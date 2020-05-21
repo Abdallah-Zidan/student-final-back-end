@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(TeachingStaffProfile::class, function (Faker $faker) {
 	return [
 		'birthdate' => $faker->date(),
-		'scientific_certificates' => $faker->sentences(3, true),
+		'scientific_certificates' => implode("\n", $faker->sentences),
 		'user_id' => 0
 	];
 });
