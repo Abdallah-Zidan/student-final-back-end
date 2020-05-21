@@ -50,6 +50,34 @@ class User extends Authenticatable
 	];
 
 	/**
+	 * The user available types.
+	 *
+	 * @var array
+	 */
+	public static $types = [
+		'Student',
+		'Company',
+		'TeachingStaff',
+		'Moderator',
+		'Admin'
+	];
+
+	/**
+	 * Gets the type from an integer value.
+	 *
+	 * @param int $value the type value equivalent.
+	 *
+	 * @return string|null
+	 */
+	public static function getTypeFromValue(int $value)
+	{
+		if ($value >= count(static::$types))
+			return null;
+
+		return static::$types[$value];
+	}
+
+	/**
 	 * Gets the user's type as a StudlyCase.
 	 *
 	 * @return string|null
