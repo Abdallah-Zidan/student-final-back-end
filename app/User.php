@@ -5,38 +5,40 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+	use HasApiTokens, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'email', 'password', 'address', 'mobile', 'avatar'
-    ];
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = [
+		'name', 'email', 'password', 'address', 'mobile', 'avatar', 'type'
+	];
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token', 'profileable_type'
-    ];
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+		'password', 'remember_token', 'profileable_type'
+	];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'email_verified_at' => 'datetime',
+	];
 
 	/**
 	 * The accessors to append to the model's array form.
@@ -85,5 +87,10 @@ class User extends Authenticatable
 		$type = $this->type ? ('App\\' . $this->type . 'Profile') : null;
 
 		return $this->hasOne($type);
+	}
+
+	public function setPasswordAttribute($value)
+	{
+		$this->attributes['password'] = Hash::make($value);
 	}
 }
