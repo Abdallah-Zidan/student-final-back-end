@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\frontend;
+namespace App\Http\Controllers\API\v1\auth;
 
 use App\CompanyProfile;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\StudentProfile;
 use App\TeachingStaffProfile;
 use App\User;
@@ -20,16 +21,17 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
-        if ($token = $user->tokens()->where('name', $request->device_name)) {
-            $token->delete();
-        }
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'credentials' => ['The provided credentials are incorrect.'],
             ]);
         }
+        if ($token = $user->tokens()->where('name', $request->device_name)) {
+            $token->delete();
+        }
         $token = $user->createToken($request->device_name)->plainTextToken;
         $response_data['data']['token'] = $token;
+        $response_data['data']['user']=new UserResource($user);
         $response_data['message'] = 'login successful';
         return response()->json($response_data, 200);
     }
@@ -57,7 +59,8 @@ class AuthController extends Controller
 
         $token = $user->createToken($request->device_name)->plainTextToken;
         $response_data['data']['token'] = $token;
-        $response_data['message'] = 'login successful';
+        $response_data['message'] = 'register successful';
+        $response_data['data']['user']=new UserResource($user);
         return response()->json($response_data, 200);
     }
 

@@ -18,8 +18,10 @@ use Illuminate\Validation\ValidationException;
 */
 
 
-Route::group(['prefix' => 'v1', 'namespace' => 'API\v1\frontend'], function () {
-    Route::post('/login', 'AuthController@login');
-    Route::post('/register', 'AuthController@register');
-    Route::get('/logout', 'AuthController@logout')->middleware('auth:sanctum');
+Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
+    Route::group(['namespace'=>'auth'],function (){
+        Route::post('/login', 'AuthController@login');
+        Route::post('/register', 'AuthController@register');
+        Route::get('/logout', 'AuthController@logout')->middleware('auth:sanctum');
+    });
 });
