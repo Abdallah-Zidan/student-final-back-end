@@ -24,6 +24,7 @@ class UserResource extends JsonResource
             "mobile"=> $this->mobile,
             "avatar"=> $this->avatar,
             "type"=> $this->type,
+            "verified"=>$this->email_verified_at ? true : false,
        ]+($this->type =='Company' ? ['profile'=>new CompanyProfileResource($this->profile)]:
                ($this->type== 'Student'?['profile'=>new StudentProfileResource($this->profile)]:[]));
     }
