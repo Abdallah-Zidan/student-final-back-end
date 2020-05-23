@@ -37,7 +37,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 * @var array
 	 */
 	protected $casts = [
-		'email_verified_at' => 'datetime',
+		'email_verified_at' => 'datetime'
 	];
 
 	/**
@@ -75,6 +75,18 @@ class User extends Authenticatable implements MustVerifyEmail
 			return null;
 
 		return static::$types[$value];
+	}
+
+	/**
+	 * Sets the user's password hash.
+	 *
+	 * @param string $value The user's password as *plain text*.
+	 *
+	 * @return void
+	 */
+	public function setPasswordAttribute(string $value)
+	{
+		$this->attributes['password'] = Hash::make($value);
 	}
 
 	/**
@@ -117,8 +129,25 @@ class User extends Authenticatable implements MustVerifyEmail
 		return $this->hasOne($type);
 	}
 
-	public function setPasswordAttribute($value)
+	/**
+	 * Many-to-many relationship to the departmentFaculties.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function departmentFaculties()
 	{
-		$this->attributes['password'] = Hash::make($value);
+		return $this->belongsToMany(DepartmentFaculty::class, 'department_faculty_users')->withTimestamps();
+	}
+
+	/**
+	 * Many-to-many relationship to the courseDepartmentFaculties.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function courseDepartmentFaculties()
+	{
+		return $this->belongsToMany(CourseDepartmentFaculty::class, 'course_department_faculty_users')->withTimestamps();
 	}
 }
