@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\auth;
+namespace App\Http\Controllers\API\v1\Auth;
 
 use App\CompanyProfile;
 use App\Http\Controllers\Controller;
@@ -61,6 +61,7 @@ class AuthController extends Controller
         $response_data['data']['token'] = $token;
         $response_data['message'] = 'register successful';
         $response_data['data']['user']=new UserResource($user);
+        $user->sendEmailVerificationNotification();
         return response()->json($response_data, 200);
     }
 

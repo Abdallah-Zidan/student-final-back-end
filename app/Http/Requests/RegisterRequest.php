@@ -39,7 +39,7 @@ class RegisterRequest extends FormRequest
 
         ] + ($this->type == 1 ? // if company
             [
-                'fax' => 'required|unique:App\CompanyProfile|size:15',
+                'fax' => 'required|unique:App\CompanyProfile|max:15',
                 'description' => 'required|max:255',
                 'website' => 'required|unique:company_profiles|max:255|url',
                 'email' => 'required|email|unique:users|max:255'

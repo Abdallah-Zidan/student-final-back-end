@@ -19,9 +19,11 @@ use Illuminate\Validation\ValidationException;
 
 
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
-    Route::group(['namespace'=>'auth'],function (){
+    Route::group(['namespace' => 'Auth'], function () {
         Route::post('/login', 'AuthController@login');
         Route::post('/register', 'AuthController@register');
         Route::get('/logout', 'AuthController@logout')->middleware('auth:sanctum');
+        Route::get('/email/resend', 'VerificationController@resend')->name('verification.resend');
+        Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
     });
 });
