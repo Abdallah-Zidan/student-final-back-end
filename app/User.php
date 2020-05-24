@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'email', 'password', 'address', 'mobile', 'avatar', 'type'
+		'name', 'email', 'password', 'gender', 'blocked', 'address', 'mobile', 'avatar', 'type'
 	];
 
 	/**
@@ -37,7 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
 	 * @var array
 	 */
 	protected $casts = [
-		'email_verified_at' => 'datetime'
+		'email_verified_at' => 'datetime',
+		'blocked' => 'boolean'
 	];
 
 	/**
@@ -47,6 +48,16 @@ class User extends Authenticatable implements MustVerifyEmail
 	 */
 	protected $appends = [
 		'type'
+	];
+
+	/**
+	 * The user available genders.
+	 *
+	 * @var array
+	 */
+	public static $genders = [
+		'Male',
+		'Female'
 	];
 
 	/**
@@ -61,6 +72,21 @@ class User extends Authenticatable implements MustVerifyEmail
 		'Moderator',
 		'Admin'
 	];
+
+	/**
+	 * Gets the gender from an integer value.
+	 *
+	 * @param int $value the gender value equivalent.
+	 *
+	 * @return string|null
+	 */
+	public static function getGenderFromValue(int $value)
+	{
+		if ($value >= count(static::$genders))
+			return null;
+
+		return static::$genders[$value];
+	}
 
 	/**
 	 * Gets the type from an integer value.
@@ -90,13 +116,38 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
+	 * Gets the user's gender.
+	 *
+	 * @return string|null
+	 */
+	public function getGenderAttribute()
+	{
+		return static::$genders[$this->attributes['gender']];
+	}
+
+	/**
+	 * Sets the user's gender.
+	 *
+	 * @param string $value The user's type as **Male** or **Female**.
+	 *
+	 * @return void
+	 */
+	public function setGenderAttribute(string $value)
+	{
+		$index = array_search($value, static::$genders);
+
+		if ($index !== false)
+			$this->attributes['gender'] = $index;
+	}
+
+	/**
 	 * Gets the user's type as a StudlyCase.
 	 *
 	 * @return string|null
 	 */
 	public function getTypeAttribute()
 	{
-		return Str::studly($this->profileable_type) ?: null;
+		return Str::studly($this->attributes['profileable_type']) ?: null;
 	}
 
 	/**
@@ -112,7 +163,7 @@ class User extends Authenticatable implements MustVerifyEmail
 		$type = Str::before($type, 'Profile');
 		$type = Str::snake($type);
 
-		$this->profileable_type = $type;
+		$this->attributes['profileable_type'] = $type;
 	}
 
 	/**
@@ -127,6 +178,17 @@ class User extends Authenticatable implements MustVerifyEmail
 		$type = $this->type ? ('App\\' . $this->type . 'Profile') : null;
 
 		return $this->hasOne($type);
+	}
+
+	/**
+	 * One-to-many relationship to the resources.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function resources()
+	{
+		return $this->hasMany(Resource::class);
 	}
 
 	/**
@@ -149,5 +211,51 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function courseDepartmentFaculties()
 	{
 		return $this->belongsToMany(CourseDepartmentFaculty::class, 'course_department_faculty_users')->withTimestamps();
+	}
+
+	/**
+	 * One-to-many relationship to the questions.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function questions()
+	{
+		return $this->hasMany(Question::class);
+	}
+
+	/**
+	 * One-to-many relationship to the events.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function events()
+	{
+		return $this->hasMany(Event::class);
+	}
+
+	/**
+	 * One-to-many relationship to the comments.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function comments()
+	{
+		return $this->hasMany(Comment::class);
+	}
+
+	/**
+	 * Many-to-many relationship to the rates.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function rates()
+	{
+		return $this->belongsToMany(Comment::class, 'rates')
+					->withPivot('rate')
+					->withTimestamps();
 	}
 }

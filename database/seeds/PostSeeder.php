@@ -1,10 +1,10 @@
 <?php
 
-use App\DepartmentFaculty;
+use App\Post;
 use App\User;
 use Illuminate\Database\Seeder;
 
-class DepartmentFacultyUserSeeder extends Seeder
+class PostSeeder extends Seeder
 {
 	/**
 	 * Run the database seeds.
@@ -17,9 +17,11 @@ class DepartmentFacultyUserSeeder extends Seeder
 			'student',
 			'teaching_staff'
 		])->get()->each(function ($user) {
-			DepartmentFaculty::inRandomOrder()->take(2)->get()->each(function ($department_faculty) use ($user) {
-				$user->departmentFaculties()->attach($department_faculty);
-			});
+			$department_faculty = $user->departmentFaculties()->inRandomOrder()->first();
+			factory(Post::class, 5)->create([
+				'user_id' => $user->id,
+				'department_faculty_id' => $department_faculty->id
+			]);
 		});
 	}
 }

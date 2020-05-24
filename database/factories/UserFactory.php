@@ -23,6 +23,8 @@ $factory->define(User::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'email_verified_at' => now(),
         'password' => '123456',
+        'gender' => $faker->randomElement(User::$genders),
+        'blocked' => $faker->boolean,
         'address' => $faker->address,
         'mobile' => $faker->e164PhoneNumber,
         'remember_token' => Str::random(10)

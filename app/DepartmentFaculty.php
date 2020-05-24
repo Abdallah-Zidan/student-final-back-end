@@ -51,7 +51,7 @@ class DepartmentFaculty extends Model
 	/**
 	 * Many-to-many relationship to the courses.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\belongsToMany
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 *
 	 */
 	public function courses()

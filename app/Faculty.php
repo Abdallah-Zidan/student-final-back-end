@@ -16,6 +16,17 @@ class Faculty extends Model
 	];
 
 	/**
+	 * One-to-many relationship to the moderators.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function moderators()
+	{
+		return $this->hasMany(ModeratorProfile::class);
+	}
+
+	/**
 	 * Many-to-one relationship to the university.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

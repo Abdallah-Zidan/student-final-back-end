@@ -13,7 +13,10 @@ class CourseDepartmentFacultyUserSeeder extends Seeder
 	 */
 	public function run()
 	{
-		User::all()->each(function ($user) {
+		User::whereIn('profileable_type', [
+			'student',
+			'teaching_staff'
+		])->get()->each(function ($user) {
 			CourseDepartmentFaculty::inRandomOrder()->take(10)->get()->each(function ($course_department_faculty) use ($user) {
 				$user->courseDepartmentFaculties()->attach($course_department_faculty);
 			});
