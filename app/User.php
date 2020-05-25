@@ -258,4 +258,9 @@ class User extends Authenticatable implements MustVerifyEmail
 					->withPivot('rate')
 					->withTimestamps();
 	}
+
+	public function getAvatarAttribute($value)
+	{
+		return request()->getSchemeAndHttpHost() . '/uploads/' . $value;
+	}
 }

@@ -7,14 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
-use App\StudentProfile;
-use App\TeachingStaffProfile;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\Sanctum;
+use Laravel\Sanctum\NewAccessToken;
 
 class AuthController extends Controller
 {
@@ -22,20 +19,25 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'credentials' => ['The provided credentials are incorrect.'],
-            ]);
+            return response([],422);
         }
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();
         }
-        $token = $user->createToken($request->device_name)->plainTextToken;
-        $response_data['data']['token'] = $token;
-        $response_data['data']['user']=new UserResource($user);
-        $response_data['message'] = 'login successful';
-        return response()->json($response_data, 200);
+        $token = $user->createToken($request->device_name);
+        $response_data['data']['token']['access_token'] = $token->plainTextToken;
+        $response_data['data']['token']['expired_at'] = $this->get_token_expired_time($token);
+        $response_data['data']['user'] = new UserResource($user);
+
+        return response([$response_data]);
     }
 
+    private function get_token_expired_time(NewAccessToken $token)
+    {
+        return Carbon::parse($token->accessToken->create_at)
+            ->addMinutes(config('sanctum.expiration'))
+            ->toDateTimeString();
+    }
 
 
     public function register(RegisterRequest $request)
@@ -47,9 +49,13 @@ class AuthController extends Controller
                     'email',
                     'password',
                     'address',
-                    'mobile'
+                    'mobile',
+                    'gender'
                 ]
-            ) + ['type' => User::getTypeFromValue($request->type)]
+            ) + [
+                'type' => User::getTypeFromValue($request->type),
+                'avatar' =>  'image/users' . ($request->gender  == 0 ? 'default_male.png' : 'default_female.png')
+            ]
         );
 
         if ($request->type == 0)  // student
@@ -57,17 +63,22 @@ class AuthController extends Controller
         else                    // company
             $user->profile()->create($request->only(['fax', 'description', 'website']));
 
-        $token = $user->createToken($request->device_name)->plainTextToken;
-        $response_data['data']['token'] = $token;
-        $response_data['message'] = 'register successful';
-        $response_data['data']['user']=new UserResource($user);
+        $token = $user->createToken($request->device_name);
+        $response_data['data']['token']['access_token'] = $token->plainTextToken;
+        $response_data['data']['token']['expired_at'] = $this->get_token_expired_time($token);
+        $response_data['data']['user'] = new UserResource($user);
+
         $user->sendEmailVerificationNotification();
-        return response()->json($response_data, 200);
+
+        return response($response_data, 200);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
-        return response()->json(['message' => 'logout successful'], 200);
+        if ($token = $request->user()->tokens()->where('name', $request->device_name)) {
+            $token->delete();
+            return response([]);
+        }
+        return response([], 402);
     }
 }

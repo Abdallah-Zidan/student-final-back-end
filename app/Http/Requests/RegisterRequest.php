@@ -32,14 +32,15 @@ class RegisterRequest extends FormRequest
             'name' => 'required|max:255',
             'password' => ['required', new StrongPassword()],
             'address' => 'required|max:255',
-            'mobile' => 'required|unique:users|max:15',
+            'mobile' => 'required|unique:users|max:15|min:11',
             'type' => 'required|in:0,1',
             'avatar' => 'mimes:jpeg,bmp,png|file|size:2048',
+            'gender'=>'required|in:0,1',
             'device_name' => 'required'
 
         ] + ($this->type == 1 ? // if company
             [
-                'fax' => 'required|unique:App\CompanyProfile|max:15',
+                'fax' => 'required|unique:App\CompanyProfile|max:15|min:11',
                 'description' => 'required|max:255',
                 'website' => 'required|unique:company_profiles|max:255|url',
                 'email' => 'required|email|unique:users|max:255'

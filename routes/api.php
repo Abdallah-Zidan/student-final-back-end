@@ -22,8 +22,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
     Route::group(['namespace' => 'Auth'], function () {
         Route::post('/login', 'AuthController@login');
         Route::post('/register', 'AuthController@register');
-        Route::get('/logout', 'AuthController@logout')->middleware('auth:sanctum');
+        Route::post('/logout', 'AuthController@logout')->middleware('auth:sanctum');
         Route::get('/email/resend', 'VerificationController@resend')->name('verification.resend');
         Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
+    });
+
+    Route::group(['prefix'=>'profile' , 'middleware'=>['auth:sanctum','verified']],function(){
+         Route::get('/','ProfileController@show')->name('profile.show');
+         Route::put('/','ProfileController@update')->name('profile.update');
     });
 });

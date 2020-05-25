@@ -26,7 +26,7 @@ class StrongPassword implements Rule
     public function passes($attribute, $value)
     {
 
-        return preg_match("/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,30}$/", $value);
+        return preg_match("/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*+-]).{8,30}$/", $value);
     }
 
     /**
