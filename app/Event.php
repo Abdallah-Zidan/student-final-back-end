@@ -2,10 +2,10 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use App\Enums\EventScope;
+use App\Enums\EventType;
 
-class Event extends Model
+class Event extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.
@@ -27,68 +27,27 @@ class Event extends Model
 	];
 
 	/**
-	 * The event available types.
-	 *
-	 * @var array
-	 */
-	public static $types = [
-		'Normal',
-		'Training',
-		'Internship',
-		'Announcement',
-		'JobOffer'
-	];
-
-	/**
-	 * The event available scopes.
-	 *
-	 * @var array
-	 */
-	public static $scopes = [
-		'all',
-		'university',
-		'faculty',
-		'department'
-	];
-
-	/**
-	 * Gets the type from an integer value.
-	 *
-	 * @param int $value the type value equivalent.
-	 *
-	 * @return string|null
-	 */
-	public static function getTypeFromValue(int $value)
-	{
-		if ($value >= count(static::$types))
-			return null;
-
-		return static::$types[$value];
-	}
-
-	/**
 	 * Gets the event's type as a StudlyCase.
 	 *
+	 * @param int $value the type value.
+	 *
 	 * @return string|null
 	 */
-	public function getTypeAttribute()
+	public function getTypeAttribute(int $value)
 	{
-		return Str::studly(static::$types[$this->attributes['type']]);
+		return EventType::getTypeString($value);
 	}
 
 	/**
-	 * Sets the event's type as an integer.
+	 * Gets the event's scope as a StudlyCase.
 	 *
-	 * @param string $value The event's type as a string.
+	 * @param int $value the scope value.
 	 *
-	 * @return void
+	 * @return string|null
 	 */
-	public function setTypeAttribute(string $value)
+	public function getScopeAttribute(int $value)
 	{
-		$index = array_search($value, static::$types);
-
-		if ($index !== false)
-			$this->attributes['type'] = $index;
+		return EventScope::getScopeString($value);
 	}
 
 	/**

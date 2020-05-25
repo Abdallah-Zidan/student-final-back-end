@@ -18,7 +18,7 @@ class CreateEventsTable extends Migration
 			$table->string('title');
 			$table->text('body');
 			$table->tinyInteger('type');
-			$table->string('scope');
+			$table->tinyInteger('scope');
 			$table->dateTime('start_date')->nullable();
 			$table->dateTime('end_date')->nullable();
 			$table->unsignedBigInteger('user_id');

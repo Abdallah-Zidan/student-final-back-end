@@ -1,10 +1,6 @@
 <?php
 
-use App\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\ValidationException;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +23,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
         Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
     });
 
-    Route::group(['prefix'=>'profile' , 'middleware'=>['auth:sanctum','verified']],function(){
-         Route::get('/','ProfileController@show')->name('profile.show');
-         Route::put('/','ProfileController@update')->name('profile.update');
+    Route::group(['prefix'=>'profile', 'middleware' => ['auth:sanctum', 'verified']], function() {
+        Route::get('/', 'ProfileController@show')->name('profile.show');
+        Route::put('/', 'ProfileController@update')->name('profile.update');
     });
 });

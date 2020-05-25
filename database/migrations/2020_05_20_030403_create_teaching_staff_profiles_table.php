@@ -17,7 +17,6 @@ class CreateTeachingStaffProfilesTable extends Migration
 			$table->id();
 			$table->date('birthdate');
 			$table->text('scientific_certificates');
-			$table->unsignedBigInteger('user_id');
 			$table->timestamps();
 		});
 	}

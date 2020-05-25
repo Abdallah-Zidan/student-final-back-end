@@ -9,7 +9,6 @@ $factory->define(CompanyProfile::class, function (Faker $faker) {
 	return [
 		'fax' => $faker->e164PhoneNumber,
 		'description' => $faker->sentences(3, true),
-		'website' => $faker->url,
-		'user_id' => 0
+		'website' => $faker->url
 	];
 });

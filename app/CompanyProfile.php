@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class CompanyProfile extends Model
+class CompanyProfile extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.
@@ -12,17 +10,17 @@ class CompanyProfile extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'fax', 'description', 'website', 'user_id'
+		'fax', 'description', 'website'
 	];
 
 	/**
 	 * One-to-one relationship to the user.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphOne
 	 *
 	 */
 	public function user()
 	{
-		return $this->belongsTo(User::class);
+		return $this->morphOne(User::class, 'profileable');
 	}
 }

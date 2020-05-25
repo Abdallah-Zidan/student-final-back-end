@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Enums\UserGender;
 use App\Notifications\VerifyEmailQueued;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,7 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'email', 'password', 'gender', 'blocked', 'address', 'mobile', 'avatar', 'type'
+		'name', 'email', 'password', 'gender', 'blocked', 'address', 'mobile', 'avatar', 'profileable_type', 'profileable_id'
 	];
 
 	/**
@@ -29,7 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 * @var array
 	 */
 	protected $hidden = [
-		'password', 'remember_token', 'profileable_type'
+		'password', 'remember_token', 'profileable_type', 'profileable_id'
 	];
 
 	/**
@@ -52,59 +53,6 @@ class User extends Authenticatable implements MustVerifyEmail
 	];
 
 	/**
-	 * The user available genders.
-	 *
-	 * @var array
-	 */
-	public static $genders = [
-		'Male',
-		'Female'
-	];
-
-	/**
-	 * The user available types.
-	 *
-	 * @var array
-	 */
-	public static $types = [
-		'Student',
-		'Company',
-		'TeachingStaff',
-		'Moderator',
-		'Admin'
-	];
-
-	/**
-	 * Gets the gender from an integer value.
-	 *
-	 * @param int $value the gender value equivalent.
-	 *
-	 * @return string|null
-	 */
-	public static function getGenderFromValue(int $value)
-	{
-		if ($value >= count(static::$genders))
-			return null;
-
-		return static::$genders[$value];
-	}
-
-	/**
-	 * Gets the type from an integer value.
-	 *
-	 * @param int $value the type value equivalent.
-	 *
-	 * @return string|null
-	 */
-	public static function getTypeFromValue(int $value)
-	{
-		if ($value >= count(static::$types))
-			return null;
-
-		return static::$types[$value];
-	}
-
-	/**
 	 * Sets the user's password hash.
 	 *
 	 * @param string $value The user's password as *plain text*.
@@ -117,28 +65,15 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * Gets the user's gender.
+	 * Gets the user's gender as a StudlyCase.
+	 *
+	 * @param int $value the gender value.
 	 *
 	 * @return string|null
 	 */
-	public function getGenderAttribute()
+	public function getGenderAttribute(int $value)
 	{
-		return static::$genders[$this->attributes['gender']];
-	}
-
-	/**
-	 * Sets the user's gender.
-	 *
-	 * @param string $value The user's type as **Male** or **Female**.
-	 *
-	 * @return void
-	 */
-	public function setGenderAttribute(string $value)
-	{
-		$index = array_search($value, static::$genders);
-
-		if ($index !== false)
-			$this->attributes['gender'] = $index;
+		return UserGender::getGenderString($value);
 	}
 
 	/**
@@ -148,37 +83,23 @@ class User extends Authenticatable implements MustVerifyEmail
 	 */
 	public function getTypeAttribute()
 	{
-		return Str::studly($this->attributes['profileable_type']) ?: null;
-	}
-
-	/**
-	 * Sets the user's type as a snake_case.
-	 *
-	 * @param string $value The user's type as **App\Model**.
-	 *
-	 * @return void
-	 */
-	public function setTypeAttribute(string $value)
-	{
+		$value = $this->attributes['profileable_type'];
 		$type = Str::after($value, 'App\\');
 		$type = Str::before($type, 'Profile');
-		$type = Str::snake($type);
 
-		$this->attributes['profileable_type'] = $type;
+		return $type ?: null;
 	}
 
 	/**
 	 * One-to-one relationship to the profile.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasOne
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphTo
 	 *
 	 * @throws \Exception If the user's type is *null*, or the class name is not found.
 	 */
-	public function profile()
+	public function profileable()
 	{
-		$type = $this->type ? ('App\\' . $this->type . 'Profile') : null;
-
-		return $this->hasOne($type);
+		return $this->morphTo();
 	}
 
 	/**
@@ -212,6 +133,17 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function courseDepartmentFaculties()
 	{
 		return $this->belongsToMany(CourseDepartmentFaculty::class, 'course_department_faculty_users')->withTimestamps();
+	}
+
+	/**
+	 * One-to-many relationship to the posts.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function posts()
+	{
+		return $this->hasMany(Post::class);
 	}
 
 	/**

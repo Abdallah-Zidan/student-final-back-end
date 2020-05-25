@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class University extends Model
+class University extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.

@@ -18,7 +18,6 @@ class CreateCompanyProfilesTable extends Migration
 			$table->string('fax', 20)->unique();
 			$table->text('description');
 			$table->string('website');
-			$table->unsignedBigInteger('user_id');
 			$table->timestamps();
 		});
 	}

@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class ModeratorProfile extends Model
+class ModeratorProfile extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.
@@ -12,18 +10,18 @@ class ModeratorProfile extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'faculty_id', 'user_id'
+		'faculty_id'
 	];
 
 	/**
 	 * One-to-one relationship to the user.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphOne
 	 *
 	 */
 	public function user()
 	{
-		return $this->belongsTo(User::class);
+		return $this->morphOne(User::class, 'profileable');
 	}
 
 	/**

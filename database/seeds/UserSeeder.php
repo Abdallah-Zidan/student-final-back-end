@@ -1,6 +1,8 @@
 <?php
 
 use App\CompanyProfile;
+use App\Enums\UserGender;
+use App\Enums\UserType;
 use App\Faculty;
 use App\ModeratorProfile;
 use App\StudentProfile;
@@ -20,46 +22,43 @@ class UserSeeder extends Seeder
 		factory(User::class)->create([
 			'name' => 'Admin',
 			'email' => 'admin@domain.com',
-			'gender' => User::getGenderFromValue(0),
+			'gender' => UserGender::MALE,
 			'blocked' => false,
-			'type' => 'admin'
+			'profileable_type' => UserType::getTypeModel(UserType::ADMIN)
 		]);
 		factory(User::class, 4)->create([
-			'type' => 'admin'
+			'profileable_type' => UserType::getTypeModel(UserType::ADMIN)
 		]);
 
 		Faculty::all()->each(function ($faculty) {
-			$user = factory(User::class)->create([
+			$profile = factory(ModeratorProfile::class)->create([
+				'faculty_id' => $faculty->id
+			]);
+			factory(User::class)->create([
 				'blocked' => false,
-				'type' => ModeratorProfile::class
-			]);
-			factory(ModeratorProfile::class)->create([
-				'faculty_id' => $faculty->id,
-				'user_id' => $user->id
+				'profileable_type' => get_class($profile),
+				'profileable_id' => $profile->id
 			]);
 		});
 
-		factory(User::class, 5)->create([
-			'type' => StudentProfile::class
-		])->each(function ($user) {
-			factory(StudentProfile::class)->create([
-				'user_id' => $user->id
+		factory(StudentProfile::class, 100)->create()->each(function ($profile) {
+			factory(User::class)->create([
+				'profileable_type' => get_class($profile),
+				'profileable_id' => $profile->id
 			]);
 		});
 
-		factory(User::class, 5)->create([
-			'type' => CompanyProfile::class
-		])->each(function ($user) {
-			factory(CompanyProfile::class)->create([
-				'user_id' => $user->id
+		factory(CompanyProfile::class, 5)->create()->each(function ($profile) {
+			factory(User::class)->create([
+				'profileable_type' => get_class($profile),
+				'profileable_id' => $profile->id
 			]);
 		});
 
-		factory(User::class, 5)->create([
-			'type' => TeachingStaffProfile::class
-		])->each(function ($user) {
-			factory(TeachingStaffProfile::class)->create([
-				'user_id' => $user->id
+		factory(TeachingStaffProfile::class, 20)->create()->each(function ($profile) {
+			factory(User::class)->create([
+				'profileable_type' => get_class($profile),
+				'profileable_id' => $profile->id
 			]);
 		});
 	}

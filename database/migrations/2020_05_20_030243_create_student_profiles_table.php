@@ -17,7 +17,6 @@ class CreateStudentProfilesTable extends Migration
 			$table->id();
 			$table->date('birthdate');
 			$table->tinyInteger('year');
-			$table->unsignedBigInteger('user_id');
 			$table->timestamps();
 		});
 	}

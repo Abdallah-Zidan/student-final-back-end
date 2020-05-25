@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class DepartmentFaculty extends Model
+class DepartmentFaculty extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.
@@ -57,5 +55,16 @@ class DepartmentFaculty extends Model
 	public function courses()
 	{
 		return $this->belongsToMany(Course::class, 'course_department_faculties')->withTimestamps();
+	}
+
+	/**
+	 * One-to-many relationship to the posts.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function posts()
+	{
+		return $this->hasMany(Post::class);
 	}
 }

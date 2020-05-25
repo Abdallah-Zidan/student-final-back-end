@@ -2,9 +2,7 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-
-class StudentProfile extends Model
+class StudentProfile extends BaseModel
 {
 	/**
 	 * The attributes that are mass assignable.
@@ -12,17 +10,17 @@ class StudentProfile extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'birthdate', 'year', 'user_id'
+		'birthdate', 'year'
 	];
 
 	/**
 	 * One-to-one relationship to the user.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphOne
 	 *
 	 */
 	public function user()
 	{
-		return $this->belongsTo(User::class);
+		return $this->morphOne(User::class, 'profileable');
 	}
 }

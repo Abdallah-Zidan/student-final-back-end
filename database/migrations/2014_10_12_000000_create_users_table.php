@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->text('address');
             $table->string('mobile', 20)->unique();
             $table->string('avatar')->nullable();
-            $table->string('profileable_type')->nullable();
+            $table->morphs('profileable');
             $table->rememberToken();
             $table->timestamps();
         });

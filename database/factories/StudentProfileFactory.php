@@ -8,7 +8,6 @@ use Faker\Generator as Faker;
 $factory->define(StudentProfile::class, function (Faker $faker) {
 	return [
 		'birthdate' => $faker->date(),
-		'year' => $faker->numberBetween(1, 7),
-		'user_id' => 0
+		'year' => $faker->numberBetween(1, 7)
 	];
 });

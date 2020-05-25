@@ -16,7 +16,6 @@ class CreateModeratorProfilesTable extends Migration
 		Schema::create('moderator_profiles', function (Blueprint $table) {
 			$table->id();
 			$table->unsignedBigInteger('faculty_id');
-			$table->unsignedBigInteger('user_id');
 			$table->timestamps();
 		});
 	}
