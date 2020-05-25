@@ -77,6 +77,18 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
+	 * Gets the user's avatar image as a url.
+	 *
+	 * @param string $value the avatar image path.
+	 *
+	 * @return string
+	 */
+	public function getAvatarAttribute(string $value)
+	{
+		return request()->getSchemeAndHttpHost() . '/uploads/' . $value;
+	}
+
+	/**
 	 * Gets the user's type as a StudlyCase.
 	 *
 	 * @return string|null
@@ -88,6 +100,16 @@ class User extends Authenticatable implements MustVerifyEmail
 		$type = Str::before($type, 'Profile');
 
 		return $type ?: null;
+	}
+
+	/**
+	 * Send the given notification.
+	 *
+	 * @return void
+	 */
+	public function sendEmailVerificationNotification()
+	{
+		$this->notify(new VerifyEmailQueued);
 	}
 
 	/**
@@ -190,15 +212,5 @@ class User extends Authenticatable implements MustVerifyEmail
 		return $this->belongsToMany(Comment::class, 'rates')
 					->withPivot('rate')
 					->withTimestamps();
-	}
-
-	public function getAvatarAttribute($value)
-	{
-		return request()->getSchemeAndHttpHost() . '/uploads/' . $value;
-	}
-
-	public function sendEmailVerificationNotification()
-	{
-		$this->notify(new VerifyEmailQueued);
 	}
 }

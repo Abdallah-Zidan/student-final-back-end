@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\v1;
 
+use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
@@ -20,25 +21,25 @@ class ProfileController extends Controller
     {
         if ($request->new_password) // change password
         {
-            return $this->change_password($request);
+            return $this->changePassword($request);
         }
         if ($request->hasFile('avatar')) {
-            $this->save_avatar($request);
+            $this->saveAvatar($request);
         }
 
         $user = $request->user();
         $user->update($request->only(['name', 'address', 'mobile']));
 
-        if ($user->type == 'Student') {
+        if ($user->type === UserType::getTypeString(UserType::STUDENT)) {
             $user->profile()->update($request->only(['birthdate']));
-        } else if ($user->type == 'Company') {
+        } else if ($user->type === UserType::getTypeString(UserType::COMPANY)) {
             $user->profile()->update($request->only(['fax', 'description', 'website']));
         }
 
         return new UserResource($user);
     }
 
-    private function save_avatar(Request $request)
+    private function saveAvatar(Request $request)
     {
         $user = $request->user();
         //delete old avatar
@@ -48,14 +49,14 @@ class ProfileController extends Controller
         $user->save();
     }
 
-    private function change_password(UpdateProfileRequest $request)
+    private function changePassword(UpdateProfileRequest $request)
     {
         $user = $request->user();
         if (Hash::check($request->password, $user->password)) {
             $user->update(['password' => $request->new_password]);
             return response([], 204);
         } else {
-            return response([],422);
+            return response([], 422);
         }
     }
 }
