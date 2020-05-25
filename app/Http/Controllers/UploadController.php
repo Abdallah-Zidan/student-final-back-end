@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
-class UploadsController extends Controller
+class UploadController extends Controller
 {
     public function show($path)
     {

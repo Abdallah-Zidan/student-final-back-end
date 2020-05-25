@@ -17,4 +17,4 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/uploads/{path}', 'UploadsController@show')->where('path', '.*');
+Route::get('/uploads/{path}', 'UploadController@show')->where('path', '.*');
