@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\User;
 
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
@@ -31,9 +31,9 @@ class ProfileController extends Controller
         $user->update($request->only(['name', 'address', 'mobile']));
 
         if ($user->type === UserType::getTypeString(UserType::STUDENT)) {
-            $user->profile()->update($request->only(['birthdate']));
+            $user->profileable()->update($request->only(['birthdate']));
         } else if ($user->type === UserType::getTypeString(UserType::COMPANY)) {
-            $user->profile()->update($request->only(['fax', 'description', 'website']));
+            $user->profileable()->update($request->only(['fax', 'description', 'website']));
         }
 
         return new UserResource($user);

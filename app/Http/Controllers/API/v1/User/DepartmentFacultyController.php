@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DepartmentFacultyResource;
 use App\Repositories\DepartmentFacultyRepository;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class DepartmentFacultyController extends Controller
 
 		return response([
 			'data' => [
-				'department_faculties' => $department_faculties
+				'department_faculties' => DepartmentFacultyResource::collection($department_faculties)
 			]
 		]);
 	}

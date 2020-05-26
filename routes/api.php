@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Add resources for posts, comments etc
-// Add pageination for posts
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	Route::group(['namespace' => 'Auth'], function () {
 		Route::post('/login', 'AuthController@login');
@@ -24,13 +22,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
 	});
 
-	Route::group(['prefix'=>'profile', 'middleware' => ['auth:sanctum', 'verified']], function() {
-		Route::get('/', 'ProfileController@show')->name('profile.show');
-		Route::put('/', 'ProfileController@update')->name('profile.update');
+	Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::get('university', 'UniversityController@index')->name('university.index');
 	});
 
-	Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::get('post', 'PostController@index')->name('user.post.index');
+	Route::group(['prefix' => 'user', 'namespace' => 'User', 'middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::get('profile', 'ProfileController@show')->name('user.profile.show');
+		Route::put('profile', 'ProfileController@update')->name('user.profile.update');
 		Route::get('department', 'DepartmentFacultyController@index')->name('user.department.index');
+	});
+
+	Route::group(['prefix' => 'post', 'namespace' => 'Post', 'middleware' => ['verified']], function () {
+		Route::get('scope', 'ScopeController@index')->name('post.scope.index');
+		Route::post('/', 'PostController@index')->middleware('auth:sanctum')->name('post.index');
 	});
 });

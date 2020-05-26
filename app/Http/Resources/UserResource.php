@@ -19,12 +19,14 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'verified' => $this->email_verified_at ? true : false,
+            'gender' => $this->gender,
+            'blocked' => $this->blocked,
             'address' => $this->address,
             'mobile' => $this->mobile,
             'avatar' => $this->avatar,
-            'type' => $this->type,
-            'verified' => $this->email_verified_at ? true : false,
-        ] + ($this->type === UserType::getTypeString(UserType::COMPANY) ? ['profile' => new CompanyProfileResource($this->profile)] :
-            ($this->type === UserType::getTypeString(UserType::STUDENT) ? ['profile' => new StudentProfileResource($this->profile)] : []));
+            'type' => $this->type
+        ] + ($this->type === UserType::getTypeString(UserType::COMPANY) ? ['profile' => new CompanyProfileResource($this->profileable)] :
+            ($this->type === UserType::getTypeString(UserType::STUDENT) ? ['profile' => new StudentProfileResource($this->profileable)] : []));
     }
 }

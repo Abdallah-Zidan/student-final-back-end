@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\API\v1;
+namespace App\Http\Controllers\API\v1\Post;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\IndexPostRequest;
+use App\Http\Resources\PostResource;
 use App\Repositories\PostRepository;
 use Illuminate\Http\Request;
 
@@ -15,15 +17,15 @@ class PostController extends Controller
 		$this->repo = $repo;
 	}
 
-	public function index(Request $request)
+	public function index(IndexPostRequest $request)
 	{
 		$user = $request->user();
 
-		$posts = $this->repo->getPostsFor($user, $request->scope);
+		$posts = $this->repo->getPostsFor($user, $request->department_faculty_id, $request->scope);
 
 		return response([
 			'data' => [
-				'posts' => $posts
+				'posts' => PostResource::collection($posts)
 			]
 		]);
 	}
