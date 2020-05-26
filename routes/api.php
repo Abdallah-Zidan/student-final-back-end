@@ -22,9 +22,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
 	});
 
-	Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::get('university', 'UniversityController@index')->name('university.index');
-	});
+	Route::get('university', 'UniversityController@index')->name('university.index');
 
 	Route::group(['prefix' => 'user', 'namespace' => 'User', 'middleware' => ['auth:sanctum', 'verified']], function () {
 		Route::get('profile', 'ProfileController@show')->name('user.profile.show');

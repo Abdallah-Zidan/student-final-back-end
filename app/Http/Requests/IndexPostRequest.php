@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class IndexPostRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class IndexPostRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'department_faculty_id' => 'required|numeric|exists:department_faculties,id',
+			'department_faculty_id' => [Rule::requiredIf($this->user()->type != UserType::getTypeString(UserType::ADMIN)), 'numeric', 'exists:department_faculties,id'],
 			'scope' => 'required|numeric|between:0,3'
 		];
 	}

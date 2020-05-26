@@ -10,7 +10,7 @@ use App\User;
 
 class PostRepository
 {
-	public function getPostsFor(User $current_user, int $department_faculty_id, string $scope)
+	public function getPostsFor(User $current_user, $department_faculty_id, string $scope)
 	{
 		if ($scope == PostScope::FACULTY)
 		{
@@ -58,7 +58,7 @@ class PostRepository
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 				'comments.replies.user'
-			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->get();
+			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->paginate(10);
 
 			return $posts;
 		}
@@ -68,9 +68,12 @@ class PostRepository
 
 	public function getPostsForStudentInSameYear(User $student, $id)
 	{
+		// Get all posts then paginate because not all posts belong to students in the same year
 		$posts = Post::with('user.profileable')->where('department_faculty_id', $id)->orderBy('created_at')->get()->filter(function ($post) use ($student) {
 			return $post->user->profileable->year === $student->profileable->year;
 		});
+
+		$posts = Post::with('user.profileable')->whereIn('id', $posts->pluck('id'))->orderBy('created_at')->paginate(10);
 
 		$posts = $posts->load([
 			'departmentFaculty.department',
@@ -101,7 +104,7 @@ class PostRepository
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 				'comments.replies.user'
-			])->where('department_faculty_id', $department_faculty->id)->orderBy('created_at')->get();
+			])->where('department_faculty_id', $department_faculty->id)->orderBy('created_at')->paginate(10);
 
 			return $posts;
 		}
@@ -129,7 +132,7 @@ class PostRepository
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 				'comments.replies.user'
-			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->get();
+			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->paginate(10);
 
 			return $posts;
 		}
@@ -153,7 +156,7 @@ class PostRepository
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 				'comments.replies.user'
-			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->get();
+			])->whereIn('department_faculty_id', $department_faculties->pluck('id'))->orderBy('created_at')->paginate(10);
 
 			return $posts;
 		}
@@ -173,7 +176,7 @@ class PostRepository
 			'comments.user',
 			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 			'comments.replies.user'
-		])->orderBy('created_at')->get();
+		])->orderBy('created_at')->paginate(10);
 
 		return $posts;
 	}
