@@ -79,13 +79,16 @@ class User extends Authenticatable implements MustVerifyEmail
 	/**
 	 * Gets the user's avatar image as a url.
 	 *
-	 * @param string $value the avatar image path.
+	 * @param $value the avatar image path.
 	 *
 	 * @return string
 	 */
-	public function getAvatarAttribute(string $value)
+	public function getAvatarAttribute($value)
 	{
-		return request()->getSchemeAndHttpHost() . '/uploads/' . $value;
+		if ($value)
+			return request()->getSchemeAndHttpHost() . '/uploads/' . $value;
+
+		return null;
 	}
 
 	/**
