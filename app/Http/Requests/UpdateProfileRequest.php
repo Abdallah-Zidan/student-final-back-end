@@ -32,11 +32,11 @@ class UpdateProfileRequest extends FormRequest
             'address' => 'max:255',
             'mobile' => ['max:15','min:11', Rule::unique('users')->ignore($this->user())],
             'avatar' => 'mimes:jpeg,bmp,png|file|max:2048'
-        ] + ($this->type == UserType::COMPANY ? [
+        ] + ($this->user()->type == UserType::getTypeString(UserType::COMPANY) ? [
             'fax' => ['max:15','min:11', Rule::unique('company_profiles')->ignore($this->user()->profileable)],
             'description' => 'max:255',
             'website' => ['max:255','url', Rule::unique('company_profiles')->ignore($this->user()->profileable)]
-        ] : ($this->type == UserType::STUDENT ? [
+        ] : ($this->user()->type == UserType::getTypeString(UserType::STUDENT) ? [
             'birthdate' => 'date|before:today'
         ] : []));
     }

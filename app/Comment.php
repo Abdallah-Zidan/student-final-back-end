@@ -14,6 +14,17 @@ class Comment extends BaseModel
 	];
 
 	/**
+	 * Model Events
+	 * 
+	 */
+	protected static function booted()
+    {
+        static::deleted(function ($comment) {
+            $comment->replies()->delete();
+        });
+    }
+
+	/**
 	 * Many-to-one relationship to the user.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

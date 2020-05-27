@@ -57,7 +57,8 @@ class AuthController extends Controller
             'address',
             'mobile'
         ]) + [
-            'avatar' => 'image/users' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png')
+            'avatar' => 'image/users' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png'),
+            'blocked'=>0
         ]);
 
         $token = $user->createToken($request->device_name);
