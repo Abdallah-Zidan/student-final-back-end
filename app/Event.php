@@ -71,4 +71,15 @@ class Event extends BaseModel
 	{
 		return $this->morphMany(Comment::class, 'parentable');
 	}
+
+	/**
+	 * One-to-many relationship to the files.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+	 *
+	 */
+	public function files()
+	{
+		return $this->morphMany(File::class, 'resourceable');
+	}
 }

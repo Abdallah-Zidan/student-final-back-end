@@ -21,8 +21,6 @@ class DatabaseSeeder extends Seeder
 			$this->call(CourseDepartmentFacultySeeder::class);
 			$this->call(DepartmentFacultyUserSeeder::class);
 			$this->call(CourseDepartmentFacultyUserSeeder::class);
-			$this->call(ResourceSeeder::class);
-			$this->call(FileSeeder::class);
 			$this->call(EventSeeder::class);
 			$this->call(PostSeeder::class);
 			$this->call(QuestionSeeder::class);
@@ -30,6 +28,7 @@ class DatabaseSeeder extends Seeder
 			$this->call(QuestionTagSeeder::class);
 			$this->call(CommentSeeder::class);
 			$this->call(RateSeeder::class);
+			$this->call(FileSeeder::class);
 		});
 	}
 }

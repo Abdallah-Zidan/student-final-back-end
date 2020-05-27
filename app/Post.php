@@ -51,6 +51,7 @@ class Post extends BaseModel
 	{
 		static::deleted(function ($post) {
 			$post->comments()->deleted();
+			$post->files()->deleted();
 		});
 	}
 
@@ -99,5 +100,16 @@ class Post extends BaseModel
 	public function comments()
 	{
 		return $this->morphMany(Comment::class, 'parentable');
+	}
+
+	/**
+	 * One-to-many relationship to the files.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+	 *
+	 */
+	public function files()
+	{
+		return $this->morphMany(File::class, 'resourceable');
 	}
 }

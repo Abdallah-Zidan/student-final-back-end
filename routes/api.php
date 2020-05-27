@@ -30,22 +30,25 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
 	});
 
+	Route::post('files', 'FileController@store')->middleware('auth:sanctum')->name('files.store');
+	Route::delete('files/{file}', 'FileController@destroy')->middleware('auth:sanctum')->name('files.destroy');
+
 	Route::group(['prefix' => 'posts', 'namespace' => 'Post', 'middleware' => ['verified']], function () {
 		Route::get('scope', 'ScopeController@index')->name('post.scope.index');
 
-		Route::get('/', 'PostController@index')->middleware('auth:sanctum')->name('post.index');
-		Route::post('/', 'PostController@store')->middleware('auth:sanctum')->name('post.store');
-		Route::put('/{post}', 'PostController@update')->middleware('auth:sanctum')->name('post.update');
-		Route::delete('/{post}', 'PostController@destroy')->middleware('auth:sanctum')->name('post.destroy');
+		Route::get('/{post}/comments/{comment}/replies', 'ReplyController@index')->middleware('auth:sanctum')->name('post.comment.replies.index');
+		Route::post('/{post}/comments/{comment}/replies', 'ReplyController@store')->middleware('auth:sanctum')->name('post.comment.replies.store');
+		Route::put('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@update')->middleware(['auth:sanctum', 'replyOwner'])->name('post.comment.replies.update');
+		Route::delete('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@destroy')->middleware(['auth:sanctum', 'replyOwner'])->name('post.comment.replies.destroy');
 
 		Route::get('/{post}/comments', 'CommentController@index')->middleware('auth:sanctum')->name('post.comments.index');
 		Route::post('/{post}/comments/', 'CommentController@store')->middleware('auth:sanctum')->name('post.comments.store');
 		Route::put('/{post}/comments/{comment}', 'CommentController@update')->middleware(['auth:sanctum', 'commentOwner'])->name('post.comments.update');
 		Route::delete('/{post}/comments/{comment}', 'CommentController@destroy')->middleware(['auth:sanctum', 'commentOwner'])->name('post.comments.destroy');
 
-		Route::get('/{post}/comments/{comment}/replies', 'ReplyController@index')->middleware('auth:sanctum')->name('post.comment.replies.index');
-		Route::post('/{post}/comments/{comment}/replies', 'ReplyController@store')->middleware('auth:sanctum')->name('post.comment.replies.store');
-		Route::put('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@update')->middleware(['auth:sanctum', 'replyOwner'])->name('post.comment.replies.update');
-		Route::delete('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@destroy')->middleware(['auth:sanctum', 'replyOwner'])->name('post.comment.replies.destroy');
+		Route::get('/', 'PostController@index')->middleware('auth:sanctum')->name('post.index');
+		Route::post('/', 'PostController@store')->middleware('auth:sanctum')->name('post.store');
+		Route::put('/{post}', 'PostController@update')->middleware('auth:sanctum')->name('post.update');
+		Route::delete('/{post}', 'PostController@destroy')->middleware('auth:sanctum')->name('post.destroy');
 	});
 });

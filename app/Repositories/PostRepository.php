@@ -6,6 +6,7 @@ use App\Enums\PostScope;
 use App\Enums\UserType;
 use App\Post;
 use App\User;
+use Illuminate\Support\Facades\Storage;
 
 class PostRepository
 {
@@ -25,11 +26,28 @@ class PostRepository
 	{
 		if ($this->checkPostScope($current_user, $data['scope'], $data['scope_id']))
 		{
-			return $current_user->posts()->create([
+			$post = $current_user->posts()->create([
 				'body' => $data['body'],
 				'scopeable_type' => PostScope::getScopeModel($data['scope']),
 				'scopeable_id' => $data['scope_id']
 			]);
+
+			if (array_key_exists('files', $data))
+			{
+				$files = $data['files'];
+
+				for ($i = 0; $i < count($files); $i++)
+				{
+					$path = Storage::disk('local')->put('files/posts/' . $post->id, $files[$i]);
+					$mime = Storage::mimeType($path);
+					$post->files()->create([
+						'path' => $path,
+						'mime' => $mime
+					]);
+				}
+			}
+
+			return $post;
 		}
 
 		return false;
@@ -84,7 +102,8 @@ class PostRepository
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user'
+				'comments.replies.user',
+				'files'
 			])->whereIn('id', $posts->pluck('id'))->orderBy('created_at')->paginate(10)->load([
 				'scopeable.department',
 				'scopeable.faculty',
@@ -108,7 +127,8 @@ class PostRepository
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user'
+				'comments.replies.user',
+				'files'
 			])->where([
 				['scopeable_type', PostScope::getScopeModel(PostScope::FACULTY)],
 				['scopeable_id', $scope_id]
@@ -131,7 +151,8 @@ class PostRepository
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user'
+				'comments.replies.user',
+				'files'
 			])->where([
 				['scopeable_type', PostScope::getScopeModel(PostScope::UNIVERSITY)],
 				['scopeable_id', $scope_id]

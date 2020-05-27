@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\PostScope;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePostRequest extends FormRequest
+class StoreFileRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -25,11 +24,9 @@ class StorePostRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'body' => 'required',
-			'scope' => 'required|numeric|between:0,2',
-			'scope_id' => 'required|numeric',
-			'files' => 'array',
-			'files.*' => 'file|max:51200'
+			'resource' => 'required|numeric|between:0,1',
+			'resource_id' => 'required|numeric',
+			'file' => 'required|file|max:51200'
 		];
 	}
 }

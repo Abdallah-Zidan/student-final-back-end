@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexPostRequest;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\FileResource;
 use App\Http\Resources\PostCollection;
 use App\Post;
 use App\Repositories\PostRepository;
@@ -34,14 +35,17 @@ class PostController extends Controller
 
 	public function store(StorePostRequest $request)
 	{
-		$post = $this->repo->create($request->user(), $request->only(['body', 'scope', 'scope_id']));
+		$post = $this->repo->create($request->user(), $request->only(['body', 'scope', 'scope_id', 'files']));
 
 		if ($post === false)
 			return response('', 401);
 
 		return response([
 			'data' => [
-				'post' => ['id' => $post->id]
+				'post' => [
+					'id' => $post->id,
+					'files' => FileResource::collection($post->files)
+				]
 			]
 		], 201);
 	}

@@ -128,17 +128,6 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * One-to-many relationship to the resources.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 *
-	 */
-	public function resources()
-	{
-		return $this->hasMany(Resource::class);
-	}
-
-	/**
 	 * Many-to-many relationship to the departmentFaculties.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

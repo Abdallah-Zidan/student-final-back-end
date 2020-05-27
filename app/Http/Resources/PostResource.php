@@ -19,7 +19,13 @@ class PostResource extends JsonResource
 			'id' => $this->id,
 			'body' => $this->body,
 			'reported' => $this->reported,
-			'user' => new UserResource($this->whenLoaded('user')),
+			$this->mergeWhen($this->whenLoaded('user'), [
+				'user' => [
+					'id' => $this->user->id,
+					'name' => $this->user->name,
+					'avatar' => $this->user->avatar
+				]
+			]),
 			$this->mergeWhen(
 				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::DEPARTMENT),
 				['department_faculty' => new DepartmentFacultyResource($this->scopeable)]
@@ -32,7 +38,8 @@ class PostResource extends JsonResource
 				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::UNIVERSITY),
 				['university' => new UniversityResource($this->scopeable)]
 			),
-			'comments' => CommentResource::collection($this->whenLoaded('comments'))
+			'comments' => CommentResource::collection($this->whenLoaded('comments')),
+			'files' => FileResource::collection($this->whenLoaded('files'))
 		];
 	}
 }

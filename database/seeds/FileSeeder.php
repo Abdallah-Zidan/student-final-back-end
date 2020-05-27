@@ -1,7 +1,8 @@
 <?php
 
+use App\Event;
 use App\File;
-use App\Resource;
+use App\Post;
 use Illuminate\Database\Seeder;
 
 class FileSeeder extends Seeder
@@ -13,9 +14,17 @@ class FileSeeder extends Seeder
 	 */
 	public function run()
 	{
-		Resource::all()->each(function ($resource) {
+		Post::all()->each(function ($post) {
 			factory(File::class, 3)->create([
-				'resource_id' => $resource->id
+				'resourceable_type' => get_class($post),
+				'resourceable_id' => $post->id
+			]);
+		});
+
+		Event::all()->each(function ($event) {
+			factory(File::class, 3)->create([
+				'resourceable_type' => get_class($event),
+				'resourceable_id' => $event->id
 			]);
 		});
 	}

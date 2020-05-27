@@ -9,6 +9,7 @@ $factory->define(File::class, function (Faker $faker) {
 	return [
 		'path' => 'path/to/file.ext',
 		'mime' => $faker->mimeType,
-		'resource_id' => 0
+		'resourceable_type' => null,
+		'resourceable_id' => 0
 	];
 });

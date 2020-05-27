@@ -17,7 +17,7 @@ class CreateFilesTable extends Migration
 			$table->id();
 			$table->string('path');
 			$table->string('mime');
-			$table->unsignedBigInteger('resource_id');
+			$table->morphs('resourceable');
 			$table->timestamps();
 		});
 	}
