@@ -16,7 +16,7 @@ class RateSeeder extends Seeder
 	{
 		$rates = [-1, 1];
 		Comment::where('parentable_type', Question::class)->get()->each(function ($comment) use ($rates) {
-			User::inRandomOrder()->take(5)->get()->each(function ($user) use ($comment, $rates) {
+			User::inRandomOrder()->take(3)->get()->each(function ($user) use ($comment, $rates) {
 				$comment->rates()->attach($user, [
 					'rate' => $rates[array_rand($rates)]
 				]);

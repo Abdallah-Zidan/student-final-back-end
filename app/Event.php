@@ -64,7 +64,7 @@ class Event extends BaseModel
 	/**
 	 * One-to-many relationship to the comments.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
 	 *
 	 */
 	public function comments()

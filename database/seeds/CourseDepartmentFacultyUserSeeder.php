@@ -18,7 +18,7 @@ class CourseDepartmentFacultyUserSeeder extends Seeder
 			UserType::getTypeModel(UserType::STUDENT),
 			UserType::getTypeModel(UserType::TEACHING_STAFF)
 		])->get()->each(function ($user) {
-			CourseDepartmentFaculty::inRandomOrder()->take(10)->get()->each(function ($course_department_faculty) use ($user) {
+			CourseDepartmentFaculty::inRandomOrder()->take(5)->get()->each(function ($course_department_faculty) use ($user) {
 				$user->courseDepartmentFaculties()->attach($course_department_faculty);
 			});
 		});

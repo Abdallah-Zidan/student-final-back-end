@@ -10,6 +10,7 @@ $factory->define(Post::class, function (Faker $faker) {
 		'body' => $faker->sentences(3, true),
 		'reported' => $faker->boolean,
 		'user_id' => 0,
-		'department_faculty_id' => 0
+		'scopeable_type' => null,
+		'scopeable_id' => 0
 	];
 });

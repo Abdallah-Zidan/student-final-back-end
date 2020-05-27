@@ -20,7 +20,7 @@ class EventSeeder extends Seeder
 			UserType::getTypeModel(UserType::MODERATOR),
 			UserType::getTypeModel(UserType::ADMIN)
 		])->get()->each(function ($user) {
-			factory(Event::class, 3)->create([
+			factory(Event::class, 2)->create([
 				'user_id' => $user->id
 			]);
 		});

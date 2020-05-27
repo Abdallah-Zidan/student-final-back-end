@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
 			]);
 		});
 
-		factory(StudentProfile::class, 100)->create()->each(function ($profile) {
+		factory(StudentProfile::class, 50)->create()->each(function ($profile) {
 			factory(User::class)->create([
 				'profileable_type' => get_class($profile),
 				'profileable_id' => $profile->id
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
 			]);
 		});
 
-		factory(TeachingStaffProfile::class, 20)->create()->each(function ($profile) {
+		factory(TeachingStaffProfile::class, 10)->create()->each(function ($profile) {
 			factory(User::class)->create([
 				'profileable_type' => get_class($profile),
 				'profileable_id' => $profile->id

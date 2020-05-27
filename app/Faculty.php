@@ -56,4 +56,15 @@ class Faculty extends BaseModel
 	{
 		return $this->hasManyThrough(CourseDepartmentFaculty::class, DepartmentFaculty::class);
 	}
+
+	/**
+	 * One-to-many relationship to the posts.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+	 *
+	 */
+	public function posts()
+	{
+		return $this->morphMany(Post::class, 'scopeable');
+	}
 }

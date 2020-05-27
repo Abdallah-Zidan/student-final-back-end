@@ -15,7 +15,7 @@ class DepartmentFacultySeeder extends Seeder
 	public function run()
 	{
 		Faculty::all()->each(function ($faculty) {
-			Department::inRandomOrder()->take(5)->get()->each(function ($department) use ($faculty) {
+			Department::inRandomOrder()->take(3)->get()->each(function ($department) use ($faculty) {
 				factory(DepartmentFaculty::class)->create([
 					'department_id' => $department->id,
 					'faculty_id' => $faculty->id

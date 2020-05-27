@@ -14,7 +14,7 @@ class ResourceSeeder extends Seeder
 	public function run()
 	{
 		User::all()->each(function ($user) {
-			factory(Resource::class, 5)->create([
+			factory(Resource::class, 3)->create([
 				'user_id' => $user->id
 			]);
 		});

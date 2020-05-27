@@ -26,8 +26,17 @@ class IndexPostRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'department_faculty_id' => [Rule::requiredIf($this->user()->type != UserType::getTypeString(UserType::ADMIN)), 'numeric', 'exists:department_faculties,id'],
-			'scope' => 'required|numeric|between:0,3'
+			'scope_id' => [
+				Rule::requiredIf($this->user()->type != UserType::getTypeString(UserType::MODERATOR) ||
+								 $this->user()->type != UserType::getTypeString(UserType::ADMIN)),
+				'numeric'
+			],
+			'scope' => [
+				Rule::requiredIf($this->user()->type != UserType::getTypeString(UserType::MODERATOR) ||
+								 $this->user()->type != UserType::getTypeString(UserType::ADMIN)),
+				'numeric',
+				'between:0,2'
+			]
 		];
 	}
 }

@@ -17,7 +17,7 @@ class CommentSeeder extends Seeder
 	public function run()
 	{
 		Post::all()->each(function ($post) {
-			User::inRandomOrder()->take(5)->get()->each(function ($user) use ($post) {
+			User::inRandomOrder()->take(3)->get()->each(function ($user) use ($post) {
 				$comment = factory(Comment::class)->create([
 					'user_id' => $user->id,
 					'parentable_type' => get_class($post),
@@ -34,7 +34,7 @@ class CommentSeeder extends Seeder
 		});
 
 		Event::all()->each(function ($event) {
-			User::inRandomOrder()->take(5)->get()->each(function ($user) use ($event) {
+			User::inRandomOrder()->take(3)->get()->each(function ($user) use ($event) {
 				$comment = factory(Comment::class)->create([
 					'user_id' => $user->id,
 					'parentable_type' => get_class($event),
@@ -51,7 +51,7 @@ class CommentSeeder extends Seeder
 		});
 
 		Question::all()->each(function ($question) {
-			User::inRandomOrder()->take(5)->get()->each(function ($user) use ($question) {
+			User::inRandomOrder()->take(3)->get()->each(function ($user) use ($question) {
 				factory(Comment::class)->create([
 					'user_id' => $user->id,
 					'parentable_type' => get_class($question),

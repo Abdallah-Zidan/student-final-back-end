@@ -14,7 +14,7 @@ class FacultySeeder extends Seeder
 	public function run()
 	{
 		University::all()->each(function ($university) {
-			factory(Faculty::class, 10)->create([
+			factory(Faculty::class, 5)->create([
 				'university_id' => $university->id
 			]);
 		});

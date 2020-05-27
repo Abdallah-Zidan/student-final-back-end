@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Illuminate\Support\Str;
+
 class Post extends BaseModel
 {
 	/**
@@ -10,7 +12,16 @@ class Post extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'body', 'reported', 'user_id', 'department_faculty_id'
+		'body', 'reported', 'user_id', 'scopeable_type', 'scopeable_id'
+	];
+
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+		'scopeable_type', 'scopeable_id'
 	];
 
 	/**
@@ -21,6 +32,41 @@ class Post extends BaseModel
 	protected $casts = [
 		'reported' => 'boolean'
 	];
+
+	/**
+	 * The accessors to append to the model's array form.
+	 *
+	 * @var array
+	 */
+	protected $appends = [
+		'scope'
+	];
+
+	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleted(function ($post) {
+			$post->comments()->deleted();
+		});
+	}
+
+	/**
+	 * Gets the post's scope as a StudlyCase.
+	 *
+	 * @return string|null
+	 */
+	public function getScopeAttribute()
+	{
+		$value = $this->attributes['scopeable_type'];
+		$scope = Str::after($value, 'App\\');
+		$scope = Str::before($scope, 'Profile');
+
+		return $scope ?: null;
+	}
 
 	/**
 	 * Many-to-one relationship to the user.
@@ -34,20 +80,20 @@ class Post extends BaseModel
 	}
 
 	/**
-	 * Many-to-one relationship to the departmentFaculty.
+	 * Many-to-one relationship to the scope.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphTo
 	 *
 	 */
-	public function departmentFaculty()
+	public function scopeable()
 	{
-		return $this->belongsTo(DepartmentFaculty::class);
+		return $this->morphTo();
 	}
 
 	/**
 	 * One-to-many relationship to the comments.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
 	 *
 	 */
 	public function comments()

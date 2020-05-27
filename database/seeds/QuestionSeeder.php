@@ -14,7 +14,7 @@ class QuestionSeeder extends Seeder
 	public function run()
 	{
 		User::all()->each(function ($user) {
-			factory(Question::class, 5)->create([
+			factory(Question::class, 3)->create([
 				'user_id' => $user->id
 			]);
 		});

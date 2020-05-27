@@ -25,6 +25,17 @@ class Question extends BaseModel
 	}
 
 	/**
+	 * One-to-many relationship to the comments.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+	 *
+	 */
+	public function comments()
+	{
+		return $this->morphMany(Comment::class, 'parentable');
+	}
+
+	/**
 	 * Many-to-many relationship to the tags.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

@@ -60,11 +60,11 @@ class DepartmentFaculty extends BaseModel
 	/**
 	 * One-to-many relationship to the posts.
 	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
 	 *
 	 */
 	public function posts()
 	{
-		return $this->hasMany(Post::class);
+		return $this->morphMany(Post::class, 'scopeable');
 	}
 }

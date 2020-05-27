@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->tinyInteger('gender');
-            $table->boolean('blocked');
+            $table->boolean('blocked')->default(false);
             $table->text('address');
             $table->string('mobile', 20)->unique();
             $table->string('avatar')->nullable();

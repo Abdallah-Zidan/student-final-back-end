@@ -4,7 +4,10 @@ namespace App\Http\Controllers\API\v1\Post;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexPostRequest;
-use App\Http\Resources\PostResource;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostCollection;
+use App\Post;
 use App\Repositories\PostRepository;
 use Illuminate\Http\Request;
 
@@ -21,12 +24,45 @@ class PostController extends Controller
 	{
 		$user = $request->user();
 
-		$posts = $this->repo->getPostsFor($user, $request->department_faculty_id, $request->scope);
+		$posts = $this->repo->getPostsFor($user, $request->scope, $request->scope_id);
+
+		if ($posts === false)
+			return response('', 401);
+
+		return new PostCollection($posts);;
+	}
+
+	public function store(StorePostRequest $request)
+	{
+		$post = $this->repo->create($request->user(), $request->only(['body', 'scope', 'scope_id']));
+
+		if ($post === false)
+			return response('', 401);
 
 		return response([
 			'data' => [
-				'posts' => PostResource::collection($posts)
+				'post' => ['id' => $post->id]
 			]
-		]);
+		], 201);
+	}
+
+	public function update(UpdatePostRequest $request, Post $post)
+	{
+		$updated = $this->repo->update($request->user(), $post, $request->only(['body']));
+
+		if (!$updated)
+			return response('', 401);
+
+		return response('', 204);
+	}
+
+	public function destroy(Request $request, Post $post)
+	{
+		$deleted = $this->repo->delete($request->user(), $post);
+
+		if (!$deleted)
+			return response('', 401);
+
+		return response('', 204);
 	}
 }

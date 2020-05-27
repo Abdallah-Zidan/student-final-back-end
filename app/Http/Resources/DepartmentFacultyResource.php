@@ -15,6 +15,7 @@ class DepartmentFacultyResource extends JsonResource
 	public function toArray($request)
 	{
 		return [
+			'id' => $this->id,
 			'department' => new DepartmentResource($this->whenLoaded('department')),
 			'faculty' => new FacultyResource($this->whenLoaded('faculty'))
 		];

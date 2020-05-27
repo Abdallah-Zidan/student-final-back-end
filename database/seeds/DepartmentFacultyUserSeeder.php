@@ -23,7 +23,7 @@ class DepartmentFacultyUserSeeder extends Seeder
 			if ($user->type === UserType::getTypeString(UserType::STUDENT))
 				$count = rand(1, 2);
 			else if ($user->type === UserType::getTypeString(UserType::TEACHING_STAFF))
-				$count = 7;
+				$count = 4;
 
 			DepartmentFaculty::inRandomOrder()->take($count)->get()->each(function ($department_faculty) use ($user) {
 				$user->departmentFaculties()->attach($department_faculty);

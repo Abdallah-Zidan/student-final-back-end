@@ -4,10 +4,9 @@ namespace App\Enums;
 
 class PostScope
 {
-	const YEAR = 0;
-	const DEPARTMENT = 1;
-	const FACULTY = 2;
-	const ALL = 3;
+	const DEPARTMENT = 0;
+	const FACULTY = 1;
+	const UNIVERSITY = 2;
 
 	/**
 	 * The post available scopes.
@@ -15,10 +14,9 @@ class PostScope
 	 * @var array
 	 */
 	private static $scopes = [
-		'Year',
 		'Department',
 		'Faculty',
-		'All'
+		'University'
 	];
 
 	/**
@@ -33,7 +31,22 @@ class PostScope
 		if ($value >= count(static::$scopes))
 			return null;
 
-		return static::$scopes[$value];
+		return static::$scopes[$value] . ($value === static::DEPARTMENT ? 'Faculty' : '');
+	}
+
+	/**
+	 * Gets the scope from an integer value as **App\Model**.
+	 *
+	 * @param int $value the scope value equivalent.
+	 *
+	 * @return string|null
+	 */
+	public static function getScopeModel(int $value)
+	{
+		if ($scope = static::getScopeString($value))
+			return 'App\\' . $scope;
+
+		return null;
 	}
 
 	/**
