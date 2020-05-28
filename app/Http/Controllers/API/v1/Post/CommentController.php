@@ -4,62 +4,72 @@ namespace App\Http\Controllers\API\v1\Post;
 
 use App\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostComment;
-use App\Http\Resources\CommentResource;
+use App\Http\Requests\StoreCommentRequest;
 use App\Post;
-use App\Repositories\PostCommentRepository;
+use App\Repositories\CommentRepository;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    private PostCommentRepository $repo;
+    private CommentRepository $repo;
 
-    public function __construct(PostCommentRepository $repo)
+    public function __construct(CommentRepository $repo)
     {
         $this->repo = $repo;
     }
     /**
-     * Show all Post Comments
+     * Get All Post Comments 
      *
      * @param Request $request
+     * @param Post $post
      * @return Comment::Collection
      */
-    public function index(Request $request)
+    public function index(Request $request, Post $post)
     {
-       return $this->repo->getAllPostComments($request->post);
+        return $this->repo->getAllComments($post);
     }
     /**
-     * Store new Comment
-     * @param StorePostComment $request
+     * Create Comment
+     *
+     * @param StoreCommentRequest $request
+     * @param Post $post
      * @return response
      */
-    public function store(StorePostComment $request)
+    public function store(StoreCommentRequest $request, Post $post)
     {
         return $this->repo->create(
             $request->user()->id,
-            $request->post,
+            $post,
             $request->body
         );
     }
 
     /**
-     * update Comment
+     * Update Comment
      *
-     * @param StorePostComment $request
+     * @param StoreCommentRequest $request
+     * @param Post $post
+     * @param Comment $comment
      * @return response
      */
-    public function update(StorePostComment $request)
+    public function update(StoreCommentRequest $request, Post $post, Comment $comment)
     {
-        return $this->repo->update($request->comment, $request->body);
+        if ($request->user()->can('update', [$comment, $post]))
+            return $this->repo->update($comment, $request->body);
+        return response([], 403);
     }
     /**
      * Delete Comment
      *
      * @param Request $request
+     * @param Post $post
+     * @param Comment $comment
      * @return response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, Post $post, Comment $comment)
     {
-        return $this->repo->delete($request->comment);
+        if ($request->user()->can('delete', [$comment, $post]))
+            return $this->repo->delete($comment);
+        return response([], 403);
     }
 }

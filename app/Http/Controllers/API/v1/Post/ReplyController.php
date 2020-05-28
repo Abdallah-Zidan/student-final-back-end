@@ -2,64 +2,85 @@
 
 namespace App\Http\Controllers\API\v1\Post;
 
+use App\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePostComment;
-use App\Repositories\PostReplyRepository;
+use App\Http\Requests\StoreCommentRequest;
+use App\Post;
+use App\Repositories\ReplyRepository;
 use Illuminate\Http\Request;
 
 class ReplyController extends Controller
 {
-    private PostReplyRepository $repo;
+    private ReplyRepository  $repo;
 
-    /**
-     * Show all Comment replies
-     *
-     * @param Request $request
-     * @return Comment::Collection
-     */
-    public function __construct(PostReplyRepository $repo)
+
+    public function __construct(ReplyRepository $repo)
     {
         $this->repo = $repo;
     }
 
-    /**
-     * Store new Reply
-     * @param StorePostComment $request
-     * @return response
-     */
-    public function index(Request $request)
-    {
-        return $this->repo->getAllCommentReplies($request->comment);
-    }
-
-    public function store(StorePostComment $request)
-    {
-        return $this->repo->create(
-            $request->user()->id,
-            $request->comment,
-            $request->body
-        );
-    }
 
     /**
-     * update Reply
+     * Get All Comment Replies 
      *
-     * @param StorePostComment $request
+     * @param Request $request
+     * @param Post $post
+     * @param Comment $comment
+     * @return Comment::Collection
+     */
+    public function index(Request $request, Post $post, Comment $comment)
+    {
+        return $this->repo->getAllCommentReplies($comment);
+    }
+
+    /**
+     * Create Reply
+     *
+     * @param StoreCommentRequest $request
+     * @param Post $post
+     * @param Comment $comment
      * @return response
      */
-    public function update(StorePostComment $request)
+    public function store(StoreCommentRequest $request, Post $post, Comment $comment)
     {
-        return $this->repo->update($request->reply, $request->body);
+        if ($request->user()->can('create', [$comment, $post]))
+            return $this->repo->create(
+                $request->user()->id,
+                $comment,
+                $request->body
+            );
+        return response([], 403);
+    }
+
+    /**
+     * Update Reply
+     *
+     * @param StoreCommentRequest $request
+     * @param Post $post
+     * @param Comment $comment
+     * @param Comment $reply
+     * @return response
+     */
+    public function update(StoreCommentRequest $request, Post $post, Comment $comment, Comment $reply)
+    {
+        if ($request->user()->can('update', [$reply, $post, $comment]))
+            return $this->repo->update($reply, $request->body);
+        return response([], 403);
     }
 
     /**
      * Delete Reply
      *
      * @param Request $request
+     * @param Post $post
+     * @param Comment $comment
+     * @param Comment $reply
      * @return response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, Post $post, Comment $comment, Comment $reply)
     {
-        return $this->repo->delete($request->reply);
+        if ($request->user()->can('delete', [$reply, $post, $comment]))
+            return $this->repo->delete($reply);
+        return response([], 403);
     }
 }

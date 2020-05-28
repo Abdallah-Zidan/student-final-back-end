@@ -22,7 +22,7 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([],422);
+            return response(['Message'=>"'The provided credentials are incorrect."],422);
         }
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();
@@ -57,7 +57,7 @@ class AuthController extends Controller
             'address',
             'mobile'
         ]) + [
-            'avatar' => 'image/users' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png')
+            'avatar' => 'images/users/' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png'),
         ]);
 
         $token = $user->createToken($request->device_name);

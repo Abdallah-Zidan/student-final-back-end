@@ -56,7 +56,7 @@ class ProfileController extends Controller
             $user->update(['password' => $request->new_password]);
             return response([], 204);
         } else {
-            return response([], 422);
+            return response(['Message'=>"Wrong Password"], 422);
         }
     }
 }

@@ -4,21 +4,20 @@ namespace App\Repositories;
 
 use App\Comment;
 use App\Http\Resources\CommentResource;
-use App\Post;
 
-class PostCommentRepository
+class CommentRepository
 {
     /**
      * Create new comment
      *
      * @param  int $user_id
-     * @param int $post_id
+     * @param  $parent
      * @param string $body
      * @return respose
      */
-    public function create($user_id, $post_id, string $body)
+    public function create(int $user_id, $parent, string $body)
     {
-        Post::findOrFail($post_id)->comments()->create([
+        $parent->comments()->create([
             'body' => $body,
             'user_id' => $user_id
         ]);
@@ -28,13 +27,12 @@ class PostCommentRepository
     /**
      * Update Comment
      *
-     * @param int  $comment_id
+     * @param Comment  $comment
      * @param string $body
      * @return response
      */
-    public function update($comment_id, string $body)
+    public function update(Comment $comment,  string $body)
     {
-        $comment = Comment::findOrFail($comment_id);
         $comment->update(['body' => $body]);
         return response([], 204);
     }
@@ -42,25 +40,24 @@ class PostCommentRepository
     /**
      * Delete Comment
      *
-     * @param int $comment_id
+     * @param Comment $comment
      * @return response
      */
-    public function delete($comment_id)
+    public function delete(Comment $comment)
     {
-        Comment::findOrFail($comment_id)->delete();
+        $comment->delete();
         return response([], 204);
     }
 
     /**
      * Get all Post Comments
      *
-     * @param int $post_id
-     * @return void
+     * @param  $parent
+     * @return CommentResource::collection
      */
-    public function getAllPostComments($post_id)
+    public function getAllComments($parent)
     {
-        $post = Post::findOrFail($post_id);
-        $comments = $post->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
+        $comments = $parent->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
         return CommentResource::collection($comments);
     }
 }

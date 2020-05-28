@@ -4,9 +4,8 @@ namespace App\Repositories;
 
 use App\Comment;
 use App\Http\Resources\CommentResource;
-use App\Post;
 
-class PostReplyRepository
+class ReplyRepository
 {
     /**
      * Create new comment
@@ -16,9 +15,9 @@ class PostReplyRepository
      * @param string $body
      * @return respose
      */
-    public function create($user_id, $comment_id, string $body)
+    public function create($user_id, $comment, string $body)
     {
-        Comment::findOrFail($comment_id)->replies()->create([
+        $comment->replies()->create([
             'body' => $body,
             'user_id' => $user_id
         ]);
@@ -28,13 +27,12 @@ class PostReplyRepository
     /**
      * Update Reply
      *
-     * @param int  $reply_id
+     * @param Comment  $reply
      * @param string $body
      * @return response
      */
-    public function update($reply_id, string $body)
+    public function update($reply, string $body)
     {
-        $reply = Comment::findOrFail($reply_id);
         $reply->update(['body' => $body]);
         return response([], 204);
     }
@@ -45,21 +43,20 @@ class PostReplyRepository
      * @param int $reply_id
      * @return response
      */
-    public function delete($reply_id)
+    public function delete($reply)
     {
-        Comment::findOrFail($reply_id)->delete();
+        $reply->delete();
         return response([], 204);
     }
 
     /**
      * Get all Post Comments
      *
-     * @param int $comment_id
-     * @return void
+     * @param Comment $comment
+     * @return CommentResource::collection
      */
-    public function getAllCommentReplies($comment_id)
+    public function getAllCommentReplies($comment)
     {
-        $comment = Comment::findOrFail($comment_id);
         $replies = $comment->replies()->with(['user'])->paginate(5);
         return CommentResource::collection($replies);
     }
