@@ -40,7 +40,7 @@ class PostRepository
 	/**
 	 * Create a post related to the given group and user.
 	 *
-	 * @param User $user The user object.
+	 * @param \App\User $user The user object.
 	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 * @param array $data The post data.
 	 *
@@ -77,7 +77,7 @@ class PostRepository
 	/**
 	 * Update an existing post.
 	 *
-	 * @param Post $post The post object.
+	 * @param \App\Post $post The post object.
 	 * @param array $data The post data.
 	 *
 	 * @return void
@@ -92,7 +92,7 @@ class PostRepository
 	/**
 	 * Delete an existing post.
 	 *
-	 * @param Post $post The post object.
+	 * @param \App\Post $post The post object.
 	 *
 	 * @return void
 	 */
@@ -104,7 +104,7 @@ class PostRepository
 	/**
 	 * Get all posts related to the *DepartmentFaculty* group.
 	 *
-	 * @param DepartmentFaculty $department_faculty The *DepartmentFaculty* object.
+	 * @param \App\DepartmentFaculty $department_faculty The *DepartmentFaculty* object.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -147,7 +147,7 @@ class PostRepository
 	/**
 	 * Get all posts related to the *Faculty* group.
 	 *
-	 * @param Faculty $faculty The *Faculty* object.
+	 * @param \App\Faculty $faculty The *Faculty* object.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -173,7 +173,7 @@ class PostRepository
 	/**
 	 * Get all posts related to the *University* group.
 	 *
-	 * @param University $university The *University* object.
+	 * @param \App\University $university The *University* object.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */

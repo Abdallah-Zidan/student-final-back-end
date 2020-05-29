@@ -56,7 +56,7 @@ class Post extends BaseModel
 	}
 
 	/**
-	 * Gets the post's scope as a StudlyCase.
+	 * Get the post's scope as a StudlyCase.
 	 *
 	 * @return string|null
 	 */

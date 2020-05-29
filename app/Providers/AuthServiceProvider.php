@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Comment;
+use App\Event;
 use App\Policies\CommentPolicy;
+use App\Policies\EventPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\ReplyPolicy;
 use App\Post;
@@ -19,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Post::class => PostPolicy::class,
+        Event::class => EventPolicy::class,
         Comment::class => CommentPolicy::class,
         Comment::class => ReplyPolicy::class
     ];

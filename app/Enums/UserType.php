@@ -24,7 +24,7 @@ class UserType
 	];
 
 	/**
-	 * Gets the type from an integer value.
+	 * Get the type from an integer value.
 	 *
 	 * @param int $value the type value equivalent.
 	 *
@@ -39,7 +39,7 @@ class UserType
 	}
 
 	/**
-	 * Gets the type from an integer value as **App\ModelProfile**.
+	 * Get the type from an integer value as **App\ModelProfile**.
 	 *
 	 * @param int $value the type value equivalent.
 	 *

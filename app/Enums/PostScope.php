@@ -20,7 +20,7 @@ class PostScope
 	];
 
 	/**
-	 * Gets the scope from an integer value.
+	 * Get the scope from an integer value.
 	 *
 	 * @param int $value the scope value equivalent.
 	 *
@@ -35,7 +35,7 @@ class PostScope
 	}
 
 	/**
-	 * Gets the scope from an integer value as **App\Model**.
+	 * Get the scope from an integer value as **App\Model**.
 	 *
 	 * @param int $value the scope value equivalent.
 	 *

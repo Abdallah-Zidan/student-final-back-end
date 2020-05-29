@@ -24,7 +24,7 @@ class EventType
 	];
 
 	/**
-	 * Gets the type from an integer value.
+	 * Get the type from an integer value.
 	 *
 	 * @param int $value the type value equivalent.
 	 *

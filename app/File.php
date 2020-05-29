@@ -46,7 +46,7 @@ class File extends BaseModel
 	}
 
 	/**
-	 * Gets the user's avatar image as a url.
+	 * Get the user's avatar image as a url.
 	 *
 	 * @param $value the avatar image path.
 	 *

@@ -27,7 +27,7 @@ class Event extends BaseModel
 	];
 
 	/**
-	 * Gets the event's type as a StudlyCase.
+	 * Get the event's type as a StudlyCase.
 	 *
 	 * @param int $value the type value.
 	 *
@@ -39,7 +39,7 @@ class Event extends BaseModel
 	}
 
 	/**
-	 * Gets the event's scope as a StudlyCase.
+	 * Get the event's scope as a StudlyCase.
 	 *
 	 * @param int $value the scope value.
 	 *

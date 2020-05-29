@@ -18,7 +18,7 @@ class UserGender
 	];
 
 	/**
-	 * Gets the gender from an integer value.
+	 * Get the gender from an integer value.
 	 *
 	 * @param int $value the gender value equivalent.
 	 *
