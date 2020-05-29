@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class ReplyController extends Controller
 {
-    private ReplyRepository  $repo;
+    private $repo;
 
 
     public function __construct(ReplyRepository $repo)

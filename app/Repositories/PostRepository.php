@@ -2,185 +2,197 @@
 
 namespace App\Repositories;
 
+use App\DepartmentFaculty;
 use App\Enums\PostScope;
 use App\Enums\UserType;
+use App\Faculty;
 use App\Post;
+use App\University;
 use App\User;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Storage;
 
 class PostRepository
 {
-	public function getPostsFor(User $current_user, string $scope, $scope_id)
+	/**
+	 * Get all posts related to the *DepartmentFaculty* / *Faculty* / *University* group.
+	 *
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	public function getAll($group)
 	{
-		if ($scope == PostScope::DEPARTMENT)
-			return $this->getPostsInDepartment($current_user, $scope_id);
-		if ($scope == PostScope::FACULTY)
-			return $this->getPostsInFaculty($current_user, $scope_id);
-		else if ($scope == PostScope::UNIVERSITY)
-			return $this->getPostsInUniversity($current_user, $scope_id);
+		if ($group instanceof DepartmentFaculty)
+			return $this->getAllInDepartment($group);
+		else if ($group instanceof Faculty)
+			return $this->getAllInFaculty($group);
+		else if ($group instanceof University)
+			return $this->getAllInUniversity($group);
 
-		return [];
+		return new LengthAwarePaginator([], 0, 10, 1, [
+			'path' => Paginator::resolveCurrentPath(),
+			'pageName' => 'page',
+		]);
 	}
 
-	public function create(User $current_user, array $data)
+	/**
+	 * Create a post related to the given group and user.
+	 *
+	 * @param User $user The user object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param array $data The post data.
+	 *
+	 * @return \App\Post
+	 */
+	public function create(User $user, $group, array $data)
 	{
-		if ($this->checkPostScope($current_user, $data['scope'], $data['scope_id']))
-		{
-			$post = $current_user->posts()->create([
-				'body' => $data['body'],
-				'scopeable_type' => PostScope::getScopeModel($data['scope']),
-				'scopeable_id' => $data['scope_id']
-			]);
+		$post = $user->posts()->create([
+			'body' => $data['body'],
+			'scopeable_type' => get_class($group),
+			'scopeable_id' => $group->id
+		] + ($user->type === UserType::getTypeString(UserType::STUDENT) ? [
+			'year' => $user->profileable->year
+		] : []));
 
-			if (array_key_exists('files', $data))
+		if (array_key_exists('files', $data))
+		{
+			$files = $data['files'];
+
+			for ($i = 0; $i < count($files); $i++)
 			{
-				$files = $data['files'];
-
-				for ($i = 0; $i < count($files); $i++)
-				{
-					$path = Storage::disk('local')->put('files/posts/' . $post->id, $files[$i]);
-					$mime = Storage::mimeType($path);
-					$post->files()->create([
-						'path' => $path,
-						'mime' => $mime
-					]);
-				}
+				$path = Storage::disk('local')->put('files/posts/' . $post->id, $files[$i]);
+				$mime = Storage::mimeType($path);
+				$post->files()->create([
+					'path' => $path,
+					'mime' => $mime
+				]);
 			}
-
-			return $post;
 		}
 
-		return false;
+		return $post;
 	}
 
-	public function update(User $current_user, Post $post, array $data)
+	/**
+	 * Update an existing post.
+	 *
+	 * @param Post $post The post object.
+	 * @param array $data The post data.
+	 *
+	 * @return void
+	 */
+	public function update(Post $post, array $data)
 	{
-		if ($post->user->id === $current_user->id)
+		$post->update([
+			'body' => $data['body']
+		]);
+	}
+
+	/**
+	 * Delete an existing post.
+	 *
+	 * @param Post $post The post object.
+	 *
+	 * @return void
+	 */
+	public function delete(Post $post)
+	{
+		$post->delete();
+	}
+
+	/**
+	 * Get all posts related to the *DepartmentFaculty* group.
+	 *
+	 * @param DepartmentFaculty $department_faculty The *DepartmentFaculty* object.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	private function getAllInDepartment(DepartmentFaculty $department_faculty)
+	{
+		// No need to get the user from the parent, because not all getAll methods will use it.
+		$user = request()->user();
+
+		$conditions = [
+			['scopeable_type', PostScope::getScopeModel(PostScope::DEPARTMENT)],
+			['scopeable_id', $department_faculty->id]
+		];
+
+		if ($user->type === UserType::getTypeString(UserType::STUDENT))
 		{
-			$post->update([
-				'body' => $data['body']
+			$conditions = array_merge($conditions, [
+				['year', $user->profileable->year]
 			]);
-
-			return true;
 		}
 
-		return false;
+		$posts = Post::with([
+			'user',
+			'user.profileable',
+			'scopeable',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies.user',
+			'files'
+		])->where($conditions)->orderBy('created_at', 'desc')->paginate(10);
+		$posts->load([
+			'scopeable.department',
+			'scopeable.faculty',
+			'scopeable.faculty.university'
+		]);
+
+		return $posts;
 	}
 
-	public function delete(User $current_user, Post $post)
+	/**
+	 * Get all posts related to the *Faculty* group.
+	 *
+	 * @param Faculty $faculty The *Faculty* object.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	private function getAllInFaculty(Faculty $faculty)
 	{
-		if ($post->user->id === $current_user->id)
-		{
-			$post->delete();
+		$posts = Post::with([
+			'user',
+			'user.profileable',
+			'scopeable',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies.user',
+			'files'
+		])->where([
+			['scopeable_type', PostScope::getScopeModel(PostScope::FACULTY)],
+			['scopeable_id', $faculty->id]
+		])->orderBy('created_at', 'desc')->paginate(10);
 
-			return true;
-		}
-
-		return false;
+		return $posts;
 	}
 
-	private function getPostsInDepartment(User $user, $scope_id)
+	/**
+	 * Get all posts related to the *University* group.
+	 *
+	 * @param University $university The *University* object.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	private function getAllInUniversity(University $university)
 	{
-		if ($this->checkPostScope($user, PostScope::DEPARTMENT, $scope_id))
-		{
-			// Get all posts then paginate because not all posts belong to students in the same year
-			$posts = Post::with('user.profileable')->where([
-				['scopeable_type', PostScope::getScopeModel(PostScope::DEPARTMENT)],
-				['scopeable_id', $scope_id]
-			])->get()->filter(function ($post) use ($user) {
-				if ($user->type === UserType::getTypeString(UserType::STUDENT) &&
-					$post->user->type === UserType::getTypeString(UserType::STUDENT))
-					return $post->user->profileable->year === $user->profileable->year;
-				else
-					return true;
-			});
+		$posts = Post::with([
+			'user',
+			'user.profileable',
+			'scopeable',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies.user',
+			'files'
+		])->where([
+			['scopeable_type', PostScope::getScopeModel(PostScope::UNIVERSITY)],
+			['scopeable_id', $university->id]
+		])->orderBy('created_at', 'desc')->paginate(10);
 
-			$posts = Post::with([
-				'user',
-				'user.profileable',
-				'scopeable',
-				'comments' => function ($query) { $query->orderBy('created_at'); },
-				'comments.user',
-				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user',
-				'files'
-			])->whereIn('id', $posts->pluck('id'))->orderBy('created_at')->paginate(10)->load([
-				'scopeable.department',
-				'scopeable.faculty',
-				'scopeable.faculty.university'
-			]);
-
-			return $posts;
-		}
-
-		return false;
-	}
-
-	private function getPostsInFaculty(User $user, $scope_id)
-	{
-		if ($this->checkPostScope($user, PostScope::FACULTY, $scope_id))
-		{
-			$posts = Post::with([
-				'user',
-				'user.profileable',
-				'scopeable',
-				'comments' => function ($query) { $query->orderBy('created_at'); },
-				'comments.user',
-				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user',
-				'files'
-			])->where([
-				['scopeable_type', PostScope::getScopeModel(PostScope::FACULTY)],
-				['scopeable_id', $scope_id]
-			])->orderBy('created_at')->paginate(10);
-
-			return $posts;
-		}
-
-		return false;
-	}
-
-	private function getPostsInUniversity(User $user, $scope_id)
-	{
-		if ($this->checkPostScope($user, PostScope::UNIVERSITY, $scope_id))
-		{
-			$posts = Post::with([
-				'user',
-				'user.profileable',
-				'scopeable',
-				'comments' => function ($query) { $query->orderBy('created_at'); },
-				'comments.user',
-				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user',
-				'files'
-			])->where([
-				['scopeable_type', PostScope::getScopeModel(PostScope::UNIVERSITY)],
-				['scopeable_id', $scope_id]
-			])->orderBy('created_at')->paginate(10);
-
-			return $posts;
-		}
-
-		return false;
-	}
-
-	private function checkPostScope(User $user, string $scope, int $scope_id)
-	{
-		if ($scope == PostScope::DEPARTMENT)
-			return $user->departmentFaculties()->find($scope_id) ? true : false;
-		if ($scope == PostScope::FACULTY)
-		{
-			return $user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($scope_id) {
-				return $department_faculty->faculty->id == $scope_id;
-			}) ? true : false;
-		}
-		else if ($scope == PostScope::UNIVERSITY)
-		{
-			return $user->departmentFaculties->load('faculty.university')->first(function ($department_faculty) use ($scope_id) {
-				return $department_faculty->faculty->university->id == $scope_id;
-			}) ? true : false;
-		}
-
-		return false;
+		return $posts;
 	}
 }

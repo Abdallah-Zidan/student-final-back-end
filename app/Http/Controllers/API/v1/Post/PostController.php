@@ -2,71 +2,172 @@
 
 namespace App\Http\Controllers\API\v1\Post;
 
+use App\DepartmentFaculty;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\IndexPostRequest;
-use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdatePostRequest;
+use App\Http\Requests\PostRequest;
 use App\Http\Resources\FileResource;
 use App\Http\Resources\PostCollection;
+use App\Http\Resources\PostResource;
 use App\Post;
 use App\Repositories\PostRepository;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+	/**
+	 * The post repository object.
+	 *
+	 * @var \App\Repositories\PostRepository
+	 */
 	private $repo;
 
+	/**
+	 * Create a new PostController object.
+	 *
+	 * @param \App\Repositories\PostRepository $repo The post repository object.
+	 */
 	public function __construct(PostRepository $repo)
 	{
 		$this->repo = $repo;
 	}
 
-	public function index(IndexPostRequest $request)
+	/**
+	 * Get all posts.
+	 *
+	 * @param \Illuminate\Http\Request $request The request object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index(Request $request, $group)
+	{
+		if ($request->user()->can('viewAny', [Post::class, $group]))
+		{
+			$posts = $this->repo->getAll($group);
+
+			return new PostCollection($posts);
+		}
+
+		return response('', 403);
+	}
+
+	/**
+	 * Store a post.
+	 *
+	 * @param \App\Http\Requests\PostRequest $request The request object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store(PostRequest $request, $group)
 	{
 		$user = $request->user();
 
-		$posts = $this->repo->getPostsFor($user, $request->scope, $request->scope_id);
+		if ($user->can('create', [Post::class, $group]))
+		{
+			$post = $this->repo->create($user, $group, $request->only(['body', 'files']));
 
-		if ($posts === false)
-			return response('', 401);
-
-		return new PostCollection($posts);;
-	}
-
-	public function store(StorePostRequest $request)
-	{
-		$post = $this->repo->create($request->user(), $request->only(['body', 'scope', 'scope_id', 'files']));
-
-		if ($post === false)
-			return response('', 401);
-
-		return response([
-			'data' => [
-				'post' => [
-					'id' => $post->id,
-					'files' => FileResource::collection($post->files)
+			return response([
+				'data' => [
+					'post' => [
+						'id' => $post->id,
+						'files' => FileResource::collection($post->files)
+					]
 				]
-			]
-		], 201);
+			], 201);
+		}
+
+		return response('', 403);
 	}
 
-	public function update(UpdatePostRequest $request, Post $post)
+	/**
+	 * Show a post.
+	 *
+	 * @param \Illuminate\Http\Request $request The request object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param int $post The post id.
+	 *
+	 * @return void
+	 */
+	public function show(Request $request, $group, int $post)
 	{
-		$updated = $this->repo->update($request->user(), $post, $request->only(['body']));
+		$post = $group->posts()->findOrFail($post);
 
-		if (!$updated)
-			return response('', 401);
+		if ($request->user()->can('view', [$post, $group]))
+		{
+			$post->load([
+				'user',
+				'user.profileable',
+				'scopeable',
+				'comments' => function ($query) { $query->orderBy('created_at'); },
+				'comments.user',
+				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+				'comments.replies.user',
+				'files'
+			]);
 
-		return response('', 204);
+			if ($group instanceof DepartmentFaculty)
+			{
+				$post->load([
+					'scopeable.department',
+					'scopeable.faculty',
+					'scopeable.faculty.university'
+				]);
+			}
+
+			return response([
+				'data' => [
+					'post' => new PostResource($post)
+				]
+			]);
+		}
+
+		return response('', 403);
 	}
 
-	public function destroy(Request $request, Post $post)
+	/**
+	 * Update a post.
+	 *
+	 * @param \App\Http\Requests\PostRequest $request The request object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param int $post The post id.
+	 *
+	 * @return void
+	 */
+	public function update(PostRequest $request, $group, int $post)
 	{
-		$deleted = $this->repo->delete($request->user(), $post);
+		$post = $group->posts()->findOrFail($post);
 
-		if (!$deleted)
-			return response('', 401);
+		if ($request->user()->can('update', [$post, $group]))
+		{
+			$this->repo->update($post, $request->only(['body']));
 
-		return response('', 204);
+			return response('', 204);
+		}
+
+		return response('', 403);
+	}
+
+	/**
+	 * Destroy a post.
+	 *
+	 * @param \Illuminate\Http\Request $request The request object.
+	 * @param @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param int $post The post id.
+	 *
+	 * @return void
+	 */
+	public function destroy(Request $request, $group, int $post)
+	{
+		$post = $group->posts()->findOrFail($post);
+
+		if ($request->user()->can('delete', [$post, $group]))
+		{
+			$this->repo->delete($post);
+
+			return response('', 204);
+		}
+
+		return response('', 403);
 	}
 }

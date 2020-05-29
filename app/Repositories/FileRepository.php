@@ -2,60 +2,73 @@
 
 namespace App\Repositories;
 
-use App\Enums\FileResource;
-use App\Event;
 use App\File;
-use App\Post;
-use App\User;
 use Illuminate\Support\Facades\Storage;
 
 class FileRepository
 {
-	public function create(User $current_user, array $data)
+	/**
+	 * Get all files related to *Post* / *Event*.
+	 *
+	 * @param mixed $resource The *Post* / *Event* object.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	public function getFilesFor($resource)
 	{
-		if ($data['resource'] == FileResource::POST)
-		{
-			$post = Post::find($data['resource_id']);
-
-			if ($post && $post->user->id === $current_user->id)
-			{
-				$path = Storage::disk('local')->put('files/posts/' . $post->id, $data['file']);
-				$mime = Storage::mimeType($path);
-
-				return $post->files()->create([
-					'path' => $path,
-					'mime' => $mime
-				]);
-			}
-		}
-		else if ($data['resource'] == FileResource::EVENT)
-		{
-			$event = Event::find($data['resource_id']);
-
-			if ($event && $event->user->id === $current_user->id)
-			{
-				$path = Storage::disk('local')->put('files/events/' . $event->id, $data['file']);
-				$mime = Storage::mimeType($path);
-
-				return $event->files()->create([
-					'path' => $path,
-					'mime' => $mime
-				]);
-			}
-		}
-
-		return false;
+		return $resource->files()->paginate(10);
 	}
 
-	public function delete(User $current_user, File $file)
+	/**
+	 * Create a file related to the given resource.
+	 *
+	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param string $path The folder path to save to.
+	 * @param array $data The file data.
+	 *
+	 * @return \App\File
+	 */
+	public function create($resource, string $path, array $data)
 	{
-		if ($file->resourceable->user->id === $current_user->id)
-		{
-			$file->delete();
+		$path = Storage::disk('local')->put("files/${path}/" . $resource->id, $data['file']);
+		$mime = Storage::mimeType($path);
 
-			return true;
-		}
+		return $resource->files()->create([
+			'path' => $path,
+			'mime' => $mime
+		]);
+	}
 
-		return false;
+	/**
+	 * Update an existing file.
+	 *
+	 * @param File $file The file object.
+	 * @param string $path The folder path to save to **with the resource id**.
+	 * @param array $data The file data.
+	 *
+	 * @return void
+	 */
+	public function update(File $file, string $path, array $data)
+	{
+		Storage::disk('local')->delete($file->path);
+		$path = Storage::disk('local')->put("files/${path}", $data['file']);
+		$mime = Storage::mimeType($path);
+
+		$file->update([
+			'path' => $path,
+			'mine' => $mime
+		]);
+	}
+
+	/**
+	 * Delete an existing file.
+	 *
+	 * @param File $file The file object.
+	 *
+	 * @return void
+	 */
+	public function delete(File $file)
+	{
+		$file->delete();
 	}
 }

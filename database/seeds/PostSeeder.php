@@ -30,7 +30,8 @@ class PostSeeder extends Seeder
 				factory(Post::class, 2)->create([
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($department_faculty),
-					'scopeable_id' => $department_faculty->id
+					'scopeable_id' => $department_faculty->id,
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
 				]);
 			});
 
@@ -38,12 +39,14 @@ class PostSeeder extends Seeder
 				factory(Post::class, 2)->create([
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($faculty),
-					'scopeable_id' => $faculty->id
+					'scopeable_id' => $faculty->id,
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
 				]);
 				factory(Post::class, 2)->create([
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($faculty->university),
-					'scopeable_id' => $faculty->university->id
+					'scopeable_id' => $faculty->university->id,
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
 				]);
 			});
 		});

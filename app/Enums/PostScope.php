@@ -48,14 +48,4 @@ class PostScope
 
 		return null;
 	}
-
-	/**
-	 * Gets a list of available scopes.
-	 *
-	 * @return array
-	 */
-	public static function getAllScopes()
-	{
-		return static::$scopes;
-	}
 }

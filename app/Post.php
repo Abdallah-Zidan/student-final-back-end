@@ -12,7 +12,7 @@ class Post extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'body', 'reported', 'user_id', 'scopeable_type', 'scopeable_id'
+		'body', 'reported', 'user_id', 'scopeable_type', 'scopeable_id', 'year'
 	];
 
 	/**
@@ -50,8 +50,8 @@ class Post extends BaseModel
 	protected static function booted()
 	{
 		static::deleted(function ($post) {
-			$post->comments()->deleted();
-			$post->files()->deleted();
+			$post->comments()->delete();
+			$post->files()->delete();
 		});
 	}
 
@@ -64,7 +64,6 @@ class Post extends BaseModel
 	{
 		$value = $this->attributes['scopeable_type'];
 		$scope = Str::after($value, 'App\\');
-		$scope = Str::before($scope, 'Profile');
 
 		return $scope ?: null;
 	}

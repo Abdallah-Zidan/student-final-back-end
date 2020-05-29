@@ -30,25 +30,22 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
 	});
 
-	Route::post('files', 'FileController@store')->middleware('auth:sanctum')->name('files.store');
-	Route::delete('files/{file}', 'FileController@destroy')->middleware('auth:sanctum')->name('files.destroy');
+	$groups = function () {
+		Route::group(['namespace' => 'Post'], function () {
+			Route::resource('posts', 'PostController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		});
+		Route::group(['namespace' => 'Event'], function () {
+			Route::resource('events', 'EventController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		});
+	};
 
-	Route::group(['prefix' => 'posts', 'namespace' => 'Post', 'middleware' => ['verified']], function () {
-		Route::get('scope', 'ScopeController@index')->name('post.scope.index');
-
-		Route::get('/{post}/comments/{comment}/replies', 'ReplyController@index')->middleware('auth:sanctum')->name('post.comment.replies.index');
-		Route::post('/{post}/comments/{comment}/replies', 'ReplyController@store')->middleware('auth:sanctum')->name('post.comment.replies.store');
-		Route::put('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@update')->middleware(['auth:sanctum'])->name('post.comment.replies.update');
-		Route::delete('/{post}/comments/{comment}/replies/{reply}', 'ReplyController@destroy')->middleware(['auth:sanctum'])->name('post.comment.replies.destroy');
-
-		Route::get('/{post}/comments', 'CommentController@index')->middleware('auth:sanctum')->name('post.comments.index');
-		Route::post('/{post}/comments/', 'CommentController@store')->middleware('auth:sanctum')->name('post.comments.store');
-		Route::put('/{post}/comments/{comment}', 'CommentController@update')->middleware(['auth:sanctum'])->name('post.comments.update');
-		Route::delete('/{post}/comments/{comment}', 'CommentController@destroy')->middleware(['auth:sanctum'])->name('post.comments.destroy');
-
-		Route::get('/', 'PostController@index')->middleware('auth:sanctum')->name('post.index');
-		Route::post('/', 'PostController@store')->middleware('auth:sanctum')->name('post.store');
-		Route::put('/{post}', 'PostController@update')->middleware('auth:sanctum')->name('post.update');
-		Route::delete('/{post}', 'PostController@destroy')->middleware('auth:sanctum')->name('post.destroy');
-	});
+	Route::group(['prefix' => 'departments/{department_faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
+	Route::group(['prefix' => 'faculties/{faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
+	Route::group(['prefix' => 'universities/{university}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
 });

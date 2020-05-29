@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreFileRequest extends FormRequest
+class PostRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -24,9 +24,10 @@ class StoreFileRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'resource' => 'required|numeric|between:0,1',
-			'resource_id' => 'required|numeric',
-			'file' => 'required|file|max:51200'
-		];
+			'body' => 'required'
+		] + ($this->isMethod('post') ? [
+			'files' => 'array',
+			'files.*' => 'file|max:51200'
+		] : []);
 	}
 }

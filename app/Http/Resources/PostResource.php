@@ -38,6 +38,7 @@ class PostResource extends JsonResource
 				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::UNIVERSITY),
 				['university' => new UniversityResource($this->scopeable)]
 			),
+			'year' => $this->when($this->year, $this->year),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),
 			'files' => FileResource::collection($this->whenLoaded('files'))
 		];

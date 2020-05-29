@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    private CommentRepository $repo;
+    private $repo;
 
     public function __construct(CommentRepository $repo)
     {

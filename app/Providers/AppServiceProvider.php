@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\DepartmentFaculty;
+use App\Faculty;
+use App\University;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +27,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+		Route::bind('department_faculty', function ($value) {
+			return DepartmentFaculty::findOrFail($value);
+		});
+
+		Route::bind('faculty', function ($value) {
+			return Faculty::findOrFail($value);
+		});
+
+		Route::bind('university', function ($value) {
+			return University::findOrFail($value);
+		});
     }
 }
