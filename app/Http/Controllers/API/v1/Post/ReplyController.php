@@ -28,7 +28,7 @@ class ReplyController extends Controller
      * @param Comment $comment
      * @return Comment::Collection
      */
-    public function index(Request $request, Post $post, Comment $comment)
+    public function index(Request $request, $group, Post $post, Comment $comment)
     {
         return $this->repo->getAllCommentReplies($comment);
     }
@@ -41,7 +41,7 @@ class ReplyController extends Controller
      * @param Comment $comment
      * @return response
      */
-    public function store(StoreCommentRequest $request, Post $post, Comment $comment)
+    public function store(StoreCommentRequest $request, $group, Post $post, Comment $comment)
     {
         if ($request->user()->can('create', [$comment, $post]))
             return $this->repo->create(
@@ -61,7 +61,7 @@ class ReplyController extends Controller
      * @param Comment $reply
      * @return response
      */
-    public function update(StoreCommentRequest $request, Post $post, Comment $comment, Comment $reply)
+    public function update(StoreCommentRequest $request, $group, Post $post, Comment $comment, Comment $reply)
     {
         if ($request->user()->can('update', [$reply, $post, $comment]))
             return $this->repo->update($reply, $request->body);
@@ -77,7 +77,7 @@ class ReplyController extends Controller
      * @param Comment $reply
      * @return response
      */
-    public function destroy(Request $request, Post $post, Comment $comment, Comment $reply)
+    public function destroy(Request $request, $group, Post $post, Comment $comment, Comment $reply)
     {
         if ($request->user()->can('delete', [$reply, $post, $comment]))
             return $this->repo->delete($reply);

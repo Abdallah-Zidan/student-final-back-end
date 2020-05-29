@@ -24,7 +24,7 @@ class CommentController extends Controller
      * @param Post $post
      * @return Comment::Collection
      */
-    public function index(Request $request, Post $post)
+    public function index(Request $request, $group, Post $post)
     {
         return $this->repo->getAllComments($post);
     }
@@ -35,7 +35,7 @@ class CommentController extends Controller
      * @param Post $post
      * @return response
      */
-    public function store(StoreCommentRequest $request, Post $post)
+    public function store(StoreCommentRequest $request, $group, Post $post)
     {
         return $this->repo->create(
             $request->user()->id,
@@ -52,7 +52,7 @@ class CommentController extends Controller
      * @param Comment $comment
      * @return response
      */
-    public function update(StoreCommentRequest $request, Post $post, Comment $comment)
+    public function update(StoreCommentRequest $request, $group, Post $post, Comment $comment)
     {
         if ($request->user()->can('update', [$comment, $post]))
             return $this->repo->update($comment, $request->body);
@@ -66,7 +66,7 @@ class CommentController extends Controller
      * @param Comment $comment
      * @return response
      */
-    public function destroy(Request $request, Post $post, Comment $comment)
+    public function destroy(Request $request, $group, Post $post, Comment $comment)
     {
         if ($request->user()->can('delete', [$comment, $post]))
             return $this->repo->delete($comment);
