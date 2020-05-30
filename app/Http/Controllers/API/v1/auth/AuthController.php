@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\v1\Auth;
 
 use App\CompanyProfile;
+use App\DepartmentFaculty;
 use App\Enums\UserGender;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
@@ -22,7 +23,7 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response(['Message'=>"'The provided credentials are incorrect."],422);
+            return response(['Message' => "'The provided credentials are incorrect."], 422);
         }
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();
@@ -59,6 +60,9 @@ class AuthController extends Controller
         ]) + [
             'avatar' => 'images/users/' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png'),
         ]);
+
+        $department_facultites = DepartmentFaculty::whereIn('department_id', $request->departments)->where('faculty_id', $request->faculty)->get();
+        $user->departmentFaculties()->attach($department_facultites);
 
         $token = $user->createToken($request->device_name);
         $response_data['data']['token']['access_token'] = $token->plainTextToken;

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\UserType;
+use App\Rules\FacultyDepartmentsExistsRule;
 use App\Rules\StrongPassword;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,7 +31,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|max:255',
             'password' => ['required', new StrongPassword()],
-            'gender'=>'required|in:0,1',
+            'gender' => 'required|in:0,1',
             'address' => 'required|max:255',
             'mobile' => 'required|unique:users|max:15|min:11',
             'avatar' => 'mimes:jpeg,bmp,png|file|size:2048',
@@ -44,8 +45,10 @@ class RegisterRequest extends FormRequest
         ] : ($this->type == UserType::STUDENT ? [
             'email' => 'required|unique:users|max:255|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.edu\.eg$/', // example: xxx@xxxx.edu.eg
             'birthdate' => 'required|date|before:today',
-            'year' => 'required|lte:7|gt:0'
-//             'year' => 'required|between:0,7'
+            'year' => 'required|lte:7|gt:0',
+            'departments' => 'required|array|max:3',
+            'departments.*' => ['required', 'exists:departments,id', new FacultyDepartmentsExistsRule($this->faculty)],
+            'faculty' => 'required|exists:faculties,id',
         ] : []));
     }
 

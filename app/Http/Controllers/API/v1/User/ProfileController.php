@@ -34,6 +34,8 @@ class ProfileController extends Controller
             $user->profileable()->update($request->only(['birthdate']));
         } else if ($user->type === UserType::getTypeString(UserType::COMPANY)) {
             $user->profileable()->update($request->only(['fax', 'description', 'website']));
+        } else if ($user->type === UserType::getTypeString(UserType::TEACHING_STAFF)) {
+            $user->profileable()->update($request->only(['birthdate', 'scientific_certificates']));
         }
 
         return new UserResource($user);
@@ -56,7 +58,7 @@ class ProfileController extends Controller
             $user->update(['password' => $request->new_password]);
             return response([], 204);
         } else {
-            return response(['Message'=>"Wrong Password"], 422);
+            return response(['Message' => "Wrong Password"], 422);
         }
     }
 }
