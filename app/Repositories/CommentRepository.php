@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Comment;
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\CommentCollection;
 
 class CommentRepository
 {
@@ -58,6 +58,6 @@ class CommentRepository
     public function getAllComments($parent)
     {
         $comments = $parent->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
-        return CommentResource::collection($comments);
+        return new CommentCollection($comments);
     }
 }

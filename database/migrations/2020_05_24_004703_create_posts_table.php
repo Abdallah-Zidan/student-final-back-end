@@ -17,9 +17,9 @@ class CreatePostsTable extends Migration
 			$table->id();
 			$table->text('body');
 			$table->boolean('reported')->default(false);
+			$table->tinyInteger('year')->nullable();
 			$table->unsignedBigInteger('user_id');
 			$table->morphs('scopeable');
-			$table->tinyInteger('year')->nullable();
 			$table->timestamps();
 		});
 	}

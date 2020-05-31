@@ -28,25 +28,25 @@ class PostSeeder extends Seeder
 					$faculties->push($faculty);
 
 				factory(Post::class, 2)->create([
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($department_faculty),
-					'scopeable_id' => $department_faculty->id,
-					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
+					'scopeable_id' => $department_faculty->id
 				]);
 			});
 
 			$faculties->each(function ($faculty) use ($user) {
 				factory(Post::class, 2)->create([
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($faculty),
-					'scopeable_id' => $faculty->id,
-					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
+					'scopeable_id' => $faculty->id
 				]);
 				factory(Post::class, 2)->create([
+					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
 					'user_id' => $user->id,
 					'scopeable_type' => get_class($faculty->university),
-					'scopeable_id' => $faculty->university->id,
-					'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null
+					'scopeable_id' => $faculty->university->id
 				]);
 			});
 		});

@@ -48,4 +48,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	Route::group(['prefix' => 'departments/{department_faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
 	Route::group(['prefix' => 'faculties/{faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
 	Route::group(['prefix' => 'universities/{university}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
+	Route::group(['prefix' => 'all/{empty?}', 'middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::group(['namespace' => 'Event'], function () {
+			Route::resource('events', 'EventController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('events.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		});
+	});
 });

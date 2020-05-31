@@ -14,7 +14,7 @@ class FileRepository
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getFilesFor($resource)
+	public function getAll($resource)
 	{
 		return $resource->files()->paginate(10);
 	}

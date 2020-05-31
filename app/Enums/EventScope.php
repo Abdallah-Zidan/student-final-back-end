@@ -4,10 +4,9 @@ namespace App\Enums;
 
 class EventScope
 {
-	const DEPARTMENT = 0;
-	const FACULTY = 1;
-	const UNIVERSITY = 2;
-	const ALL = 3;
+	const FACULTY = 0;
+	const UNIVERSITY = 1;
+	const ALL = 2;
 
 	/**
 	 * The event available scopes.
@@ -15,7 +14,6 @@ class EventScope
 	 * @var array
 	 */
 	private static $scopes = [
-		'Department',
 		'Faculty',
 		'University',
 		'All'
@@ -33,7 +31,7 @@ class EventScope
 		if ($value >= count(static::$scopes))
 			return null;
 
-		return static::$scopes[$value] . ($value === static::DEPARTMENT ? 'Faculty' : '');
+		return static::$scopes[$value];
 	}
 
 	/**
@@ -45,7 +43,7 @@ class EventScope
 	 */
 	public static function getScopeModel(int $value)
 	{
-		if ($scope = static::getScopeString($value))
+		if ($value !== static::ALL && $scope = static::getScopeString($value))
 			return 'App\\' . $scope;
 
 		return null;

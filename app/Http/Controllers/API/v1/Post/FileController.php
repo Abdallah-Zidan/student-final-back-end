@@ -44,7 +44,7 @@ class FileController extends Controller
 
 		if ($request->user()->can('viewAny', [File::class, $post]))
 		{
-			$files = $this->repo->getFilesFor($post);
+			$files = $this->repo->getAll($post);
 
 			return new FileCollection($files);
 		}

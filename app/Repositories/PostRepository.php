@@ -33,7 +33,7 @@ class PostRepository
 
 		return new LengthAwarePaginator([], 0, 10, 1, [
 			'path' => Paginator::resolveCurrentPath(),
-			'pageName' => 'page',
+			'pageName' => 'page'
 		]);
 	}
 

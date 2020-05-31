@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Enums\EventScope;
 use App\Enums\EventType;
+use Illuminate\Support\Str;
 
 class Event extends BaseModel
 {
@@ -13,7 +13,16 @@ class Event extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'title', 'body', 'type', 'scope', 'start_date', 'end_date', 'user_id'
+		'title', 'body', 'type', 'start_date', 'end_date', 'user_id', 'scopeable_type', 'scopeable_id'
+	];
+
+	/**
+	 * The attributes that should be hidden for arrays.
+	 *
+	 * @var array
+	 */
+	protected $hidden = [
+		'scopeable_type', 'scopeable_id'
 	];
 
 	/**
@@ -25,6 +34,28 @@ class Event extends BaseModel
 		'start_date' => 'datetime',
 		'end_date' => 'datetime'
 	];
+
+	/**
+	 * The accessors to append to the model's array form.
+	 *
+	 * @var array
+	 */
+	protected $appends = [
+		'scope'
+	];
+
+	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleted(function ($event) {
+			$event->comments()->delete();
+			$event->files()->delete();
+		});
+	}
 
 	/**
 	 * Get the event's type as a StudlyCase.
@@ -41,13 +72,14 @@ class Event extends BaseModel
 	/**
 	 * Get the event's scope as a StudlyCase.
 	 *
-	 * @param int $value the scope value.
-	 *
 	 * @return string|null
 	 */
-	public function getScopeAttribute(int $value)
+	public function getScopeAttribute()
 	{
-		return EventScope::getScopeString($value);
+		$value = $this->attributes['scopeable_type'];
+		$scope = Str::after($value, 'App\\');
+
+		return $scope ?: null;
 	}
 
 	/**
@@ -59,6 +91,17 @@ class Event extends BaseModel
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	/**
+	 * Many-to-one relationship to the scope.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+	 *
+	 */
+	public function scopeable()
+	{
+		return $this->morphTo();
 	}
 
 	/**

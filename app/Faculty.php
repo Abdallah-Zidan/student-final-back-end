@@ -67,4 +67,15 @@ class Faculty extends BaseModel
 	{
 		return $this->morphMany(Post::class, 'scopeable');
 	}
+
+	/**
+	 * One-to-many relationship to the events.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+	 *
+	 */
+	public function events()
+	{
+		return $this->morphMany(Post::class, 'scopeable');
+	}
 }

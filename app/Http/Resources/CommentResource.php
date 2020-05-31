@@ -24,7 +24,9 @@ class CommentResource extends JsonResource
 					'avatar' => $this->user->avatar
 				]
 			]),
-			'replies' => CommentResource::collection($this->whenLoaded('replies'))
+			'replies' => CommentResource::collection($this->whenLoaded('replies')),
+			'created_at' => $this->created_at,
+			'created_at_human' => $this->created_at->diffForHumans()
 		];
 	}
 }

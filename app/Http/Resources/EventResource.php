@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Enums\PostScope;
+use App\Enums\EventScope;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PostResource extends JsonResource
+class EventResource extends JsonResource
 {
 	/**
 	 * Transform the resource into an array.
@@ -17,9 +17,13 @@ class PostResource extends JsonResource
 	{
 		return [
 			'id' => $this->id,
+			'title' => $this->title,
 			'body' => $this->body,
-			'reported' => $this->reported,
-			'year' => $this->when($this->year, $this->year),
+			'type' => $this->type,
+			'start_date' => $this->start_date,
+			'start_date_human' => $this->start_date->diffForHumans(),
+			'end_date' => $this->end_date,
+			'end_date_human' => $this->end_date->diffForHumans(),
 			$this->mergeWhen($this->whenLoaded('user'), [
 				'user' => [
 					'id' => $this->user->id,
@@ -28,15 +32,11 @@ class PostResource extends JsonResource
 				]
 			]),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::DEPARTMENT),
-				['department_faculty' => new DepartmentFacultyResource($this->scopeable)]
-			),
-			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::FACULTY),
+				$this->whenLoaded('scopeable') && $this->scope === EventScope::getScopeString(EventScope::FACULTY),
 				['faculty' => new FacultyResource($this->scopeable)]
 			),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::UNIVERSITY),
+				$this->whenLoaded('scopeable') && $this->scope === EventScope::getScopeString(EventScope::UNIVERSITY),
 				['university' => new UniversityResource($this->scopeable)]
 			),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),

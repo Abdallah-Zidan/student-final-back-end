@@ -12,7 +12,7 @@ class Post extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'body', 'reported', 'user_id', 'scopeable_type', 'scopeable_id', 'year'
+		'body', 'reported', 'year', 'user_id', 'scopeable_type', 'scopeable_id'
 	];
 
 	/**
