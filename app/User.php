@@ -183,6 +183,17 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
+	 * One-to-many relationship to the tools.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function tools()
+	{
+		return $this->hasMany(Tool::class);
+	}
+
+	/**
 	 * One-to-many relationship to the comments.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

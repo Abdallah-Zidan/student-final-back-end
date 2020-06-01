@@ -3,6 +3,7 @@
 use App\Event;
 use App\File;
 use App\Post;
+use App\Tool;
 use Illuminate\Database\Seeder;
 
 class FileSeeder extends Seeder
@@ -25,6 +26,13 @@ class FileSeeder extends Seeder
 			factory(File::class, 3)->create([
 				'resourceable_type' => get_class($event),
 				'resourceable_id' => $event->id
+			]);
+		});
+
+		Tool::all()->each(function ($tool) {
+			factory(File::class, 3)->create([
+				'resourceable_type' => get_class($tool),
+				'resourceable_id' => $tool->id
 			]);
 		});
 	}

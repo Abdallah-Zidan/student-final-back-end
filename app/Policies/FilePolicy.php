@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\UserType;
 use App\File;
+use App\Tool;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -15,12 +16,15 @@ class FilePolicy
 	 * Determine whether the user can view any models.
 	 *
 	 * @param \App\User $user
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
 	public function viewAny(User $user, $resource)
 	{
+		if ($resource instanceof Tool)
+			return $user->can('viewAny', Tool::class);
+
 		return $user->can('viewAny', [get_class($resource), $resource->scopeable]);
 	}
 
@@ -29,7 +33,7 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
@@ -42,7 +46,7 @@ class FilePolicy
 	 * Determine whether the user can create models.
 	 *
 	 * @param \App\User $user
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
@@ -57,7 +61,7 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
@@ -72,12 +76,15 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
 	public function delete(User $user, File $file, $resource)
 	{
+		if ($resource instanceof Tool)
+			return $user->can('delete', $resource);
+
 		return $user->can('delete', [$resource, $resource->scopeable]);
 	}
 }

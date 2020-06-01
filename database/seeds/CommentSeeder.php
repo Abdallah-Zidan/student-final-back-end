@@ -4,6 +4,7 @@ use App\Comment;
 use App\Event;
 use App\Post;
 use App\Question;
+use App\Tool;
 use App\User;
 use Illuminate\Database\Seeder;
 
@@ -56,6 +57,16 @@ class CommentSeeder extends Seeder
 					'user_id' => $user->id,
 					'parentable_type' => get_class($question),
 					'parentable_id' => $question->id
+				]);
+			});
+		});
+
+		Tool::all()->each(function ($tool) {
+			User::inRandomOrder()->take(3)->get()->each(function ($user) use ($tool) {
+				factory(Comment::class)->create([
+					'user_id' => $user->id,
+					'parentable_type' => get_class($tool),
+					'parentable_id' => $tool->id
 				]);
 			});
 		});

@@ -132,7 +132,7 @@ class ReplyController extends Controller
 	 * Destroy a reply.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 * @param int $event The event id.
 	 * @param int $comment The comment id.
 	 * @param int $reply The reply id.

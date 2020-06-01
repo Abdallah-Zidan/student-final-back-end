@@ -152,7 +152,7 @@ class PostController extends Controller
 	 * Destroy a post.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 * @param int $post The post id.
 	 *
 	 * @return void

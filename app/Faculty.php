@@ -78,4 +78,15 @@ class Faculty extends BaseModel
 	{
 		return $this->morphMany(Post::class, 'scopeable');
 	}
+
+	/**
+	 * One-to-many relationship to the tools.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function tools()
+	{
+		return $this->hasMany(Tool::class);
+	}
 }

@@ -21,11 +21,13 @@ class DatabaseSeeder extends Seeder
 			$this->call(CourseDepartmentFacultySeeder::class);
 			$this->call(DepartmentFacultyUserSeeder::class);
 			$this->call(CourseDepartmentFacultyUserSeeder::class);
+			$this->call(ToolSeeder::class);
 			$this->call(EventSeeder::class);
 			$this->call(PostSeeder::class);
 			$this->call(QuestionSeeder::class);
 			$this->call(TagSeeder::class);
 			$this->call(QuestionTagSeeder::class);
+			$this->call(ToolTagSeeder::class);
 			$this->call(CommentSeeder::class);
 			$this->call(RateSeeder::class);
 			$this->call(FileSeeder::class);

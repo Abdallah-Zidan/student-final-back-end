@@ -45,7 +45,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		});
 	};
 
-	Route::group(['prefix' => 'departments/{department_faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
+	Route::group(['prefix' => 'departments/{department_faculty}', 'middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::group(['namespace' => 'Post'], function () {
+			Route::resource('posts', 'PostController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+			Route::resource('posts.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		});
+	});
 	Route::group(['prefix' => 'faculties/{faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
 	Route::group(['prefix' => 'universities/{university}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
 	Route::group(['prefix' => 'all/{empty?}', 'middleware' => ['auth:sanctum', 'verified']], function () {
@@ -55,5 +62,17 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::resource('events.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
 			Route::resource('events.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
 		});
+	});
+
+	Route::group(['namespace' => 'Tool'], function () {
+		Route::resource('needs', 'ToolController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('needs.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('needs.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('needs.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+
+		Route::resource('offers', 'ToolController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('offers.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('offers.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('offers.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
 	});
 });
