@@ -75,4 +75,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource('offers.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
 		Route::resource('offers.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
 	});
+	
+	Route::group(['namespace' => 'Question', 'middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::resource('questions', 'QuestionController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::get('/questions/tagged/{tags}', 'QuestionController@index')->where('tags', '.*');
+		Route::resource('questions.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('questions.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('tags', 'TagController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::post('/comments/{comment}/rates','RateController@store');
+		Route::put('/comments/{comment}/rates','RateController@update');
+		Route::delete('/comments/{comment}/rates','RateController@destroy');
+	});
 });

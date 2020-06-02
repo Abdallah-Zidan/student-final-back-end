@@ -21,7 +21,7 @@ class CommentRepository
             'body' => $body,
             'user_id' => $user_id
         ]);
-        return response(['data' => ['replay' => ['id' => $comment->id]]], 201);
+        return response(['data' => ['reply' => ['id' => $comment->id]]], 201);
     }
 
     /**

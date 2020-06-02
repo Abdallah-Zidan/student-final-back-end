@@ -25,8 +25,23 @@ class CommentResource extends JsonResource
 				]
 			]),
 			'replies' => CommentResource::collection($this->whenLoaded('replies')),
+			$this->mergeWhen($this->whenLoaded('rate'), [
+				'rate_sum' => $this->rates()->sum('rate'),
+				"is_rated" =>  $this->is_rated()
+			]),
 			'created_at' => $this->created_at,
 			'created_at_human' => $this->created_at->diffForHumans()
 		];
+	}
+	
+	/**
+	 * Comment Rated before or none
+	 *
+	 * @return 0 not rated , 1 or -1 rated
+	 */
+	private function is_rated()
+	{
+		$rate = $this->rates()->find( Request()->user()->id);
+		return $rate ? $rate->pivot->rate : 0;
 	}
 }
