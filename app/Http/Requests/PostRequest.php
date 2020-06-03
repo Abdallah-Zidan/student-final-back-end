@@ -23,11 +23,34 @@ class PostRequest extends FormRequest
 	 */
 	public function rules()
 	{
-		return [
-			'body' => 'required'
-		] + ($this->isMethod('post') ? [
-			'files' => 'array',
-			'files.*' => 'file|max:51200'
-		] : []);
+		if ($this->routeIs('posts.index'))
+		{
+			return [
+				'group' => 'required|integer|between:0,2',
+				'group_id' => 'required|integer'
+			];
+		}
+		else if ($this->routeIs('posts.store'))
+		{
+			return [
+				'group' => 'required|integer|between:0,2',
+				'group_id' => 'required|integer',
+				'body' => 'required',
+				'files' => 'array',
+				'files.*' => 'file|max:51200'
+			];
+		}
+		else if ($this->routeIs('posts.update'))
+		{
+			return [
+				'body' => 'required'
+			];
+		}
+		else if ($this->routeIs('posts.report'))
+		{
+			return [
+				'id' => 'required|integer'
+			];
+		}
 	}
 }

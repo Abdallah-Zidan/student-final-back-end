@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Post;
+namespace App\Http\Controllers\API\v1;
 
 use App\DepartmentFaculty;
+use App\Enums\PostScope;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Http\Resources\FileResource;
@@ -34,13 +35,15 @@ class PostController extends Controller
 	/**
 	 * Get all posts.
 	 *
-	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
+	 * @param \App\Http\Requests\PostRequest $request The request object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index(Request $request, $group)
+	public function index(PostRequest $request)
 	{
+		$model = PostScope::getScopeModel($request->group);
+		$group = $model::findOrFail($request->group_id);
+
 		if ($request->user()->can('viewAny', [Post::class, $group]))
 		{
 			$posts = $this->repo->getAll($group);
@@ -55,13 +58,14 @@ class PostController extends Controller
 	 * Store a post.
 	 *
 	 * @param \App\Http\Requests\PostRequest $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(PostRequest $request, $group)
+	public function store(PostRequest $request)
 	{
 		$user = $request->user();
+		$model = PostScope::getScopeModel($request->group);
+		$group = $model::findOrFail($request->group_id);
 
 		if ($user->can('create', [Post::class, $group]))
 		{
@@ -84,16 +88,13 @@ class PostController extends Controller
 	 * Show a post.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param \App\Post $post The post object.
 	 *
 	 * @return void
 	 */
-	public function show(Request $request, $group, int $post)
+	public function show(Request $request, Post $post)
 	{
-		$post = $group->posts()->findOrFail($post);
-
-		if ($request->user()->can('view', [$post, $group]))
+		if ($request->user()->can('view', $post))
 		{
 			$post->load([
 				'user',
@@ -106,7 +107,7 @@ class PostController extends Controller
 				'files'
 			]);
 
-			if ($group instanceof DepartmentFaculty)
+			if ($post->scopeable instanceof DepartmentFaculty)
 			{
 				$post->load([
 					'scopeable.department',
@@ -129,16 +130,13 @@ class PostController extends Controller
 	 * Update a post.
 	 *
 	 * @param \App\Http\Requests\PostRequest $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param \App\Post $post The post object.
 	 *
 	 * @return void
 	 */
-	public function update(PostRequest $request, $group, int $post)
+	public function update(PostRequest $request, Post $post)
 	{
-		$post = $group->posts()->findOrFail($post);
-
-		if ($request->user()->can('update', [$post, $group]))
+		if ($request->user()->can('update', $post))
 		{
 			$this->repo->update($post, $request->only(['body']));
 
@@ -152,18 +150,36 @@ class PostController extends Controller
 	 * Destroy a post.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param \App\Post $post The post object.
 	 *
 	 * @return void
 	 */
-	public function destroy(Request $request, $group, int $post)
+	public function destroy(Request $request, Post $post)
 	{
-		$post = $group->posts()->findOrFail($post);
-
-		if ($request->user()->can('delete', [$post, $group]))
+		if ($request->user()->can('delete', $post))
 		{
 			$this->repo->delete($post);
+
+			return response('', 204);
+		}
+
+		return response('', 403);
+	}
+
+	/**
+	 * Report a post.
+	 *
+	 * @param \App\Http\Requests\PostRequest $request The request object.
+	 *
+	 * @return void
+	 */
+	public function report(PostRequest $request)
+	{
+		$post = Post::findOrFail($request->id);
+
+		if ($request->user()->can('report', $post))
+		{
+			$this->repo->report($post);
 
 			return response('', 204);
 		}

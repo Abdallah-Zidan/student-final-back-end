@@ -26,9 +26,7 @@ class ToolResource extends JsonResource
 					'avatar' => $this->user->avatar
 				]
 			]),
-			$this->mergeWhen($this->whenLoaded('faculty'), [
-				'faculty' => new FacultyResource($this->faculty)
-			]),
+			'faculty' => new FacultyResource($this->whenLoaded('faculty')),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),
 			'files' => FileResource::collection($this->whenLoaded('files')),
 			'tags' => TagResource::collection($this->whenLoaded('tags')),

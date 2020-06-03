@@ -4,38 +4,39 @@ namespace App\Repositories;
 
 use App\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class FileRepository
 {
 	/**
-	 * Get all files related to *Post* / *Event*.
+	 * Get all files related to *Post* / *Event* / *Tool*.
 	 *
-	 * @param mixed $resource The *Post* / *Event* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll($resource)
+	public function getAll($parent)
 	{
-		return $resource->files()->paginate(10);
+		return $parent->files()->paginate(10);
 	}
 
 	/**
-	 * Create a file related to the given resource.
+	 * Create a file related to the given parent.
 	 *
-	 * @param mixed $resource The *Post* / *Event* object.
-	 * @param string $path The folder path to save to.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param array $data The file data.
 	 *
 	 * @return \App\File
 	 */
-	public function create($resource, string $path, array $data)
+	public function create($parent, array $data)
 	{
-		$path = Storage::disk('local')->put("files/${path}/" . $resource->id, $data['file']);
-		$mime = Storage::mimeType($path);
+		$path = Str::plural(Str::lower(Str::after(get_class($parent), 'App\\')));
+		$path = Storage::disk('local')->put("files/${path}/" . $parent->id, $data['file']);
 
-		return $resource->files()->create([
+		return $parent->files()->create([
+			'name' => $data['file']->getClientOriginalName(),
 			'path' => $path,
-			'mime' => $mime
+			'mime' => Storage::mimeType($path)
 		]);
 	}
 
@@ -43,20 +44,22 @@ class FileRepository
 	 * Update an existing file.
 	 *
 	 * @param File $file The file object.
-	 * @param string $path The folder path to save to **with the resource id**.
 	 * @param array $data The file data.
 	 *
 	 * @return void
 	 */
-	public function update(File $file, string $path, array $data)
+	public function update(File $file, array $data)
 	{
 		Storage::disk('local')->delete($file->path);
-		$path = Storage::disk('local')->put("files/${path}", $data['file']);
-		$mime = Storage::mimeType($path);
+
+		$parent = $file->resourceable;
+		$path = Str::plural(Str::lower(Str::after(get_class($parent), 'App\\')));
+		$path = Storage::disk('local')->put("files/${path}/" . $parent->id, $data['file']);
 
 		$file->update([
+			'name' => $data['file']->getClientOriginalName(),
 			'path' => $path,
-			'mine' => $mime
+			'mime' => Storage::mimeType($path)
 		]);
 	}
 

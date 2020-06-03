@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\EventScope;
 use App\Enums\UserType;
 use App\Event;
 use App\Faculty;
@@ -35,7 +36,7 @@ class EventSeeder extends Seeder
 
 				factory(Event::class)->create([
 					'user_id' => $user->id,
-					'scopeable_type' => 'all'
+					'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
 				]);
 			});
 		});
@@ -59,7 +60,7 @@ class EventSeeder extends Seeder
 
 			factory(Event::class)->create([
 				'user_id' => $user->id,
-				'scopeable_type' => 'all'
+				'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
 			]);
 		});
 
@@ -78,7 +79,7 @@ class EventSeeder extends Seeder
 
 			factory(Event::class)->create([
 				'user_id' => $user->id,
-				'scopeable_type' => 'all'
+				'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
 			]);
 		});
 	}

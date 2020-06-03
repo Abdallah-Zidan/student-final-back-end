@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Tool;
+namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ToolRequest;
@@ -33,18 +33,20 @@ class ToolController extends Controller
 	/**
 	 * Get all tools.
 	 *
-	 * @param \Illuminate\Http\Request $request The request object.
+	 * @param \App\Http\Requests\ToolRequest $request The request object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index(Request $request)
+	public function index(ToolRequest $request)
 	{
 		$user = $request->user();
+		$faculty = $user->departmentFaculties()->first()->faculty;
 
-		if ($user->can('viewAny', Tool::class))
+		if ($user->can('viewAny', [Tool::class, $faculty]))
 		{
-			$faculty_id = $user->departmentFaculties()->first()->faculty->id;
-			$tools = $this->repo->getAll($faculty_id);
+			$type = $request->type;
+			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
+			$tools = $this->repo->getAll($faculty, $type, $tags);
 
 			return new ToolCollection($tools);
 		}
@@ -62,10 +64,12 @@ class ToolController extends Controller
 	public function store(ToolRequest $request)
 	{
 		$user = $request->user();
+		$faculty = $user->departmentFaculties()->first()->faculty;
 
-		if ($user->can('create', Tool::class))
+		if ($user->can('create', [Tool::class, $faculty]))
 		{
-			$tool = $this->repo->create($user, $request->only(['title', 'body', 'type', 'files']));
+			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
+			$tool = $this->repo->create($user, $faculty, $request->only(['title', 'body', 'type', 'files']), $tags);
 
 			return response([
 				'data' => [
@@ -126,7 +130,8 @@ class ToolController extends Controller
 	{
 		if ($request->user()->can('update', $tool))
 		{
-			$this->repo->update($tool, $request->only(['title', 'body']));
+			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
+			$this->repo->update($tool, $request->only(['title', 'body']), $tags);
 
 			return response('', 204);
 		}

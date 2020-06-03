@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Post;
+namespace App\Http\Controllers\API\v1;
 
 use App\File;
 use App\Http\Controllers\Controller;
@@ -9,6 +9,7 @@ use App\Http\Resources\FileCollection;
 use App\Http\Resources\FileResource;
 use App\Repositories\FileRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class FileController extends Controller
 {
@@ -33,18 +34,15 @@ class FileController extends Controller
 	 * Get all files.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index(Request $request, $group, int $post)
+	public function index(Request $request, $parent)
 	{
-		$post = $group->posts()->findOrFail($post);
-
-		if ($request->user()->can('viewAny', [File::class, $post]))
+		if ($request->user()->can('viewAny', [File::class, $parent]))
 		{
-			$files = $this->repo->getAll($post);
+			$files = $this->repo->getAll($parent);
 
 			return new FileCollection($files);
 		}
@@ -56,18 +54,15 @@ class FileController extends Controller
 	 * Store a file.
 	 *
 	 * @param \App\Http\Requests\FileRequest $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(FileRequest $request, $group, int $post)
+	public function store(FileRequest $request, $parent)
 	{
-		$post = $group->posts()->findOrFail($post);
-
-		if ($request->user()->can('create', [File::class, $post]))
+		if ($request->user()->can('create', [File::class, $parent]))
 		{
-			$file = $this->repo->create($post, 'posts', $request->only(['file']));
+			$file = $this->repo->create($parent, $request->only(['file']));
 
 			return response([
 				'data' => [
@@ -83,17 +78,16 @@ class FileController extends Controller
 	 * Show a file.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param int $file The file id.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function show(Request $request, $group, int $post, int $file)
+	public function show(Request $request, $parent, int $file)
 	{
-		$file = $group->posts()->findOrFail($post)->files()->findOrFail($file);
+		$file = $parent->files()->findOrFail($file);
 
-		if ($request->user()->can('view', [$file, $post]))
+		if ($request->user()->can('view', $file))
 		{
 			return response([
 				'data' => [
@@ -109,19 +103,18 @@ class FileController extends Controller
 	 * Update a file.
 	 *
 	 * @param \App\Http\Requests\FileRequest $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param int $file The file id.
 	 *
 	 * @return void
 	 */
-	public function update(FileRequest $request, $group, int $post, int $file)
+	public function update(FileRequest $request, $parent, int $file)
 	{
-		$file = $group->posts()->findOrFail($post)->files()->findOrFail($file);
+		$file = $parent->files()->findOrFail($file);
 
-		if ($request->user()->can('update', [$file, $post]))
+		if ($request->user()->can('update', $file))
 		{
-			$this->repo->update($file, 'posts/' . $post->id, $request->only(['file']));
+			$this->repo->update($file, $request->only(['file']));
 
 			return response('', 204);
 		}
@@ -133,17 +126,16 @@ class FileController extends Controller
 	 * Destroy a file.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
-	 * @param int $post The post id.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param int $file The file id.
 	 *
 	 * @return void
 	 */
-	public function destroy(Request $request, $group, int $post, int $file)
+	public function destroy(Request $request, $parent, int $file)
 	{
-		$file = $group->posts()->findOrFail($post)->files()->findOrFail($file);
+		$file = $parent->files()->findOrFail($file);
 
-		if ($request->user()->can('delete', [$file, $post]))
+		if ($request->user()->can('delete', $file))
 		{
 			$this->repo->delete($file);
 

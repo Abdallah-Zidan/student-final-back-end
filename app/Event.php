@@ -51,9 +51,9 @@ class Event extends BaseModel
 	 */
 	protected static function booted()
 	{
-		static::deleted(function ($event) {
+		static::deleting(function ($event) {
 			$event->comments()->delete();
-			$event->files()->delete();
+			$event->files->each->delete();
 		});
 	}
 

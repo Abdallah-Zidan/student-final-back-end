@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(File::class, function (Faker $faker) {
 	return [
+		'name' => $faker->firstName,
 		'path' => 'path/to/file.ext',
 		'mime' => $faker->mimeType,
 		'resourceable_type' => null,

@@ -12,7 +12,7 @@ class File extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'path', 'mime', 'resourceable_type', 'resourceable_id'
+		'name', 'path', 'mime', 'resourceable_type', 'resourceable_id'
 	];
 
 	/**
@@ -40,7 +40,7 @@ class File extends BaseModel
 	 */
 	protected static function booted()
 	{
-		static::deleted(function ($file) {
+		static::deleting(function ($file) {
 			Storage::disk('local')->delete($file->path);
 		});
 	}

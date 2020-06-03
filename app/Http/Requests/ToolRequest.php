@@ -23,13 +23,31 @@ class ToolRequest extends FormRequest
 	 */
 	public function rules()
 	{
-		return [
-			'title' => 'required',
-			'body' => 'required'
-		] + ($this->isMethod('post') ? [
-			'type' => 'required|between:0,1',
-			'files' => 'array',
-			'files.*' => 'file|max:51200'
-		] : []);
+		if ($this->routeIs('tools.index'))
+		{
+			return [
+				'type' => 'required|integer|between:0,1',
+				'tags' => 'string'
+			];
+		}
+		else if ($this->routeIs('tools.store'))
+		{
+			return [
+				'title' => 'required',
+				'body' => 'required',
+				'type' => 'required|integer|between:0,1',
+				'tags' => 'string',
+				'files' => 'array',
+				'files.*' => 'file|max:51200'
+			];
+		}
+		else if ($this->routeIs('tools.update'))
+		{
+			return [
+				'title' => 'required',
+				'body' => 'required',
+				'tags' => 'string'
+			];
+		}
 	}
 }

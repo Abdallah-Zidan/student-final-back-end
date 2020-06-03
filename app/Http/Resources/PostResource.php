@@ -28,16 +28,16 @@ class PostResource extends JsonResource
 				]
 			]),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::DEPARTMENT),
-				['department_faculty' => new DepartmentFacultyResource($this->scopeable)]
+				$this->scope === PostScope::getScopeString(PostScope::DEPARTMENT),
+				['department_faculty' => new DepartmentFacultyResource($this->whenLoaded('scopeable'))]
 			),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::FACULTY),
-				['faculty' => new FacultyResource($this->scopeable)]
+				$this->scope === PostScope::getScopeString(PostScope::FACULTY),
+				['faculty' => new FacultyResource($this->whenLoaded('scopeable'))]
 			),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === PostScope::getScopeString(PostScope::UNIVERSITY),
-				['university' => new UniversityResource($this->scopeable)]
+				$this->scope === PostScope::getScopeString(PostScope::UNIVERSITY),
+				['university' => new UniversityResource($this->whenLoaded('scopeable'))]
 			),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),
 			'files' => FileResource::collection($this->whenLoaded('files')),

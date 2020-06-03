@@ -23,9 +23,10 @@ class Tool extends Model
 	 */
 	protected static function booted()
 	{
-		static::deleted(function ($tool) {
+		static::deleting(function ($tool) {
 			$tool->comments()->delete();
-			$tool->files()->delete();
+			$tool->files->each->delete();
+			$tool->tags()->detach();
 		});
 	}
 

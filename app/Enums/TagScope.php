@@ -8,27 +8,27 @@ class TagScope
 	const QUESTION = 1;
 
 	/**
-	 * The event available types.
+	 * The tag available scopes.
 	 *
 	 * @var array
 	 */
-	public static $types = [
-		'tool',
-		'question',
+	public static $scopes = [
+		'Tool',
+		'Question',
 	];
 
 	/**
-	 * Get the type from an integer value.
+	 * Get the scope from an integer value.
 	 *
-	 * @param int $value the type value equivalent.
+	 * @param int $value the scope value equivalent.
 	 *
 	 * @return string|null
 	 */
 	public static function getScopeString(int $value)
 	{
-		if ($value >= count(static::$types))
+		if ($value >= count(static::$scopes))
 			return null;
 
-		return static::$types[$value];
+		return static::$scopes[$value];
 	}
 }

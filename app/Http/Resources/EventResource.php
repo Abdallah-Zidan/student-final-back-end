@@ -32,12 +32,12 @@ class EventResource extends JsonResource
 				]
 			]),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === EventScope::getScopeString(EventScope::FACULTY),
-				['faculty' => new FacultyResource($this->scopeable)]
+				$this->scope === EventScope::getScopeString(EventScope::FACULTY),
+				['faculty' => new FacultyResource($this->whenLoaded('scopeable'))]
 			),
 			$this->mergeWhen(
-				$this->whenLoaded('scopeable') && $this->scope === EventScope::getScopeString(EventScope::UNIVERSITY),
-				['university' => new UniversityResource($this->scopeable)]
+				$this->scope === EventScope::getScopeString(EventScope::UNIVERSITY),
+				['university' => new UniversityResource($this->whenLoaded('scopeable'))]
 			),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),
 			'files' => FileResource::collection($this->whenLoaded('files')),

@@ -26,7 +26,7 @@ class TagScopeRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $value < count(TagScope::$types);
+        return $value < count(TagScope::$scopes);
     }
 
     /**

@@ -33,13 +33,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		$methods = ['index', 'store', 'show', 'update', 'destroy'];
 
-		Route::resource('courses', 'CourseController')->only($methods);
-		Route::resource('tutorials', 'TutorialController')->only($methods);
 		Route::resource('posts', 'PostController')->only($methods);
 		Route::post('posts/report', 'PostController@report')->name('posts.report');
 		Route::resource('events', 'EventController')->only($methods);
 		Route::resource('questions', 'QuestionController')->only($methods);
 		Route::resource('tools', 'ToolController')->only($methods);
+		Route::get('tags', 'TagController@index')->name('tags.index');
 
 		Route::resource('posts.files', 'FileController')->only($methods);
 		Route::resource('events.files', 'FileController')->only($methods);
@@ -52,11 +51,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		Route::resource('comments.replies', 'ReplyController')->only($methods);
 
-		Route::post('/comments/{comment}/rates', 'RateController@store')->name('rates.store');
-		Route::put('/comments/{comment}/rates', 'RateController@update')->name('rates.update');
-		Route::delete('/comments/{comment}/rates', 'RateController@destroy')->name('rates.destroy');
-
-		Route::get('/tags','TagController@index')->name('tags.index');
-
+		Route::post('comments/{comment}/rates', 'RateController@store')->name('rates.store');
+		Route::put('comments/{comment}/rates', 'RateController@update')->name('rates.update');
+		Route::delete('comments/{comment}/rates', 'RateController@destroy')->name('rates.destroy');
 	});
 });

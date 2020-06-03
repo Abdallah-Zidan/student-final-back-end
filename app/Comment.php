@@ -19,7 +19,7 @@ class Comment extends BaseModel
 	 */
 	protected static function booted()
     {
-        static::deleted(function ($comment) {
+        static::deleting(function ($comment) {
             $comment->replies()->delete();
         });
     }

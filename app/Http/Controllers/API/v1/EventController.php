@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Event;
+namespace App\Http\Controllers\API\v1;
 
+use App\Enums\EventScope;
 use App\Event;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EventRequest;
@@ -33,16 +34,19 @@ class EventController extends Controller
 	/**
 	 * Get all events.
 	 *
-	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
+	 * @param \App\Http\Requests\EventRequest $request The request object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function index(Request $request, $group)
+	public function index(EventRequest $request)
 	{
+		$model = EventScope::getScopeModel($request->group);
+		$group = $model ? $model::findOrFail($request->group_id) : null;
+
 		if ($request->user()->can('viewAny', [Event::class, $group]))
 		{
-			$events = $this->repo->getAll($group);
+			$type = $request->type;
+			$events = $this->repo->getAll($group, $type);
 
 			return new EventCollection($events);
 		}
@@ -54,15 +58,16 @@ class EventController extends Controller
 	 * Store an event.
 	 *
 	 * @param \App\Http\Requests\EventRequest $request The request object.
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(EventRequest $request, $group)
+	public function store(EventRequest $request)
 	{
 		$user = $request->user();
+		$model = EventScope::getScopeModel($request->group);
+		$group = $model ? $model::findOrFail($request->group_id) : null;
 
-		if ($user->can('create', [Event::class, $group]))
+		if ($user->can('create', [Event::class, $group, $request->type]))
 		{
 			$event = $this->repo->create($user, $group, $request->only(['title', 'body', 'type', 'start_date', 'end_date', 'files']));
 
@@ -83,27 +88,30 @@ class EventController extends Controller
 	 * Show an event.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
-	 * @param int $event The event id.
+	 * @param \App\Event $event The event object.
 	 *
 	 * @return void
 	 */
-	public function show(Request $request, $group, int $event)
+	public function show(Request $request, Event $event)
 	{
-		$event = $group->events()->findOrFail($event);
-
-		if ($request->user()->can('view', [$event, $group]))
+		if ($request->user()->can('view', $event))
 		{
 			$event->load([
 				'user',
 				'user.profileable',
-				'scopeable',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 				'comments.replies.user',
 				'files'
 			]);
+
+			if ($event->scope !== EventScope::getScopeString(EventScope::ALL))
+			{
+				$event->load([
+					'scopeable'
+				]);
+			}
 
 			return response([
 				'data' => [
@@ -119,16 +127,13 @@ class EventController extends Controller
 	 * Update an event.
 	 *
 	 * @param \App\Http\Requests\EventRequest $request The request object.
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
-	 * @param int $event The event id.
+	 * @param \App\Event $event The event object.
 	 *
 	 * @return void
 	 */
-	public function update(EventRequest $request, $group, int $event)
+	public function update(EventRequest $request, Event $event)
 	{
-		$event = $group->events()->findOrFail($event);
-
-		if ($request->user()->can('update', [$event, $group]))
+		if ($request->user()->can('update', $event))
 		{
 			$this->repo->update($event, $request->only(['title', 'body', 'start_date', 'end_date']));
 
@@ -142,16 +147,13 @@ class EventController extends Controller
 	 * Destroy an event.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
-	 * @param int $event The event id.
+	 * @param \App\Event $event The event object.
 	 *
 	 * @return void
 	 */
-	public function destroy(Request $request, $group, int $event)
+	public function destroy(Request $request, Event $event)
 	{
-		$event = $group->events()->findOrFail($event);
-
-		if ($request->user()->can('delete', [$event, $group]))
+		if ($request->user()->can('delete', $event))
 		{
 			$this->repo->delete($event);
 

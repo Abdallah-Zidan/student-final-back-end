@@ -33,13 +33,12 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function view(User $user, File $file, $parent)
+	public function view(User $user, File $file)
 	{
-		return $user->can('viewAny', [File::class, $parent]);
+		return $user->can('viewAny', [File::class, $file->resourceable]);
 	}
 
 	/**
@@ -61,13 +60,12 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function update(User $user, File $file, $parent)
+	public function update(User $user, File $file)
 	{
-		return $parent->user->id === $user->id ||
+		return $file->resourceable->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
 	}
 
@@ -76,15 +74,11 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function delete(User $user, File $file, $parent)
+	public function delete(User $user, File $file)
 	{
-		if ($parent instanceof Tool)
-			return $user->can('delete', $parent);
-
-		return $user->can('delete', [$parent, $parent->scopeable]);
+		return $user->can('delete', $file->resourceable);
 	}
 }

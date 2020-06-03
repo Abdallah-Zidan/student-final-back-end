@@ -58,15 +58,13 @@ class PostRepository
 
 		if (array_key_exists('files', $data))
 		{
-			$files = $data['files'];
-
-			for ($i = 0; $i < count($files); $i++)
+			foreach ($data['files'] as $file)
 			{
-				$path = Storage::disk('local')->put('files/posts/' . $post->id, $files[$i]);
-				$mime = Storage::mimeType($path);
+				$path = Storage::disk('local')->put('files/posts/' . $post->id, $file);
 				$post->files()->create([
+					'name' => $file->getClientOriginalName(),
 					'path' => $path,
-					'mime' => $mime
+					'mime' => Storage::mimeType($path)
 				]);
 			}
 		}
@@ -99,6 +97,20 @@ class PostRepository
 	public function delete(Post $post)
 	{
 		$post->delete();
+	}
+
+	/**
+	 * Report an existing post.
+	 *
+	 * @param \App\Post $post The post object.
+	 *
+	 * @return void
+	 */
+	public function report(Post $post)
+	{
+		$post->update([
+			'reported' => true
+		]);
 	}
 
 	/**

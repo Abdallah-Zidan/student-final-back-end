@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\EventScope;
+use App\Enums\EventType;
 use App\Enums\UserType;
 use App\Event;
 use App\Faculty;
@@ -28,9 +29,7 @@ class EventPolicy
 			$user->type === UserType::getTypeString(UserType::TEACHING_STAFF))
 		{
 			if (is_null($group))
-			{
 				return true;
-			}
 			else if ($group instanceof Faculty)
 			{
 				if ($user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($group) {
@@ -47,15 +46,11 @@ class EventPolicy
 			}
 		}
 		else if ($user->type === UserType::getTypeString(UserType::COMPANY))
-		{
 			return true;
-		}
 		else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 		{
 			if (is_null($group))
-			{
 				return true;
-			}
 			else if ($group instanceof Faculty)
 			{
 				if ($user->profileable->faculty->id === $group->id)
@@ -94,52 +89,58 @@ class EventPolicy
 	 *
 	 * @param \App\User $user
 	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
+	 * @param int $type The event's type.
 	 *
 	 * @return bool
 	 */
-	public function create(User $user, $group)
+	public function create(User $user, $group, int $type)
 	{
 		if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
 			$user->type === UserType::getTypeString(UserType::TEACHING_STAFF))
 		{
-			if (is_null($group))
+			if ($type === EventType::NORMAL ||
+			   ($user->type === UserType::getTypeString(UserType::TEACHING_STAFF) && $type === EventType::ANNOUNCEMENT))
 			{
-				return true;
-			}
-			else if ($group instanceof Faculty)
-			{
-				if ($user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($group) {
-					return $department_faculty->faculty->id == $group->id;
-				}))
+				if (is_null($group))
 					return true;
-			}
-			else if ($group instanceof University)
-			{
-				if ($user->departmentFaculties->load('faculty.university')->first(function ($department_faculty) use ($group) {
-					return $department_faculty->faculty->university->id == $group->id;
-				}))
-					return true;
+				else if ($group instanceof Faculty)
+				{
+					if ($user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($group) {
+						return $department_faculty->faculty->id == $group->id;
+					}))
+						return true;
+				}
+				else if ($group instanceof University)
+				{
+					if ($user->departmentFaculties->load('faculty.university')->first(function ($department_faculty) use ($group) {
+						return $department_faculty->faculty->university->id == $group->id;
+					}))
+						return true;
+				}
 			}
 		}
 		else if ($user->type === UserType::getTypeString(UserType::COMPANY))
 		{
-			return true;
+			if ($type !== EventType::ANNOUNCEMENT)
+				return true;
 		}
 		else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 		{
-			if (is_null($group))
+			if ($type === EventType::NORMAL ||
+				$type === EventType::ANNOUNCEMENT)
 			{
-				return true;
-			}
-			else if ($group instanceof Faculty)
-			{
-				if ($user->profileable->faculty->id === $group->id)
+				if (is_null($group))
 					return true;
-			}
-			else if ($group instanceof University)
-			{
-				if ($user->profileable->faculty->university->id === $group->id)
-					return true;
+				else if ($group instanceof Faculty)
+				{
+					if ($user->profileable->faculty->id === $group->id)
+						return true;
+				}
+				else if ($group instanceof University)
+				{
+					if ($user->profileable->faculty->university->id === $group->id)
+						return true;
+				}
 			}
 		}
 		else if ($user->type === UserType::getTypeString(UserType::ADMIN))

@@ -49,9 +49,9 @@ class Post extends BaseModel
 	 */
 	protected static function booted()
 	{
-		static::deleted(function ($post) {
+		static::deleting(function ($post) {
 			$post->comments()->delete();
-			$post->files()->delete();
+			$post->files->each->delete();
 		});
 	}
 

@@ -17,17 +17,18 @@ class EventRepository
 	 * Get all events related to the *Faculty* / *University* / *All* group.
 	 *
 	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
+	 * @param int $type The event's type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll($group)
+	public function getAll($group, int $type)
 	{
 		if (is_null($group))
-			return $this->getAllInAll();
+			return $this->getAllInAll($type);
 		else if ($group instanceof Faculty)
-			return $this->getAllInFaculty($group);
+			return $this->getAllInFaculty($group, $type);
 		else if ($group instanceof University)
-			return $this->getAllInUniversity($group);
+			return $this->getAllInUniversity($group, $type);
 
 		return new LengthAwarePaginator([], 0, 10, 1, [
 			'path' => Paginator::resolveCurrentPath(),
@@ -52,21 +53,19 @@ class EventRepository
 			'type' => $data['type'],
 			'start_date' => $data['start_date'],
 			'end_date' => $data['end_date'],
-			'scopeable_type' => is_null($group) ? 'all' : get_class($group),
+			'scopeable_type' => is_null($group) ? EventScope::getScopeString(EventScope::ALL) : get_class($group),
 			'scopeable_id' => is_null($group) ? 0 : $group->id
 		]);
 
 		if (array_key_exists('files', $data))
 		{
-			$files = $data['files'];
-
-			for ($i = 0; $i < count($files); $i++)
+			foreach ($data['files'] as $file)
 			{
-				$path = Storage::disk('local')->put('files/events/' . $event->id, $files[$i]);
-				$mime = Storage::mimeType($path);
+				$path = Storage::disk('local')->put('files/events/' . $event->id, $file);
 				$event->files()->create([
+					'name' => $file->getClientOriginalName(),
 					'path' => $path,
-					'mime' => $mime
+					'mime' => Storage::mimeType($path)
 				]);
 			}
 		}
@@ -106,21 +105,25 @@ class EventRepository
 
 	/**
 	 * Get all events related to the *All* group.
+	 * 
+	 * @param int $type The event's type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	private function getAllInAll()
+	private function getAllInAll(int $type)
 	{
 		$events = Event::with([
 			'user',
 			'user.profileable',
-			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
 			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 			'comments.replies.user',
 			'files'
-		])->where('scopeable_type', EventScope::getScopeModel(EventScope::ALL))->orderBy('created_at', 'desc')->paginate(10);
+		])->where([
+			['scopeable_type', EventScope::getScopeString(EventScope::ALL)],
+			['type', $type]
+		])->orderBy('created_at', 'desc')->paginate(10);
 
 		return $events;
 	}
@@ -129,10 +132,11 @@ class EventRepository
 	 * Get all events related to the *Faculty* group.
 	 *
 	 * @param \App\Faculty $faculty The *Faculty* object.
+	 * @param int $type The event's type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	private function getAllInFaculty(Faculty $faculty)
+	private function getAllInFaculty(Faculty $faculty, int $type)
 	{
 		$events = Event::with([
 			'user',
@@ -145,7 +149,8 @@ class EventRepository
 			'files'
 		])->where([
 			['scopeable_type', EventScope::getScopeModel(EventScope::FACULTY)],
-			['scopeable_id', $faculty->id]
+			['scopeable_id', $faculty->id],
+			['type', $type]
 		])->orderBy('created_at', 'desc')->paginate(10);
 
 		return $events;
@@ -155,10 +160,11 @@ class EventRepository
 	 * Get all events related to the *University* group.
 	 *
 	 * @param University $university The *University* object.
+	 * @param int $type The event's type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	private function getAllInUniversity(University $university)
+	private function getAllInUniversity(University $university, $type)
 	{
 		$events = Event::with([
 			'user',
@@ -171,7 +177,8 @@ class EventRepository
 			'files'
 		])->where([
 			['scopeable_type', EventScope::getScopeModel(EventScope::UNIVERSITY)],
-			['scopeable_id', $university->id]
+			['scopeable_id', $university->id],
+			['type', $type]
 		])->orderBy('created_at', 'desc')->paginate(10);
 
 		return $events;
