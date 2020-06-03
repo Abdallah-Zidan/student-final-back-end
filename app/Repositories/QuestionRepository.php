@@ -42,6 +42,7 @@ class QuestionRepository
 
 	private function attachTags($question, $tag_names)
 	{
+		$tag_names=array_filter(array_map('trim',$tag_names));
 		$db_tags = Tag::whereIn('name', $tag_names);
 		$db_tag_names = $db_tags->pluck('name')->toArray();
 		$db_tag_ids = $db_tags->pluck('id')->toArray();

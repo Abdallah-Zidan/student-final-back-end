@@ -30,7 +30,7 @@ class ReplyController extends Controller
      */
     public function index(Request $request, Comment $comment)
     {
-        if ($request->user()->can('viewAny', $comment->parent)) {
+        if ($request->user()->can('view', $comment->parent)) {
             return $this->repo->getAll($comment);
         }
         return response([], 403);
