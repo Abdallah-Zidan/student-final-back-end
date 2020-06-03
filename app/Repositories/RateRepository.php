@@ -7,20 +7,22 @@ use App\User;
 
 class RateRepository
 {
-    public function create(Comment $comment, $rate, User $user)
+    public function create(Comment $comment, $data)
     {
-        $comment->rates()->attach($user, ['rate' => $rate]);
+        return $comment->rates()->attach(request()->user(), $data);
     }
 
-    public function update(Comment $comment, $rate, User $user)
+    public function update(Comment $comment, $data)
     {
-        $rate_obj= $comment->rates()->find($user->id)->pivot;
-        $rate_obj->rate = $rate;
-        $rate_obj->save();
+        if ($rate_obj = $comment->rates()->find(request()->user()->id)) {
+            $rate_obj->pivot->rate = $data['rate'];
+            $rate_obj->pivot->save();
+            return $rate_obj->pivot;
+        }
     }
 
-    public function delete(Comment $comment, User $user)
+    public function delete(Comment $comment)
     {
-        $comment->rates()->detach($user);
+        $comment->rates()->detach(request()->user());
     }
 }

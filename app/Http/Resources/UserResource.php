@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\UserType;
+use App\StudentProfile;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -15,7 +16,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-       return [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
@@ -26,7 +27,18 @@ class UserResource extends JsonResource
             'mobile' => $this->mobile,
             'avatar' => $this->avatar,
             'type' => $this->type
-        ] + ($this->type === UserType::getTypeString(UserType::COMPANY) ? ['profile' => new CompanyProfileResource($this->profileable)] :
-            ($this->type === UserType::getTypeString(UserType::STUDENT) ? ['profile' => new StudentProfileResource($this->profileable)] : []));
+        ] + $this->getProfile();
+    }
+
+    public function getProfile()
+    {
+        if ($this->type == UserType::getTypeString(UserType::STUDENT)) {
+            return ['profile' => new StudentProfileResource($this->profileable)];
+        } else if ($this->type == UserType::getTypeString(UserType::COMPANY)) {
+            return ['profile' => new CompanyProfileResource($this->profileable)];
+        } else if ($this->type == UserType::getTypeString(UserType::TEACHING_STAFF)) {
+            return ['profile' => new TeachingStaffProfileResource($this->profileable)];
+        }
+        return [];
     }
 }

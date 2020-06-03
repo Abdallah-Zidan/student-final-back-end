@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\UserType;
+use App\Rules\EducationEmail;
 use App\Rules\FacultyDepartmentsExistsRule;
 use App\Rules\StrongPassword;
 use Illuminate\Foundation\Http\FormRequest;
@@ -34,28 +35,31 @@ class RegisterRequest extends FormRequest
             'gender' => 'required|in:0,1',
             'address' => 'required|max:255',
             'mobile' => 'required|unique:users|max:15|min:11',
-            'avatar' => 'mimes:jpeg,bmp,png|file|size:2048',
             'type' => 'required|in:0,1',
             'device_name' => 'required'
-        ] + ($this->type == UserType::COMPANY ? [
-            'email' => 'required|email|unique:users|max:255',
-            'fax' => 'required|unique:App\CompanyProfile|max:15|min:11',
-            'description' => 'required|max:255',
-            'website' => 'required|unique:company_profiles|max:255|url'
-        ] : ($this->type == UserType::STUDENT ? [
-            'email' => 'required|unique:users|max:255|regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.edu\.eg$/', // example: xxx@xxxx.edu.eg
-            'birthdate' => 'required|date|before:today',
-            'year' => 'required|lte:7|gt:0',
-            'departments' => 'required|array|max:3',
-            'departments.*' => ['required', 'exists:departments,id', new FacultyDepartmentsExistsRule($this->faculty)],
-            'faculty' => 'required|exists:faculties,id',
-        ] : []));
+        ] + $this->getUserTypeRules();
     }
 
-    public function messages()
+
+
+    private function getUserTypeRules()
     {
-        return [
-            'email.regex' => 'invalid email format must be like this xxx@xxx.edu.eg',
-        ];
+        if ($this->type == UserType::COMPANY) {
+            return [
+                'email' => 'required|email|unique:users|max:255',
+                'fax' => 'required|unique:App\CompanyProfile|max:15|min:11',
+                'description' => 'required|max:255',
+                'website' => 'required|unique:company_profiles|max:255|url'
+            ];
+        } else if ($this->type == UserType::STUDENT) {
+            return [
+                'email' => ['required', 'unique:users', 'max:255', new EducationEmail()],
+                'birthdate' => 'required|date|before:today',
+                'year' => 'required|lte:7|gt:0',
+                'departments' => 'required|array|max:3',
+                'departments.*' => ['required', 'exists:departments,id', 'distinct', new FacultyDepartmentsExistsRule($this->faculty)],
+                'faculty' => 'required|exists:faculties,id',
+            ];
+        }
     }
 }

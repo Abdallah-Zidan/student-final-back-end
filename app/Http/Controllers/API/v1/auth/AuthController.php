@@ -39,8 +39,8 @@ class AuthController extends Controller
     private function getTokenExpirationTime(NewAccessToken $token)
     {
         return Carbon::parse($token->accessToken->create_at)
-                    ->addMinutes(config('sanctum.expiration'))
-                    ->toDateTimeString();
+            ->addMinutes(config('sanctum.expiration'))
+            ->toDateTimeString();
     }
 
     public function register(RegisterRequest $request)
@@ -61,8 +61,11 @@ class AuthController extends Controller
             'avatar' => 'images/users/' . ($request->gender == UserGender::MALE ? 'default_male.png' : 'default_female.png'),
         ]);
 
-        $department_facultites = DepartmentFaculty::whereIn('department_id', $request->departments)->where('faculty_id', $request->faculty)->get();
-        $user->departmentFaculties()->attach($department_facultites);
+        if ($request->type == UserType::STUDENT) // student
+        {
+            $department_facultites = DepartmentFaculty::whereIn('department_id', $request->departments)->where('faculty_id', $request->faculty)->get();
+            $user->departmentFaculties()->attach($department_facultites);
+        }
 
         $token = $user->createToken($request->device_name);
         $response_data['data']['token']['access_token'] = $token->plainTextToken;

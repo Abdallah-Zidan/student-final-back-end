@@ -7,21 +7,35 @@ use App\Http\Resources\CommentCollection;
 
 class CommentRepository
 {
+
+    /**
+     * Get all Post Comments
+     *
+     * @param  $parent
+     * @return CommentResource::collection
+     */
+    public function getAll($parent)
+    {
+        $comments = $parent->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
+        return new CommentCollection($comments);
+    }
+
     /**
      * Create new comment
      *
      * @param  int $user_id
-     * @param  $parent
+     * @param  $parent post event tool question
      * @param string $body
      * @return respose
      */
-    public function create(int $user_id, $parent, string $body)
+    public function create($parent, array $data)
     {
-        $comment = $parent->comments()->create([
-            'body' => $body,
-            'user_id' => $user_id
-        ]);
-        return response(['data' => ['reply' => ['id' => $comment->id]]], 201);
+        $comment = $parent->comments()->create(
+            $data + [
+                'user_id' => request()->user()->id
+            ]
+        );
+        return $comment;
     }
 
     /**
@@ -31,10 +45,9 @@ class CommentRepository
      * @param string $body
      * @return response
      */
-    public function update(Comment $comment,  string $body)
+    public function update($comment, array $data)
     {
-        $comment->update(['body' => $body]);
-        return response([], 204);
+        return $comment->update($data);
     }
 
     /**
@@ -45,19 +58,6 @@ class CommentRepository
      */
     public function delete(Comment $comment)
     {
-        $comment->delete();
-        return response([], 204);
-    }
-
-    /**
-     * Get all Post Comments
-     *
-     * @param  $parent
-     * @return CommentResource::collection
-     */
-    public function getAllComments($parent)
-    {
-        $comments = $parent->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
-        return new CommentCollection($comments);
+        return $comment->delete();
     }
 }

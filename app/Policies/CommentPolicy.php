@@ -16,9 +16,9 @@ class CommentPolicy
      * @param  \App\User  $user
      * @return mixed
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user, $parent)
     {
-        //
+        return $user->can('view', $parent);
     }
 
     /**
@@ -39,9 +39,9 @@ class CommentPolicy
      * @param  \App\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, $parent)
     {
-        //
+        return $user->can('view', $parent);
     }
 
     /**
@@ -51,11 +51,13 @@ class CommentPolicy
      * @param  \App\Comment  $comment
      * @return mixed
      */
-    public function update(User $user, Comment $comment, $parent)
+    public function update(User $user, Comment $comment)
     {
-        // dd("ds");
-        return $comment->parent->id === $parent->id     //this comment belongs to this post
-            &&  $user->id  === $comment->user_id;       // this user is the comment owner
+        if ($comment->parent instanceof Comment) // reply only
+        {
+            return $user->can('view', $comment->parent->parent) && $user->id  === $comment->user_id;
+        }
+        return  $user->can('view', [$comment->parent]) && $user->id  === $comment->user_id;       // this user is the comment owner
     }
 
     /**
@@ -67,9 +69,13 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment, $parent)
     {
-        return $comment->parent->id === $parent->id     //this comment belongs to this post
-            && ( $user->id === $parent->user_id         // this user is the post owner
-                || $user->id  === $comment->user_id );  //this user is the comment owner
+        if ($parent instanceof Comment) // reply only
+        {
+            return $user->can('view', $parent->parent) && $user->id  === $comment->user_id;
+        }
+        return $user->can('viewAny', $parent) &&
+            ($user->id === $parent->user_id         // this user is the post owner
+                || $user->id  === $comment->user_id);  //this user is the comment owner
     }
 
     /**

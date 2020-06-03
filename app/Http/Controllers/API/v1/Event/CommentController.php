@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\v1\Event;
 
 use App\Event;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\CommentRequest;
 use App\Http\Resources\CommentCollection;
 use App\Http\Resources\CommentResource;
 use App\Repositories\CommentRepository;

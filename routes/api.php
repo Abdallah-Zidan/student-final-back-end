@@ -15,75 +15,45 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 	Route::group(['namespace' => 'Auth'], function () {
-		Route::post('/login', 'AuthController@login');
-		Route::post('/register', 'AuthController@register');
-		Route::post('/logout', 'AuthController@logout')->middleware('auth:sanctum');
-		Route::get('/email/resend', 'VerificationController@resend')->name('verification.resend');
-		Route::get('/email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
+		Route::post('login', 'AuthController@login')->name('login');
+		Route::post('register', 'AuthController@register')->name('register');
+		Route::post('logout', 'AuthController@logout')->name('logout')->middleware(['auth:sanctum', 'verified']);
+		Route::get('email/resend', 'VerificationController@resend')->name('verification.resend');
+		Route::get('email/verify/{id}/{hash}', 'VerificationController@verify')->name('verification.verify');
 	});
 
 	Route::get('universities', 'UniversityController@index')->name('university.index');
 
-	Route::group(['prefix' => 'user', 'namespace' => 'User', 'middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::get('profile', 'ProfileController@show')->name('user.profile.show');
-		Route::put('profile', 'ProfileController@update')->name('user.profile.update');
-		Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
-	});
-
-	$groups = function () {
-		Route::group(['namespace' => 'Post'], function () {
-			Route::resource('posts', 'PostController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+	Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
+		Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
+			Route::get('profile', 'ProfileController@show')->name('user.profile.show');
+			Route::put('profile', 'ProfileController@update')->name('user.profile.update');
+			Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
 		});
-		Route::group(['namespace' => 'Event'], function () {
-			Route::resource('events', 'EventController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		});
-	};
 
-	Route::group(['prefix' => 'departments/{department_faculty}', 'middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::group(['namespace' => 'Post'], function () {
-			Route::resource('posts', 'PostController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('posts.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		});
-	});
-	Route::group(['prefix' => 'faculties/{faculty}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
-	Route::group(['prefix' => 'universities/{university}', 'middleware' => ['auth:sanctum', 'verified']], $groups);
-	Route::group(['prefix' => 'all/{empty?}', 'middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::group(['namespace' => 'Event'], function () {
-			Route::resource('events', 'EventController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-			Route::resource('events.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		});
-	});
+		$methods = ['index', 'store', 'show', 'update', 'destroy'];
 
-	Route::group(['namespace' => 'Tool'], function () {
-		Route::resource('needs', 'ToolController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('needs.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('needs.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('needs.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
+		Route::resource('courses', 'CourseController')->only($methods);
+		Route::resource('tutorials', 'TutorialController')->only($methods);
+		Route::resource('posts', 'PostController')->only($methods);
+		Route::post('posts/report', 'PostController@report')->name('posts.report');
+		Route::resource('events', 'EventController')->only($methods);
+		Route::resource('questions', 'QuestionController')->only($methods);
+		Route::resource('tools', 'ToolController')->only($methods);
 
-		Route::resource('offers', 'ToolController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('offers.files', 'FileController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('offers.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('offers.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
-	});
-	
-	Route::group(['namespace' => 'Question', 'middleware' => ['auth:sanctum', 'verified']], function () {
-		Route::resource('questions', 'QuestionController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::get('/questions/tagged/{tags}', 'QuestionController@index')->where('tags', '.*');
-		Route::resource('questions.comments', 'CommentController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('questions.comments.replies', 'ReplyController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::resource('tags', 'TagController')->only(['index', 'store', 'show', 'update', 'destroy']);
-		Route::post('/comments/{comment}/rates','RateController@store');
-		Route::put('/comments/{comment}/rates','RateController@update');
-		Route::delete('/comments/{comment}/rates','RateController@destroy');
+		Route::resource('posts.files', 'FileController')->only($methods);
+		Route::resource('events.files', 'FileController')->only($methods);
+		Route::resource('tools.files', 'FileController')->only($methods);
+
+		Route::resource('posts.comments', 'CommentController')->only($methods);
+		Route::resource('events.comments', 'CommentController')->only($methods);
+		Route::resource('questions.comments', 'CommentController')->only($methods);
+		Route::resource('tools.comments', 'CommentController')->only($methods);
+
+		Route::resource('comments.replies', 'ReplyController')->only($methods);
+
+		Route::post('/comments/{comment}/rates', 'RateController@store')->name('rate.store');
+		Route::put('/comments/{comment}/rates', 'RateController@update')->name('rate.update');
+		Route::delete('/comments/{comment}/rates', 'RateController@destroy')->name('rate.destroy');
 	});
 });

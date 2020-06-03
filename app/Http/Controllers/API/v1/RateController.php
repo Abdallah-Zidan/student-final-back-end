@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Question;
+namespace App\Http\Controllers\API\v1;
 
 use App\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RateRequest;
+use App\Question;
 use App\Repositories\RateRepository;
 use App\User;
 use Illuminate\Http\Request;
@@ -26,7 +27,11 @@ class RateController extends Controller
      */
     public function store(RateRequest $request, Comment $comment)
     {
-        $this->repo->create($comment, $request->rate, $request->user());
+        if ($comment->parent instanceof Question) {
+            $this->repo->create($comment, $request->only('rate'));
+            return response([], 201);
+        }
+        return response([], 403);
     }
 
     /**
@@ -38,7 +43,11 @@ class RateController extends Controller
      */
     public function update(RateRequest $request, Comment $comment)
     {
-        $this->repo->update($comment, $request->rate, $request->user());
+        if ($comment->parent instanceof Question) {
+            if ($this->repo->update($comment, $request->only('rate')))
+                return response([], 204);
+        }
+        return response([], 403);
     }
 
     /**
@@ -50,6 +59,10 @@ class RateController extends Controller
      */
     public function destroy(Request $request, Comment $comment)
     {
-        $this->repo->delete($comment, $request->user());
+        if ($comment->parent instanceof Question) {
+            $this->repo->delete($comment);
+            return response([], 204);
+        }
+        return response([], 403);
     }
 }

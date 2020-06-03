@@ -25,9 +25,9 @@ class CommentResource extends JsonResource
 				]
 			]),
 			'replies' => CommentResource::collection($this->whenLoaded('replies')),
-			$this->mergeWhen($this->whenLoaded('rate'), [
-				'rate_sum' => $this->rates()->sum('rate'),
-				"is_rated" =>  $this->is_rated()
+			$this->mergeWhen($this->whenLoaded('rates'), [
+				'rates' => $this->rates()->sum('rate'),
+				"rated" =>  $this->is_rated()
 			]),
 			'created_at' => $this->created_at,
 			'created_at_human' => $this->created_at->diffForHumans()

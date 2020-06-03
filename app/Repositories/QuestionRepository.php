@@ -20,27 +20,27 @@ class QuestionRepository
 		if ($tags) {
 			return new QuestionCollection($this->filter($tags));
 		}
-		return new QuestionCollection(Question::paginate(20));
+		return new QuestionCollection(Question::paginate(10));
 	}
 
 	private function filter($tags)
 	{
-		$tags = explode(" ", $tags);
+		$tags = array_filter(array_map('trim', explode(",", $tags)));
 		$tags_ids = Tag::whereIn('name', $tags)->get()->pluck('id');
 		$questions_ids = DB::table('question_tags')->whereIn('tag_id', $tags_ids)->get()->pluck('question_id');
 		$questions = Question::whereIn('id', $questions_ids)->with(['tags'])
-			->orderBy('created_at', 'desc')->paginate(20);
+			->orderBy('created_at', 'desc')->paginate(10);
 		return $questions;
 	}
 
-	public function create($title, $body, $tag_names, $user_id)
+	public function create($data)
 	{
-		$question = Question::create(['title' => $title, 'body' => $body, 'user_id' => $user_id]);
-		$this->attachTags($question, $tag_names);
+		$question = Question::create(['title' => $data['title'], 'body' => $data['body'], 'user_id' => request()->user()->id]);
+		$this->attachTags($question, $data['tags']);
 		return $question;
 	}
 
-	private function attachTags($question, $tag_names) 
+	private function attachTags($question, $tag_names)
 	{
 		$db_tags = Tag::whereIn('name', $tag_names);
 		$db_tag_names = $db_tags->pluck('name')->toArray();
@@ -56,10 +56,10 @@ class QuestionRepository
 		$question->tags()->sync($db_tag_ids);
 	}
 
-	public function update(Question $question, $title, $body, $tag_names)
+	public function update(Question $question, $data)
 	{
-		$question->update(['title' => $title, 'body' => $body]);
-		$this->attachTags($question, $tag_names);
+		$question->update(['title' => $data['title'], 'body' => $data['body']]);
+		$this->attachTags($question, $data['tags']);
 		return $question;
 	}
 

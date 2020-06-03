@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\v1\Question;
+namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionRequest;
@@ -21,6 +21,7 @@ class QuestionController extends Controller
     {
         $this->repo = $repo;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,7 +32,6 @@ class QuestionController extends Controller
         return $this->repo->getAll($request->tags);
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -40,12 +40,13 @@ class QuestionController extends Controller
      */
     public function store(QuestionRequest $request)
     {
-
-        $question = $this->repo->create($request->title, $request->body, $request->tags, $request->user()->id);
+        $question = $this->repo->create($request->only(['title', 'body', 'tags']));
         return response([
             'data' => [
-                'question' => $question->id,
-                'tags' => TagResource::collection( $question->tags)
+                'question' => [
+                    'id' => $question->id
+                ],
+                'tags' => TagResource::collection($question->tags)
             ]
         ], 201);
     }
@@ -70,12 +71,15 @@ class QuestionController extends Controller
      */
     public function update(QuestionRequest $request, Question $question)
     {
-        $question = $this->repo->update($question, $request->title, $request->body, $request->tags);
-        return response([
-            'data' => [
-                'tags' => TagResource::collection( $question->tags)
-            ]
-        ], 201);
+        if (request()->user()->can('update', $question)) {
+            $question = $this->repo->update($question, $request->only(['title', 'body', 'tags']));
+            return response([
+                'data' => [
+                    'tags' => TagResource::collection($question->tags)
+                ]
+            ], 201);
+        }
+        return response([], 403);
     }
 
     /**
@@ -86,7 +90,10 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        $this->delete($question);
-        return response([], 204);
+        if (request()->user()->can('delete', $question)) {
+            $this->repo->delete($question);
+            return response([], 204);
+        }
+        return response([], 403);
     }
 }

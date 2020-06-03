@@ -3,61 +3,62 @@
 namespace App\Repositories;
 
 use App\Comment;
-use App\Http\Resources\CommentResource;
+use App\Http\Resources\CommentCollection;
+use App\Http\Resources\ReplyCollection;
 
-class ReplyRepository
+class ReplyRepository 
 {
+
     /**
-     * Create new comment
+     * Get all  replies
+     *
+     * @param Comment $comment
+     * @return CommentCollection
+     */
+    public function getAll($comment)
+    {
+        $replies = $comment->replies()->with(['user'])->paginate(10);
+        return new ReplyCollection($replies);
+    }
+
+    /**
+     * Create new reply
      *
      * @param  int $user_id
      * @param int $comment_id
      * @param string $body
-     * @return respose
+     * @return resposne
      */
-    public function create($user_id, $comment, string $body)
+    public function create(Comment $comment, array $data)
     {
-        $comment->replies()->create([
-            'body' => $body,
-            'user_id' => $user_id
-        ]);
-        return response(['data' => ['replay' => ['id' => $comment->id]]], 201);
+        $reply = $comment->replies()->create(
+            $data + [
+                'user_id' => request()->user()->id
+            ]
+        );
+        return $reply;
     }
 
     /**
-     * Update Reply
+     * Update Comment
      *
-     * @param Comment  $reply
+     * @param Comment  $comment
      * @param string $body
      * @return response
      */
-    public function update($reply, string $body)
+    public function update($reply, array $data)
     {
-        $reply->update(['body' => $body]);
-        return response([], 204);
+        return $reply->update($data);
     }
 
     /**
-     * Delete Romment
+     * Delete re$reply
      *
-     * @param int $reply_id
+     * @param Comment $reply
      * @return response
      */
-    public function delete($reply)
+    public function delete(Comment $reply)
     {
-        $reply->delete();
-        return response([], 204);
-    }
-
-    /**
-     * Get all Post Comments
-     *
-     * @param Comment $comment
-     * @return CommentResource::collection
-     */
-    public function getAllCommentReplies($comment)
-    {
-        $replies = $comment->replies()->with(['user'])->paginate(5);
-        return CommentResource::collection($replies);
+        return $reply->delete();
     }
 }

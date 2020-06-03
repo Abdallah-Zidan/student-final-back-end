@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\v1\Question;
 
 use App\Comment;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreCommentRequest;
+use App\Http\Requests\CommentRequest;
 use App\Question;
 use App\Repositories\CommentRepository;
 use Illuminate\Http\Request;
