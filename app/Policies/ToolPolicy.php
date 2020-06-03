@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\UserType;
+use App\Faculty;
 use App\Tool;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -15,14 +16,21 @@ class ToolPolicy
 	 * Determine whether the user can view any models.
 	 *
 	 * @param \App\User $user
+	 * @param \App\Faculty $faculty The *Faculty* object.
 	 *
 	 * @return bool
 	 */
-	public function viewAny(User $user)
+	public function viewAny(User $user, Faculty $faculty)
 	{
-		if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
-			$user->type === UserType::getTypeString(UserType::MODERATOR) ||
-			$user->type === UserType::getTypeString(UserType::ADMIN))
+		if ($user->type === UserType::getTypeString(UserType::STUDENT))
+		{
+			if ($user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($faculty) {
+				return $department_faculty->faculty->id == $faculty->id;
+			}))
+				return true;
+		}
+		else if($user->type === UserType::getTypeString(UserType::MODERATOR) ||
+				$user->type === UserType::getTypeString(UserType::ADMIN))
 			return true;
 
 		return false;
@@ -38,7 +46,7 @@ class ToolPolicy
 	 */
 	public function view(User $user, Tool $tool)
 	{
-		return $user->can('viewAny', Tool::class);
+		return $user->can('viewAny', [Tool::class, $tool->faculty]);
 	}
 
 	/**
@@ -48,10 +56,16 @@ class ToolPolicy
 	 *
 	 * @return bool
 	 */
-	public function create(User $user)
+	public function create(User $user, Faculty $faculty)
 	{
-		if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
-			$user->type === UserType::getTypeString(UserType::ADMIN))
+		if ($user->type === UserType::getTypeString(UserType::STUDENT))
+		{
+			if ($user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($faculty) {
+				return $department_faculty->faculty->id == $faculty->id;
+			}))
+				return true;
+		}
+		else if ($user->type === UserType::getTypeString(UserType::ADMIN))
 			return true;
 
 		return false;

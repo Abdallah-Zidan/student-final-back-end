@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\EventScope;
 use App\Enums\UserType;
 use App\Event;
 use App\Faculty;
@@ -77,13 +78,15 @@ class EventPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Event $event
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
 	 *
 	 * @return bool
 	 */
-	public function view(User $user, Event $event, $group)
+	public function view(User $user, Event $event)
 	{
-		return $user->can('viewAny', [Event::class, $group]);
+		if ($event->scope === EventScope::getScopeString(EventScope::ALL))
+			return $user->can('viewAny', [Event::class, null]);
+
+		return $user->can('viewAny', [Event::class, $event->scopeable]);
 	}
 
 	/**
@@ -150,11 +153,10 @@ class EventPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Event $event
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
 	 *
 	 * @return bool
 	 */
-	public function update(User $user, Event $event, $group)
+	public function update(User $user, Event $event)
 	{
 		return $event->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
@@ -165,18 +167,26 @@ class EventPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Event $event
-	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
 	 *
 	 * @return bool
 	 */
-	public function delete(User $user, Event $event, $group)
+	public function delete(User $user, Event $event)
 	{
 		if ($event->user->id === $user->id ||
 			$user->type === UserType::getTypeString(UserType::ADMIN))
 			return true;
 		else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 		{
-			if ($group instanceof Faculty)
+			$group = is_null($event->scope) ? null : $event->scopeable;
+
+			if (is_null($group))
+			{
+				if ($event->user->departmentFaculties->load('faculty')->first(function ($department_faculty) use ($user) {
+					return $department_faculty->faculty->id == $user->profileable->faculty->id;
+				}))
+					return true;
+			}
+			else if ($group instanceof Faculty)
 			{
 				if ($user->profileable->faculty->id === $group->id)
 					return true;

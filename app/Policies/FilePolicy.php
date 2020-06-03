@@ -16,16 +16,16 @@ class FilePolicy
 	 * Determine whether the user can view any models.
 	 *
 	 * @param \App\User $user
-	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function viewAny(User $user, $resource)
+	public function viewAny(User $user, $parent)
 	{
-		if ($resource instanceof Tool)
-			return $user->can('viewAny', Tool::class);
+		if ($parent instanceof Tool)
+			return $user->can('viewAny', [Tool::class, $parent->faculty]);
 
-		return $user->can('viewAny', [get_class($resource), $resource->scopeable]);
+		return $user->can('viewAny', [get_class($parent), $parent->scopeable]);
 	}
 
 	/**
@@ -33,26 +33,26 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function view(User $user, File $file, $resource)
+	public function view(User $user, File $file, $parent)
 	{
-		return $user->can('viewAny', [File::class, $resource]);
+		return $user->can('viewAny', [File::class, $parent]);
 	}
 
 	/**
 	 * Determine whether the user can create models.
 	 *
 	 * @param \App\User $user
-	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function create(User $user, $resource)
+	public function create(User $user, $parent)
 	{
-		return $resource->user->id === $user->id ||
+		return $parent->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
 	}
 
@@ -61,13 +61,13 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function update(User $user, File $file, $resource)
+	public function update(User $user, File $file, $parent)
 	{
-		return $resource->user->id === $user->id ||
+		return $parent->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
 	}
 
@@ -76,15 +76,15 @@ class FilePolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\File $file
-	 * @param mixed $resource The *Post* / *Event* / *Tool* object.
+	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 *
 	 * @return bool
 	 */
-	public function delete(User $user, File $file, $resource)
+	public function delete(User $user, File $file, $parent)
 	{
-		if ($resource instanceof Tool)
-			return $user->can('delete', $resource);
+		if ($parent instanceof Tool)
+			return $user->can('delete', $parent);
 
-		return $user->can('delete', [$resource, $resource->scopeable]);
+		return $user->can('delete', [$parent, $parent->scopeable]);
 	}
 }

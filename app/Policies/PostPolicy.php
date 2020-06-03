@@ -76,13 +76,12 @@ class PostPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Post $post
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 *
 	 * @return bool
 	 */
-	public function view(User $user, Post $post, $group)
+	public function view(User $user, Post $post)
 	{
-		return $user->can('viewAny', [Post::class, $group]);
+		return $user->can('viewAny', [Post::class, $post->scopeable]);
 	}
 
 	/**
@@ -142,11 +141,10 @@ class PostPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Post $post
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 *
 	 * @return bool
 	 */
-	public function update(User $user, Post $post, $group)
+	public function update(User $user, Post $post)
 	{
 		return $post->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
@@ -157,17 +155,18 @@ class PostPolicy
 	 *
 	 * @param \App\User $user
 	 * @param \App\Post $post
-	 * @param mixed $group The *DepartmentFaculty* / *Faculty* / *University* object.
 	 *
 	 * @return bool
 	 */
-	public function delete(User $user, Post $post, $group)
+	public function delete(User $user, Post $post)
 	{
 		if ($post->user->id === $user->id ||
 			$user->type === UserType::getTypeString(UserType::ADMIN))
 			return true;
 		else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 		{
+			$group = $post->scopeable;
+
 			if ($group instanceof DepartmentFaculty)
 			{
 				if (DepartmentFaculty::where('faculty_id', $user->profileable->faculty->id)->find($group->id))
@@ -186,5 +185,18 @@ class PostPolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine whether the user can report the model.
+	 *
+	 * @param \App\User $user
+	 * @param \App\Post $post
+	 *
+	 * @return bool
+	 */
+	public function report(User $user, Post $post)
+	{
+		return $user->can('view', $post);
 	}
 }
