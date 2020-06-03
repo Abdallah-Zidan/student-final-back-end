@@ -52,8 +52,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 		Route::resource('comments.replies', 'ReplyController')->only($methods);
 
-		Route::post('/comments/{comment}/rates', 'RateController@store')->name('rate.store');
-		Route::put('/comments/{comment}/rates', 'RateController@update')->name('rate.update');
-		Route::delete('/comments/{comment}/rates', 'RateController@destroy')->name('rate.destroy');
+		Route::post('/comments/{comment}/rates', 'RateController@store')->name('rates.store');
+		Route::put('/comments/{comment}/rates', 'RateController@update')->name('rates.update');
+		Route::delete('/comments/{comment}/rates', 'RateController@destroy')->name('rates.destroy');
+
+		Route::get('/tags','TagController@index')->name('tags.index');
+
 	});
 });
