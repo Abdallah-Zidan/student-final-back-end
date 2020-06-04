@@ -10,7 +10,7 @@ $factory->define(Tool::class, function (Faker $faker) {
 	return [
 		'title' => $faker->sentence,
 		'body' => $faker->sentences(3, true),
-		'type' => $faker->randomElement([ToolType::NEED, ToolType::OFFER]),
+		'type' => $faker->randomElement([ToolType::NEED, ToolType::OFFER, ToolType::LIVING, ToolType::CAR]),
 		'closed' => $faker->boolean,
 		'faculty_id' => 0,
 		'user_id' => 0
