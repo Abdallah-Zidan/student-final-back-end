@@ -10,29 +10,32 @@ class RateRepository
     /**
      * Create a rate related to the given user and comment.
      *
-     * @param \App\User $user The user object.
      * @param \App\Comment $comment The comment object.
      * @param array $data The rate data.
      *
      * @return void
      */
-    public function create(User $user, Comment $comment, $data)
+    public function create(Comment $comment, array $data)
     {
-        $comment->rates()->attach($user, $data);
+        $comment->rates()->attach(request()->user(), $data);
     }
 
     /**
      * Update an existing rate.
      *
-     * @param mixed $rate The rate object.
+     * @param Comment $comment 
      * @param array $data The rate data.
      *
      * @return void
      */
-    public function update($rate, array $data)
+    public function update(Comment $comment, array $data)
     {
-        $rate->pivot->rate = $data['rate'];
-        $rate->pivot->save();
+        if ($rate_obj = $comment->rates()->find(request()->user()->id)) 
+        {
+            $rate_obj->pivot->rate = $data['rate'];
+            $rate_obj->pivot->save();
+            return $rate_obj->pivot;
+        }
     }
 
     /**
@@ -43,8 +46,8 @@ class RateRepository
      *
      * @return void
      */
-    public function delete(User $user, Comment $comment)
+    public function delete(Comment $comment)
     {
-        $comment->rates()->detach($user);
+        $comment->rates()->detach(request()->user());
     }
 }

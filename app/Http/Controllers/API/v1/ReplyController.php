@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CommentRequest;
 use App\Http\Resources\ReplyCollection;
 use App\Http\Resources\ReplyResource;
+use App\Post;
 use App\Repositories\ReplyRepository;
 use Illuminate\Http\Request;
 
@@ -29,6 +30,7 @@ class ReplyController extends Controller
         $this->repo = $repo;
     }
 
+
     /**
      * Get all replies of a comment.
      *
@@ -42,10 +44,8 @@ class ReplyController extends Controller
         if ($request->user()->can('viewAny', [Comment::class, $comment]))
         {
             $replies = $this->repo->getAll($comment);
-
             return new ReplyCollection($replies);
         }
-
         return response([], 403);
     }
 
@@ -59,12 +59,11 @@ class ReplyController extends Controller
      */
     public function store(CommentRequest $request, Comment $comment)
     {
-        $user = $request->user();
-
-        if ($user->can('create', [Comment::class, $comment]))
-        {
-            $reply = $this->repo->create($user, $comment, $request->only(['body']));
-
+        if ($request->user()->can('create', [Comment::class, $comment])) {
+            $reply = $this->repo->create(
+                $comment,
+                $request->only(['body'])
+            );
             return response([
                 'data' => [
                     'reply' => [
@@ -73,10 +72,8 @@ class ReplyController extends Controller
                 ]
             ], 201);
         }
-
         return response([], 403);
     }
-
     /**
      * Show a reply.
      *
@@ -116,14 +113,11 @@ class ReplyController extends Controller
     public function update(CommentRequest $request, Comment $comment, int $reply)
     {
         $reply = $comment->replies()->findOrFail($reply);
-
-        if ($request->user()->can('update', $reply))
+        if ($request->user()->can('update', $reply)) 
         {
-            $this->repo->update($reply, $request->only(['body']));
-
-            return response([], 204);
+            if ($this->repo->update($reply, $request->only(['body'])))
+                return response([], 204);
         }
-
         return response([], 403);
     }
 
@@ -136,17 +130,14 @@ class ReplyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, Comment $comment, int $reply)
+    public function destroy(Request $request, Comment $comment,  $reply)
     {
         $reply = $comment->replies()->findOrFail($reply);
-
         if ($request->user()->can('delete', $reply))
-        {
-            $this->repo->delete($reply);
-
+        { 
+            if ($this->repo->delete($reply))
             return response([], 204);
         }
-
         return response([], 403);
     }
 }

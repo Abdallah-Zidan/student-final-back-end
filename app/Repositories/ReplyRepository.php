@@ -22,16 +22,15 @@ class ReplyRepository
     /**
      * Create a reply related to the given comment
      *
-     * @param \App\User $user The user object.
      * @param \App\Comment $comment The comment object.
      * @param array $data The reply data.
      *
      * @return \App\Comment
      */
-    public function create(User $user, Comment $comment, array $data)
+    public function create(Comment $comment, array $data)
     {
         return $comment->replies()->create($data + [
-            'user_id' => $user->id
+            'user_id' => request()->user()->id
         ]);
     }
 
@@ -49,11 +48,10 @@ class ReplyRepository
     }
 
     /**
-     * Delete an existing reply.
+     * Delete re$reply
      *
-     * @param \App\Comment $reply The reply object.
-     *
-     * @return void
+     * @param Comment $reply
+     * @return response
      */
     public function delete(Comment $reply)
     {

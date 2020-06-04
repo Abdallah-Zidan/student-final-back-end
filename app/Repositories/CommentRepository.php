@@ -46,10 +46,10 @@ class CommentRepository
      *
      * @return \App\Comment
      */
-    public function create(User $user, $parent, array $data)
+    public function create($parent, array $data)
     {
         return $parent->comments()->create($data + [
-            'user_id' => $user->id
+            'user_id' => request()->user()->id
         ]);
     }
 

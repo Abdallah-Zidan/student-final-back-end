@@ -27,7 +27,7 @@ class QuestionResource extends JsonResource
             ]),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
             'comments' => CommentResource::collection($this->whenLoaded('comments')),
-            'created_at' => $this->created_at,
+            'created_at'=>$this->created_at,
             'created_at_human' => $this->created_at->diffForHumans()
         ];
     }

@@ -26,13 +26,13 @@ class CommentResource extends JsonResource
 				]
 			]),
 			'replies' => CommentResource::collection($this->whenLoaded('replies')),
-			'rates' => $this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->rates()->sum('rate'),
-			'rated' => $this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->isRated(),
+			$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->rates()->sum('rate'),
+			$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->isRated(),
 			'created_at' => $this->created_at,
 			'created_at_human' => $this->created_at->diffForHumans()
 		];
 	}
-
+	
 	/**
 	 * Comment is rated by the user before or not
 	 *
@@ -40,8 +40,7 @@ class CommentResource extends JsonResource
 	 */
 	private function isRated()
 	{
-		$rate = $this->rates()->find(request()->user()->id);
-
+		$rate = $this->rates()->find( Request()->user()->id);
 		return $rate ? $rate->pivot->rate : 0;
 	}
 }

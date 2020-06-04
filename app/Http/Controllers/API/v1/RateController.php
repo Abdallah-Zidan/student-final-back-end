@@ -36,15 +36,13 @@ class RateController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(RateRequest $request, Comment $comment)
+     public function store(RateRequest $request, Comment $comment)
     {
-        if ($comment->parent instanceof Question)
+        if ($comment->parent instanceof Question) 
         {
-            $this->repo->create($request->user(), $comment, $request->only('rate'));
-
+            $this->repo->create($comment, $request->only('rate'));
             return response([], 201);
         }
-
         return response([], 403);
     }
 
@@ -58,14 +56,11 @@ class RateController extends Controller
      */
     public function update(RateRequest $request, Comment $comment)
     {
-        if ($comment->parent instanceof Question)
+       if ($comment->parent instanceof Question) 
         {
-            $rate = $comment->rates()->findOrFail($request->user()->id);
-            $this->repo->update($rate, $request->only('rate'));
-
-            return response([], 204);
+            if ($this->repo->update($comment, $request->only('rate')))
+                return response([], 204);
         }
-
         return response([], 403);
     }
 
@@ -79,13 +74,11 @@ class RateController extends Controller
   */
     public function destroy(Request $request, Comment $comment)
     {
-        if ($comment->parent instanceof Question)
+        if ($comment->parent instanceof Question) 
         {
-            $this->repo->delete($request->user(), $comment);
-
+            $this->repo->delete($comment);
             return response([], 204);
         }
-
         return response([], 403);
     }
 }

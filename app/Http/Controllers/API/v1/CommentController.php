@@ -45,10 +45,8 @@ class CommentController extends Controller
         if ($request->user()->can('viewAny', [Comment::class, $parent]))
         {
             $comments = $this->repo->getAll($parent);
-
-            return new CommentCollection($comments);
+            return  new CommentCollection($comments);
         }
-
         return response([], 403);
     }
 
@@ -62,24 +60,23 @@ class CommentController extends Controller
      */
     public function store(CommentRequest $request, $parent)
     {
-        $user = $request->user();
-
-        if ($user->can('create', [Comment::class, $parent]))
+        if ($request->user()->can('create', [Comment::class, $parent]))
         {
-            $comment = $this->repo->create($user, $parent, $request->only(['body']));
-
+            $comment = $this->repo->create(
+                $parent,
+                $request->only(['body'])
+            );
             return response([
                 'data' => [
                     'comment' => [
                         'id' => $comment->id
-                    ]
+                        ]
                 ]
             ], 201);
         }
-
         return response([], 403);
     }
-
+    
     /**
      * Show a comment.
      *
@@ -91,30 +88,20 @@ class CommentController extends Controller
      */
     public function show(Request $request, $parent, int $comment)
     {
-        $comment = $parent->comments()->findOrFail($comment);
-
-        if ($request->user()->can('view', $comment))
+       $comment = $parent->comments()->findOrFail($comment);
+       if($request->user()->can('view', $comment))
         {
             $comment->load('user');
-
-            if ($comment->parent instanceof Post || $comment->parent instanceof Event)
+            if($parent instanceof Question)
             {
-                $comment->load([
-                    'replies',
-                    'replies.user'
-                ]);
-            }
-
-            if ($comment->parent instanceof Question)
                 $comment->load('rates');
-
-            return response([
-                'data' => [
-                    'comment' => new CommentResource($comment)
-                ]
-            ]);
+            }
+            else if($parent instanceof Post || $parent instanceof Event)
+            {
+                $comment->load(['replies','replies.user']);
+            }
+            return response(new CommentResource($comment));
         }
-
         return response([], 403);
     }
 
@@ -131,17 +118,15 @@ class CommentController extends Controller
     {
         $comment = $parent->comments()->findOrFail($comment);
 
-        if ($request->user()->can('update', $comment))
+        if ($request->user()->can('update', $comment)) 
         {
-            $this->repo->update($comment, $request->only(['body']));
-
-            return response([], 204);
+            if ($this->repo->update($comment,  $request->only(['body'])))
+                return response([], 204);
         }
-
         return response([], 403);
     }
-
-    /**
+    
+   /**
      * Destroy a comment.
      *
      * @param \Illuminate\Http\Request $request The request object.
@@ -156,11 +141,9 @@ class CommentController extends Controller
 
         if ($request->user()->can('delete', $comment))
         {
-            $this->repo->delete($comment);
-
-            return response([], 204);
+            if ($this->repo->delete($comment))
+                return response([], 204);
         }
-
         return response([], 403);
     }
 }

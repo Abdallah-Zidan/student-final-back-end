@@ -4,12 +4,11 @@ namespace App\Repositories;
 
 use App\Question;
 use App\Tag;
-use App\User;
 use Illuminate\Support\Facades\DB;
 
 class QuestionRepository
 {
-	/**
+		/**
 	 * The tag repository object.
 	 *
 	 * @var \App\Repositories\TagRepository
@@ -25,20 +24,47 @@ class QuestionRepository
 	{
 		$this->repo = $repo;
 	}
-
+	
 	/**
-	 * Get all tags.
+	 * Get all Questions.
 	 *
 	 * @param array $tags The tags array.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(array $tags)
+	public function getAll(array $tags = [])
 	{
-		if (count($tags) > 0)
-			return $this->getAllWithTags($tags);
-		else
-			return $this->getAllWithoutTags();
+		$tags = array_filter(array_map('trim', explode(",", $tags)));
+
+		if (count($tags)) {
+			return $this->filter($tags);
+		}
+
+		return Question::with([
+			'user',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'tags',
+		])->orderBy('created_at' , 'desc')->paginate(10);
+	}
+
+	/**
+	 * Fillter Questions with tags
+	 *
+	 * @param array $tags
+	 * @return Question $question
+	 */
+	private function filter(array $tags)
+	{
+		$tags_ids = Tag::whereIn('name', $tags)->get()->pluck('id');
+		$questions_ids = DB::table('question_tags')->whereIn('tag_id', $tags_ids)->get()->pluck('question_id');
+		$questions = Question::whereIn('id', $questions_ids)->with([
+			'user',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'tags'
+		])->orderBy('created_at', 'desc')->paginate(10);
+		return $questions;
 	}
 
 	/**
@@ -49,35 +75,38 @@ class QuestionRepository
 	 *
 	 * @return \App\Question
 	 */
-	public function create(User $user, array $data)
+	public function create(array $data)
 	{
-		$question = Question::create($data + [
-			'user_id' => $user->id
-		]);
+		$question = Question::create(['title' => $data['title'], 'body' => $data['body'], 'user_id' => request()->user()->id]);
+		$this->attachTags($question, $data['tags']);
+		return $question;
+	}
 
-		if (count($data['tags']) > 0)
+	/**
+	 * Attach tags with Questions
+	 *
+	 * @param Question $question
+	 * @param array $tag_names
+	 * @return void
+	 */
+	private function attachTags(Question $question, array $tag_names)
+	{
+		$tag_names = array_filter(array_map('trim', $tag_names));
+		$db_tags = Tag::whereIn('name', $tag_names);
+		$db_tag_names = $db_tags->pluck('name')->toArray();
+		$db_tag_ids = $db_tags->pluck('id')->toArray();
+		if (count($db_tag_names) != count($tag_names)) 
 		{
-			$tags = $data['tags'];
-			$db_tags = Tag::whereIn('name', $tags)->get();
-
-			if ($db_tags->count() < count($tags))
+			foreach ($tag_names as $tag_name) 
 			{
-				foreach ($tags as $tag)
+				if (!in_array($tag_name, $db_tag_names)) 
 				{
-					if (!$db_tags->contains('name', $tag))
-					{
-						$tag = $this->repo->create([
-							'name' => $tag
-						]);
-						$db_tags->push($tag);
-					}
+					$new_tag = $this->repo->create(['name',$tag_name]);
+					array_push($db_tag_ids, $new_tag->id);
 				}
 			}
-
-			$question->tags()->sync($db_tags->pluck('id'));
 		}
-
-		return $question;
+		$question->tags()->sync($db_tag_ids);
 	}
 
 	/**
@@ -86,29 +115,15 @@ class QuestionRepository
 	 * @param \App\Question $question The question object.
 	 * @param array $data The question data.
 	 *
-	 * @return void
+	 * @return Question
 	 */
 	public function update(Question $question, array $data)
 	{
-		$question->update($data);
-
-		$tags = $data['tags'];
-		$db_tags = Tag::whereIn('name', $tags)->get();
-
-		foreach ($tags as $tag)
-		{
-			if (!$db_tags->contains('name', $tag))
-			{
-				$tag = $this->repo->create([
-					'name' => $tag
-				]);
-				$db_tags->push($tag);
-			}
-		}
-
-		$question->tags()->sync($db_tags->pluck('id'));
+		$question->update(['title' => $data['title'], 'body' => $data['body']]);
+		$this->attachTags($question, $data['tags']);
+		return $question;
 	}
-
+	
 	/**
 	 * Delete an existing question.
 	 *
@@ -118,43 +133,7 @@ class QuestionRepository
 	 */
 	public function delete(Question $question)
 	{
+		$question->tags()->detach();
 		$question->delete();
-	}
-
-	/**
-	 * Get all questions related to tags.
-	 *
-	 * @param array $tags The tags array.
-	 *
-	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-	 */
-	private function getAllWithTags(array $tags)
-	{
-		$tags = Tag::whereIn('name', $tags)->get();
-		$question_tags = DB::table('question_tags')->whereIn('tag_id', $tags->pluck('id'))->get();
-
-		$questions = Question::with([
-			'user',
-			'comments' => function ($query) { $query->orderBy('created_at'); },
-			'comments.user',
-			'tags'
-		])->whereIn('id', $question_tags->pluck('question_id'))->orderBy('created_at', 'desc')->paginate(10);
-
-		return $questions;
-	}
-
-	/**
-	 * Get all questions.
-	 *
-	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-	 */
-	private function getAllWithoutTags()
-	{
-		return Question::with([
-			'user',
-			'comments' => function ($query) { $query->orderBy('created_at'); },
-			'comments.user',
-			'tags'
-		])->orderBy('created_at', 'desc')->paginate(10);
 	}
 }

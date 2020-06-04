@@ -20,9 +20,10 @@ class CommentPolicy
      */
     public function viewAny(User $user, $parent)
     {
-        if ($parent instanceof Comment) // Reply only
-            return $user->can('viewAny', $parent->parent);
-
+        if($parent instanceof Comment)
+        {
+            return $user->can('viewAny',$parent->parent);
+        }
         return $user->can('view', $parent);
     }
 
@@ -55,34 +56,34 @@ class CommentPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param \App\User $user
-     * @param \App\Comment $comment
-     *
-     * @return bool
+     * @param  \App\User  $user
+     * @param  \App\Comment  $comment
+     * @return mixed
      */
     public function update(User $user, Comment $comment)
     {
-        if ($comment->parent instanceof Comment) // Reply only
-            return $user->can('view', $comment->parent->parent) && $user->id === $comment->user->id;
-
-        return $user->can('view', $comment->parent) && $user->id === $comment->user->id; // This user is the comment owner
+        if ($comment->parent instanceof Comment) // reply only
+        {
+            return $user->can('view', $comment->parent->parent) && $user->id  === $comment->user_id;
+        }
+        return  $user->can('view', [$comment->parent]) && $user->id  === $comment->user_id; // This user is the comment owner
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @param \App\User $user
-     * @param \App\Comment $comment
-     *
-     * @return bool
+     * @param  \App\User  $user
+     * @param  \App\Comment  $comment
+     * @return mixed
      */
     public function delete(User $user, Comment $comment)
     {
         if ($comment->parent instanceof Comment) // Reply only
-            return $user->can('delete', $comment->parent->parent) && $user->id === $comment->user->id;
-
-        return $user->can('delete', $comment->parent) &&
-              ($user->id === $comment->parent->user->id || // This user is the post owner
-               $user->id === $comment->user->id); //This user is the comment owner
+        {
+            return $user->can('view', $comment->parent->parent) && $user->id  === $comment->user_id;
+        }
+        return $user->can('view', $comment->parent) &&
+            ($user->id === $comment->parent->user_id   // This user is the post owner
+                || $user->id  === $comment->user_id);  // This user is the comment owner
     }
 }
