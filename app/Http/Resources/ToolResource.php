@@ -19,6 +19,7 @@ class ToolResource extends JsonResource
 			'title' => $this->title,
 			'body' => $this->body,
 			'type' => $this->type,
+			'closed' => $this->closed,
 			$this->mergeWhen($this->whenLoaded('user'), [
 				'user' => [
 					'id' => $this->user->id,

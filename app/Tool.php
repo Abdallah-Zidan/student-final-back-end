@@ -13,7 +13,16 @@ class Tool extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'title', 'body', 'type', 'faculty_id', 'user_id'
+		'title', 'body', 'type', 'closed', 'faculty_id', 'user_id'
+	];
+
+	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'closed' => 'boolean'
 	];
 
 	/**
@@ -31,7 +40,7 @@ class Tool extends Model
 	}
 
 	/**
-	 * Get the tool's type as a StudlyCase.
+	 * Get the tool type as a StudlyCase.
 	 *
 	 * @param int $value the type value.
 	 *

@@ -66,7 +66,7 @@ class VerificationController extends Controller
         }
 
         if ($request->user()->hasVerifiedEmail()) {
-            return new Response('', 204);
+            return new Response([], 204);
 
         }
 
@@ -79,9 +79,9 @@ class VerificationController extends Controller
         }
 
          if($request->wantsJson()) {
-             return new Response('', 204);
+             return new Response([], 204);
          }
-        return response(['message'=>'Successfully verified']);
+        return response(['message' => 'Successfully verified']);
 
     }
 
@@ -102,7 +102,7 @@ class VerificationController extends Controller
     public function resend(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return new Response(['message'=>'Already verified'], 200);
+            return new Response(['message' => 'Already verified'], 200);
         }
 
         $request->user()->sendEmailVerificationNotification();
@@ -110,7 +110,7 @@ class VerificationController extends Controller
 
         if($request->wantsJson())
         {
-            return new Response('', 204);
+            return new Response([], 204);
         }
     }
 

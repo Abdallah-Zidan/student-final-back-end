@@ -15,9 +15,9 @@ class CompanyProfileResource extends JsonResource
     public function toArray($request)
     {
        return [
-                "fax"=>$this->fax,
-                "description"=>$this->description,
-                "website"=>$this->website
+            'fax' => $this->fax,
+            'description' => $this->description,
+            'website' => $this->website
        ];
     }
 }

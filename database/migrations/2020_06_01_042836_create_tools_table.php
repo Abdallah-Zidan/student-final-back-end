@@ -18,6 +18,7 @@ class CreateToolsTable extends Migration
 			$table->string('title');
 			$table->text('body');
 			$table->tinyInteger('type');
+			$table->boolean('closed')->default(false);
 			$table->unsignedBigInteger('faculty_id');
 			$table->unsignedBigInteger('user_id');
 			$table->timestamps();

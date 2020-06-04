@@ -12,6 +12,23 @@ use Illuminate\Support\Facades\Storage;
 class ToolRepository
 {
 	/**
+	 * The tag repository object.
+	 *
+	 * @var \App\Repositories\TagRepository
+	 */
+	private $repo;
+
+	/**
+	 * Create a new ToolRepository object.
+	 *
+	 * @param \App\Repositories\TagRepository $repo The tag repository object.
+	 */
+	public function __construct(TagRepository $repo)
+	{
+		$this->repo = $repo;
+	}
+
+	/**
 	 * Get all tools related to the *Faculty* group.
 	 *
 	 * @param \App\Faculty $faculty The faculty object.
@@ -34,16 +51,12 @@ class ToolRepository
 	 * @param \App\User $user The user object.
 	 * @param \App\Faculty $faculty The faculty object.
 	 * @param array $data The tool data.
-	 * @param array $tags The tags array.
 	 *
 	 * @return \App\Tool
 	 */
-	public function create(User $user, Faculty $faculty, array $data, array $tags)
+	public function create(User $user, Faculty $faculty, array $data)
 	{
-		$tool = $user->tools()->create([
-			'title' => $data['title'],
-			'body' => $data['body'],
-			'type' => $data['type'],
+		$tool = $user->tools()->create($data + [
 			'faculty_id' => $faculty->id
 		]);
 
@@ -60,8 +73,9 @@ class ToolRepository
 			}
 		}
 
-		if (count($tags) > 0)
+		if (count($data['tags']) > 0)
 		{
+			$tags = $data['tags'];
 			$db_tags = Tag::whereIn('name', $tags)->get();
 
 			if ($db_tags->count() < count($tags))
@@ -70,7 +84,7 @@ class ToolRepository
 				{
 					if (!$db_tags->contains('name', $tag))
 					{
-						$tag = Tag::create([
+						$tag = $this->repo->create([
 							'name' => $tag
 						]);
 						$db_tags->push($tag);
@@ -89,24 +103,21 @@ class ToolRepository
 	 *
 	 * @param \App\Tool $tool The tool object.
 	 * @param array $data The tool data.
-	 * @param array $tags The tags array.
 	 *
 	 * @return void
 	 */
-	public function update(Tool $tool, array $data, array $tags)
+	public function update(Tool $tool, array $data)
 	{
-		$tool->update([
-			'title' => $data['title'],
-			'body' => $data['body']
-		]);
+		$tool->update($data);
 
+		$tags = $data['tags'];
 		$db_tags = Tag::whereIn('name', $tags)->get();
 
 		foreach ($tags as $tag)
 		{
 			if (!$db_tags->contains('name', $tag))
 			{
-				$tag = Tag::create([
+				$tag = $this->repo->create([
 					'name' => $tag
 				]);
 				$db_tags->push($tag);
@@ -129,6 +140,20 @@ class ToolRepository
 	}
 
 	/**
+	 * Close an existing tool.
+	 *
+	 * @param \App\Tool $tool The tool object.
+	 *
+	 * @return void
+	 */
+	public function close(Tool $tool)
+	{
+		$tool->update([
+			'closed' => true
+		]);
+	}
+
+	/**
 	 * Get all tools related to the *Faculty* group and tags.
 	 *
 	 * @param \App\Faculty $faculty The faculty object.
@@ -144,12 +169,9 @@ class ToolRepository
 
 		$tools = Tool::with([
 			'user',
-			'user.profileable',
 			'faculty',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
-			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-			'comments.replies.user',
 			'files',
 			'tags'
 		])->where([
@@ -165,7 +187,6 @@ class ToolRepository
 	 *
 	 * @param \App\Faculty $faculty The faculty object.
 	 * @param int $type The tool type.
-	 * @param array $tags The tags array.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -173,12 +194,9 @@ class ToolRepository
 	{
 		$tools = Tool::with([
 			'user',
-			'user.profileable',
 			'faculty',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
-			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-			'comments.replies.user',
 			'files',
 			'tags'
 		])->where([

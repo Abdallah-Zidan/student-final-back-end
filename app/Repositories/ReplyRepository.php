@@ -3,62 +3,60 @@
 namespace App\Repositories;
 
 use App\Comment;
-use App\Http\Resources\CommentCollection;
-use App\Http\Resources\ReplyCollection;
+use App\User;
 
 class ReplyRepository 
 {
-
     /**
-     * Get all  replies
+     * Get all replies related to comment.
      *
-     * @param Comment $comment
-     * @return CommentCollection
+     * @param \App\Comment $comment The comment object.
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAll($comment)
+    public function getAll(Comment $comment)
     {
-        $replies = $comment->replies()->with(['user'])->paginate(10);
-        return new ReplyCollection($replies);
+        return $comment->replies()->with('user')->paginate(10);
     }
 
     /**
-     * Create new reply
+     * Create a reply related to the given comment
      *
-     * @param  int $user_id
-     * @param int $comment_id
-     * @param string $body
-     * @return resposne
+     * @param \App\User $user The user object.
+     * @param \App\Comment $comment The comment object.
+     * @param array $data The reply data.
+     *
+     * @return \App\Comment
      */
-    public function create(Comment $comment, array $data)
+    public function create(User $user, Comment $comment, array $data)
     {
-        $reply = $comment->replies()->create(
-            $data + [
-                'user_id' => request()->user()->id
-            ]
-        );
-        return $reply;
+        return $comment->replies()->create($data + [
+            'user_id' => $user->id
+        ]);
     }
 
     /**
-     * Update Comment
+     * Update an existing reply.
      *
-     * @param Comment  $comment
-     * @param string $body
-     * @return response
+     * @param \App\Comment $reply The reply object.
+     * @param array $data The reply data.
+     *
+     * @return void
      */
-    public function update($reply, array $data)
+    public function update(Comment $reply, array $data)
     {
-        return $reply->update($data);
+        $reply->update($data);
     }
 
     /**
-     * Delete re$reply
+     * Delete an existing reply.
      *
-     * @param Comment $reply
-     * @return response
+     * @param \App\Comment $reply The reply object.
+     *
+     * @return void
      */
     public function delete(Comment $reply)
     {
-        return $reply->delete();
+        $reply->delete();
     }
 }

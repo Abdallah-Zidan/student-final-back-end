@@ -12,7 +12,7 @@ class ToolType
 	 *
 	 * @var array
 	 */
-	private static $types = [
+	public static $types = [
 		'Need',
 		'Offer'
 	];

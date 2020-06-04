@@ -3,61 +3,78 @@
 namespace App\Repositories;
 
 use App\Comment;
-use App\Http\Resources\CommentCollection;
+use App\Event;
+use App\Post;
+use App\Question;
+use App\User;
 
 class CommentRepository
 {
-
     /**
-     * Get all Post Comments
+     * Get all comments related to *Post* / *Event* / *Tool* / *Question*.
      *
-     * @param  $parent
-     * @return CommentResource::collection
+     * @param mixed $parent The *Post* / *Event* / *Tool* / *Question* object.
+     *
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function getAll($parent)
     {
-        $comments = $parent->comments()->with(['user', 'replies', 'replies.user'])->paginate(10);
-        return new CommentCollection($comments);
+        $comments = $parent->comments()->with([
+            'user'
+        ])->paginate(10);
+
+        if ($parent instanceof Post || $parent instanceof Event)
+        {
+            $comments->load([
+                'replies',
+                'replies.user'
+            ]);
+        }
+
+        if ($parent instanceof Question)
+            $comments->load('rates');
+
+        return $comments;
     }
 
     /**
-     * Create new comment
+     * Create a comment related to the given parent.
      *
-     * @param  int $user_id
-     * @param  $parent post event tool question
-     * @param string $body
-     * @return respose
+     * @param \App\User $user The user object.
+     * @param mixed $parent The *Post* / *Event* / *Tool* / *Question* object.
+     * @param array $data The comment data.
+     *
+     * @return \App\Comment
      */
-    public function create($parent, array $data)
+    public function create(User $user, $parent, array $data)
     {
-        $comment = $parent->comments()->create(
-            $data + [
-                'user_id' => request()->user()->id
-            ]
-        );
-        return $comment;
+        return $parent->comments()->create($data + [
+            'user_id' => $user->id
+        ]);
     }
 
     /**
-     * Update Comment
+     * Update an existing comment.
      *
-     * @param Comment  $comment
-     * @param string $body
-     * @return response
+     * @param \App\Comment $comment The comment object.
+     * @param array $data The comment data.
+     *
+     * @return void
      */
-    public function update($comment, array $data)
+    public function update(Comment $comment, array $data)
     {
-        return $comment->update($data);
+        $comment->update($data);
     }
 
     /**
-     * Delete Comment
+     * Delete an existing comment.
      *
-     * @param Comment $comment
-     * @return response
+     * @param \App\Comment $comment The comment object.
+     *
+     * @return void
      */
     public function delete(Comment $comment)
     {
-        return $comment->delete();
+        $comment->delete();
     }
 }

@@ -51,7 +51,7 @@ class EventController extends Controller
 			return new EventCollection($events);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class EventController extends Controller
 			], 201);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -90,7 +90,7 @@ class EventController extends Controller
 	 * @param \Illuminate\Http\Request $request The request object.
 	 * @param \App\Event $event The event object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show(Request $request, Event $event)
 	{
@@ -98,7 +98,6 @@ class EventController extends Controller
 		{
 			$event->load([
 				'user',
-				'user.profileable',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
@@ -120,7 +119,7 @@ class EventController extends Controller
 			]);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -129,7 +128,7 @@ class EventController extends Controller
 	 * @param \App\Http\Requests\EventRequest $request The request object.
 	 * @param \App\Event $event The event object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update(EventRequest $request, Event $event)
 	{
@@ -137,10 +136,10 @@ class EventController extends Controller
 		{
 			$this->repo->update($event, $request->only(['title', 'body', 'start_date', 'end_date']));
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -149,7 +148,7 @@ class EventController extends Controller
 	 * @param \Illuminate\Http\Request $request The request object.
 	 * @param \App\Event $event The event object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy(Request $request, Event $event)
 	{
@@ -157,9 +156,9 @@ class EventController extends Controller
 		{
 			$this->repo->delete($event);
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 }

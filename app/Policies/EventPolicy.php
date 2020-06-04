@@ -89,7 +89,7 @@ class EventPolicy
 	 *
 	 * @param \App\User $user
 	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
-	 * @param int $type The event's type.
+	 * @param int $type The event type.
 	 *
 	 * @return bool
 	 */

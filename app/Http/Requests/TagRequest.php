@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\TagScopeRule;
+use App\Enums\TagScope;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TagRequest extends FormRequest
@@ -25,7 +25,7 @@ class TagRequest extends FormRequest
     public function rules()
     {
         return [
-            'scope' => ['required', new TagScopeRule()]
+            'scope' => ['required', 'between:0,' . count(TagScope::$scopes) - 1]
         ];
     }
 }

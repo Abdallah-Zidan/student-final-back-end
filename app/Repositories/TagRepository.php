@@ -4,24 +4,39 @@ namespace App\Repositories;
 
 use App\Enums\TagScope;
 use App\Tag;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TagRepository
 {
-
-    public function getAll($scope)
+    /**
+     * Get all tags.
+     *
+     * @param int $type The tag scope.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAll(int $scope)
     {
-        $tags_ids = [];
-        if ($scope == TagScope::TOOL) {
-            $tags_ids = DB::table('tag_tools')->pluck('tag_id');
-        } else if ($scope == TagScope::QUESTION) {
-            $tags_ids = DB::table('question_tags')->pluck('tag_id');
-        }
-        return Tag::find($tags_ids);
+        $tags = new Collection;
+
+        if ($scope === TagScope::TOOL)
+            $tags = DB::table('tag_tools')->get();
+        else if ($scope === TagScope::QUESTION)
+            $tags = DB::table('question_tags')->get();
+
+        return Tag::find($tags->pluck('tag_id'));
     }
 
-    public function create($name)
+    /**
+     * Create a tag.
+     *
+     * @param array $data The tag data.
+     *
+     * @return \App\Tag
+     */
+    public function create(array $data)
     {
-        return Tag::create(['name' => $name]);
+        return Tag::create($data);
     }
 }

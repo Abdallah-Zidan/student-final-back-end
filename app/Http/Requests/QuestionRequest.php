@@ -23,11 +23,20 @@ class QuestionRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'title'=>'required',
-            'body'=>'required',
-            'tags'=>'required|array',
-            'tags.*'=>'required|distinct'
-        ];
+        if ($this->routeIs('questions.index'))
+        {
+            return [
+                'tags' => 'string'
+            ];
+        }
+        else if ($this->routeIs('questions.store') || $this->routeIs('questions.update'))
+        {
+            return [
+                'title' => 'required',
+                'body' => 'required',
+                'tags' => 'required|array',
+                'tags.*' => 'required|distinct'
+            ];
+        }
     }
 }

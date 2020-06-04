@@ -7,7 +7,7 @@ use App\Rules\StrongPassword;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateProfileRequest extends FormRequest
+class ProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,17 +37,18 @@ class UpdateProfileRequest extends FormRequest
 
     private function updateProfileableData()
     {
-        if ($this->user()->type == UserType::getTypeString(UserType::COMPANY)) {
+        if ($this->user()->type == UserType::getTypeString(UserType::COMPANY))
+        {
             return [
                 'fax' => ['max:15', 'min:11', Rule::unique('company_profiles')->ignore($this->user()->profileable)],
                 'description' => 'max:255',
                 'website' => ['max:255', 'url', Rule::unique('company_profiles')->ignore($this->user()->profileable)]
             ];
-        } else if (
-            $this->user()->type == UserType::getTypeString(UserType::STUDENT)
-            || $this->user()->type == UserType::getTypeString(UserType::TEACHING_STAFF)
-        ) {
-            return  [
+        }
+        else if ($this->user()->type == UserType::getTypeString(UserType::STUDENT) ||
+                $this->user()->type == UserType::getTypeString(UserType::TEACHING_STAFF))
+        {
+            return [
                 'birthdate' => 'date|before:today'
             ];
         }

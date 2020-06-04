@@ -15,8 +15,8 @@ class TeachingStaffProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "birthdate" => $this->birthdate,
-            "scientific_certificates" => $this->scientific_certificates
+            'birthdate' => $this->birthdate,
+            'scientific_certificates' => $this->scientific_certificates
         ];
     }
 }

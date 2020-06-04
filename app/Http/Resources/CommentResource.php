@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\MissingValue;
 
 class CommentResource extends JsonResource
 {
@@ -25,23 +26,22 @@ class CommentResource extends JsonResource
 				]
 			]),
 			'replies' => CommentResource::collection($this->whenLoaded('replies')),
-			$this->mergeWhen($this->whenLoaded('rates'), [
-				'rates' => $this->rates()->sum('rate'),
-				"rated" =>  $this->is_rated()
-			]),
+			'rates' => $this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->rates()->sum('rate'),
+			'rated' => $this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->isRated(),
 			'created_at' => $this->created_at,
 			'created_at_human' => $this->created_at->diffForHumans()
 		];
 	}
-	
+
 	/**
-	 * Comment Rated before or none
+	 * Comment is rated by the user before or not
 	 *
-	 * @return 0 not rated , 1 or -1 rated
+	 * @return int 0 if not rated, 1 or -1 if rated
 	 */
-	private function is_rated()
+	private function isRated()
 	{
-		$rate = $this->rates()->find( Request()->user()->id);
+		$rate = $this->rates()->find(request()->user()->id);
+
 		return $rate ? $rate->pivot->rate : 0;
 	}
 }

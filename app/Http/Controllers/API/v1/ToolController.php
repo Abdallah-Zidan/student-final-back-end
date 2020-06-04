@@ -51,7 +51,7 @@ class ToolController extends Controller
 			return new ToolCollection($tools);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -68,8 +68,8 @@ class ToolController extends Controller
 
 		if ($user->can('create', [Tool::class, $faculty]))
 		{
-			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
-			$tool = $this->repo->create($user, $faculty, $request->only(['title', 'body', 'type', 'files']), $tags);
+			$tags = array_filter(array_map('trim', $request->tags));
+			$tool = $this->repo->create($user, $faculty, array_merge($request->only(['title', 'body', 'type', 'files']), $tags));
 
 			return response([
 				'data' => [
@@ -81,16 +81,16 @@ class ToolController extends Controller
 			], 201);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
 	 * Show a tool.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param int $tool The tool object.
+	 * @param \App\Tool $tool The tool object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show(Request $request, Tool $tool)
 	{
@@ -98,7 +98,6 @@ class ToolController extends Controller
 		{
 			$tool->load([
 				'user',
-				'user.profileable',
 				'faculty',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
@@ -115,37 +114,37 @@ class ToolController extends Controller
 			]);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
 	 * Update a tool.
 	 *
 	 * @param \App\Http\Requests\ToolRequest $request The request object.
-	 * @param int $tool The tool object.
+	 * @param \App\Tool $tool The tool object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update(ToolRequest $request, Tool $tool)
 	{
 		if ($request->user()->can('update', $tool))
 		{
-			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
-			$this->repo->update($tool, $request->only(['title', 'body']), $tags);
+			$tags = array_filter(array_map('trim', $request->tags));
+			$this->repo->update($tool, array_merge($request->only(['title', 'body']), $tags));
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
 	 * Destroy a tool.
 	 *
 	 * @param \Illuminate\Http\Request $request The request object.
-	 * @param int $tool The tool object.
+	 * @param \App\Tool $tool The tool object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy(Request $request, Tool $tool)
 	{
@@ -153,9 +152,30 @@ class ToolController extends Controller
 		{
 			$this->repo->delete($tool);
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
+	}
+
+	/**
+	 * Close a tool request.
+	 *
+	 * @param \App\Http\Requests\ToolRequest $request The request object.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function close(ToolRequest $request)
+	{
+		$tool = Tool::findOrFail($request->id);
+
+		if ($request->user()->can('close', $tool))
+		{
+			$this->repo->close($tool);
+
+			return response([], 204);
+		}
+
+		return response([], 403);
 	}
 }

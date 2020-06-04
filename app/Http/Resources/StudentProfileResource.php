@@ -15,8 +15,8 @@ class StudentProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'birthdate'=>$this->birthdate,
-            'year'=>$this->year
+            'birthdate' => $this->birthdate,
+            'year' => $this->year
         ];
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API\v1\User;
 
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateProfileRequest;
+use App\Http\Requests\ProfileRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +17,7 @@ class ProfileController extends Controller
         return new UserResource($request->user());
     }
 
-    public function update(UpdateProfileRequest $request)
+    public function update(ProfileRequest $request)
     {
         if ($request->new_password) // change password
         {
@@ -51,14 +51,14 @@ class ProfileController extends Controller
         $user->save();
     }
 
-    private function changePassword(UpdateProfileRequest $request)
+    private function changePassword(ProfileRequest $request)
     {
         $user = $request->user();
         if (Hash::check($request->password, $user->password)) {
             $user->update(['password' => $request->new_password]);
             return response([], 204);
         } else {
-            return response(['Message' => "Wrong Password"], 422);
+            return response(['Message' => 'Wrong Password'], 422);
         }
     }
 }

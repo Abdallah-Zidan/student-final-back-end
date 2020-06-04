@@ -31,6 +31,7 @@ class FacultyDepartmentsExistsRule implements Rule
             ['department_id', $value],
             ['faculty_id', $this->faculty]
         ])->first();
+
         return $department_faculty ? true : false;
     }
 

@@ -9,18 +9,33 @@ use Illuminate\Http\Request;
 
 class DepartmentFacultyController extends Controller
 {
+	/**
+	 * The department_faculty repository object.
+	 *
+	 * @var \App\Repositories\DepartmentFacultyRepository
+	 */
 	private $repo;
 
+	/**
+	 * Create a new DepartmentFacultyController object.
+	 *
+	 * @param \App\Repositories\DepartmentFacultyRepository $repo The department_faculty repository object.
+	 */
 	public function __construct(DepartmentFacultyRepository $repo)
 	{
 		$this->repo = $repo;
 	}
 
+	/**
+	 * Get all departments of user.
+	 *
+	 * @param \Illuminate\Http\Request $request The request object.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
 	public function index(Request $request)
 	{
-		$user = $request->user();
-
-		$department_faculties = $this->repo->getDepartmentFacultiesFor($user);
+		$department_faculties = $this->repo->getAll($request->user());
 
 		return response([
 			'data' => [

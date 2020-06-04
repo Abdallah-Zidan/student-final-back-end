@@ -51,7 +51,7 @@ class PostController extends Controller
 			return new PostCollection($posts);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class PostController extends Controller
 			], 201);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -90,7 +90,7 @@ class PostController extends Controller
 	 * @param \Illuminate\Http\Request $request The request object.
 	 * @param \App\Post $post The post object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function show(Request $request, Post $post)
 	{
@@ -98,7 +98,6 @@ class PostController extends Controller
 		{
 			$post->load([
 				'user',
-				'user.profileable',
 				'scopeable',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
@@ -123,7 +122,7 @@ class PostController extends Controller
 			]);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -132,7 +131,7 @@ class PostController extends Controller
 	 * @param \App\Http\Requests\PostRequest $request The request object.
 	 * @param \App\Post $post The post object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update(PostRequest $request, Post $post)
 	{
@@ -140,10 +139,10 @@ class PostController extends Controller
 		{
 			$this->repo->update($post, $request->only(['body']));
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -152,7 +151,7 @@ class PostController extends Controller
 	 * @param \Illuminate\Http\Request $request The request object.
 	 * @param \App\Post $post The post object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy(Request $request, Post $post)
 	{
@@ -160,10 +159,10 @@ class PostController extends Controller
 		{
 			$this->repo->delete($post);
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -171,7 +170,7 @@ class PostController extends Controller
 	 *
 	 * @param \App\Http\Requests\PostRequest $request The request object.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function report(PostRequest $request)
 	{
@@ -181,9 +180,9 @@ class PostController extends Controller
 		{
 			$this->repo->report($post);
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 }

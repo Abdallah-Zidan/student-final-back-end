@@ -31,7 +31,7 @@ class FileRepository
 	public function create($parent, array $data)
 	{
 		$path = Str::plural(Str::lower(Str::after(get_class($parent), 'App\\')));
-		$path = Storage::disk('local')->put("files/${path}/" . $parent->id, $data['file']);
+		$path = Storage::disk('local')->put("files/$path/" . $parent->id, $data['file']);
 
 		return $parent->files()->create([
 			'name' => $data['file']->getClientOriginalName(),
@@ -43,7 +43,7 @@ class FileRepository
 	/**
 	 * Update an existing file.
 	 *
-	 * @param File $file The file object.
+	 * @param \App\File $file The file object.
 	 * @param array $data The file data.
 	 *
 	 * @return void
@@ -54,7 +54,7 @@ class FileRepository
 
 		$parent = $file->resourceable;
 		$path = Str::plural(Str::lower(Str::after(get_class($parent), 'App\\')));
-		$path = Storage::disk('local')->put("files/${path}/" . $parent->id, $data['file']);
+		$path = Storage::disk('local')->put("files/$path/" . $parent->id, $data['file']);
 
 		$file->update([
 			'name' => $data['file']->getClientOriginalName(),
@@ -66,7 +66,7 @@ class FileRepository
 	/**
 	 * Delete an existing file.
 	 *
-	 * @param File $file The file object.
+	 * @param \App\File $file The file object.
 	 *
 	 * @return void
 	 */

@@ -17,7 +17,7 @@ class EventRepository
 	 * Get all events related to the *Faculty* / *University* / *All* group.
 	 *
 	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
-	 * @param int $type The event's type.
+	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -47,12 +47,7 @@ class EventRepository
 	 */
 	public function create(User $user, $group, array $data)
 	{
-		$event = $user->events()->create([
-			'title' => $data['title'],
-			'body' => $data['body'],
-			'type' => $data['type'],
-			'start_date' => $data['start_date'],
-			'end_date' => $data['end_date'],
+		$event = $user->events()->create($data + [
 			'scopeable_type' => is_null($group) ? EventScope::getScopeString(EventScope::ALL) : get_class($group),
 			'scopeable_id' => is_null($group) ? 0 : $group->id
 		]);
@@ -83,12 +78,7 @@ class EventRepository
 	 */
 	public function update(Event $event, array $data)
 	{
-		$event->update([
-			'title' => $data['title'],
-			'body' => $data['body'],
-			'start_date' => $data['start_date'],
-			'end_date' => $data['end_date']
-		]);
+		$event->update($data);
 	}
 
 	/**
@@ -106,7 +96,7 @@ class EventRepository
 	/**
 	 * Get all events related to the *All* group.
 	 * 
-	 * @param int $type The event's type.
+	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -114,7 +104,6 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
-			'user.profileable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
 			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
@@ -132,7 +121,7 @@ class EventRepository
 	 * Get all events related to the *Faculty* group.
 	 *
 	 * @param \App\Faculty $faculty The *Faculty* object.
-	 * @param int $type The event's type.
+	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -140,7 +129,6 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
-			'user.profileable',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
@@ -160,7 +148,7 @@ class EventRepository
 	 * Get all events related to the *University* group.
 	 *
 	 * @param University $university The *University* object.
-	 * @param int $type The event's type.
+	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
@@ -168,7 +156,6 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
-			'user.profileable',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',

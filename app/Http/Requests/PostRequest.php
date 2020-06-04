@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PostScope;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PostRequest extends FormRequest
@@ -26,14 +27,14 @@ class PostRequest extends FormRequest
 		if ($this->routeIs('posts.index'))
 		{
 			return [
-				'group' => 'required|integer|between:0,2',
+				'group' => 'required|integer|between:0,' . count(PostScope::$scopes) - 1,
 				'group_id' => 'required|integer'
 			];
 		}
 		else if ($this->routeIs('posts.store'))
 		{
 			return [
-				'group' => 'required|integer|between:0,2',
+				'group' => 'required|integer|between:0,' . count(PostScope::$scopes) - 1,
 				'group_id' => 'required|integer',
 				'body' => 'required',
 				'files' => 'array',

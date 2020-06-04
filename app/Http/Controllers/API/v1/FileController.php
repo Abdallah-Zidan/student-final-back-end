@@ -9,7 +9,6 @@ use App\Http\Resources\FileCollection;
 use App\Http\Resources\FileResource;
 use App\Repositories\FileRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class FileController extends Controller
 {
@@ -47,7 +46,7 @@ class FileController extends Controller
 			return new FileCollection($files);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -71,7 +70,7 @@ class FileController extends Controller
 			], 201);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -96,7 +95,7 @@ class FileController extends Controller
 			]);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -106,7 +105,7 @@ class FileController extends Controller
 	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param int $file The file id.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function update(FileRequest $request, $parent, int $file)
 	{
@@ -116,10 +115,10 @@ class FileController extends Controller
 		{
 			$this->repo->update($file, $request->only(['file']));
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 
 	/**
@@ -129,7 +128,7 @@ class FileController extends Controller
 	 * @param mixed $parent The *Post* / *Event* / *Tool* object.
 	 * @param int $file The file id.
 	 *
-	 * @return void
+	 * @return \Illuminate\Http\Response
 	 */
 	public function destroy(Request $request, $parent, int $file)
 	{
@@ -139,9 +138,9 @@ class FileController extends Controller
 		{
 			$this->repo->delete($file);
 
-			return response('', 204);
+			return response([], 204);
 		}
 
-		return response('', 403);
+		return response([], 403);
 	}
 }

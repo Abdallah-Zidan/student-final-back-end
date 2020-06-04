@@ -28,7 +28,6 @@ class RegisterRequest extends FormRequest
 
     public function rules()
     {
-
         return [
             'name' => 'required|max:255',
             'password' => ['required', new StrongPassword()],
@@ -40,25 +39,26 @@ class RegisterRequest extends FormRequest
         ] + $this->getUserTypeRules();
     }
 
-
-
     private function getUserTypeRules()
     {
-        if ($this->type == UserType::COMPANY) {
+        if ($this->type == UserType::COMPANY)
+        {
             return [
                 'email' => 'required|email|unique:users|max:255',
                 'fax' => 'required|unique:App\CompanyProfile|max:15|min:11',
                 'description' => 'required|max:255',
                 'website' => 'required|unique:company_profiles|max:255|url'
             ];
-        } else if ($this->type == UserType::STUDENT) {
+        }
+        else if ($this->type == UserType::STUDENT)
+        {
             return [
                 'email' => ['required', 'unique:users', 'max:255', new EducationEmail()],
                 'birthdate' => 'required|date|before:today',
                 'year' => 'required|lte:7|gt:0',
                 'departments' => 'required|array|max:3',
                 'departments.*' => ['required', 'exists:departments,id', 'distinct', new FacultyDepartmentsExistsRule($this->faculty)],
-                'faculty' => 'required|exists:faculties,id',
+                'faculty' => 'required|exists:faculties,id'
             ];
         }
     }

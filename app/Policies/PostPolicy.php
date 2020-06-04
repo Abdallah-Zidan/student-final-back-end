@@ -81,7 +81,10 @@ class PostPolicy
 	 */
 	public function view(User $user, Post $post)
 	{
-		return $user->can('viewAny', [Post::class, $post->scopeable]);
+		return $post->user->id === $user->id ||
+			  ($user->can('viewAny', [Post::class, $post->scopeable]) &&
+				($user->type === UserType::getTypeString(UserType::STUDENT) && $user->profileable->year === $post->year) ||
+				 $user->type !== UserType::getTypeString(UserType::STUDENT));
 	}
 
 	/**

@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Enums\UserType;
-use App\StudentProfile;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -32,13 +31,13 @@ class UserResource extends JsonResource
 
     public function getProfile()
     {
-        if ($this->type == UserType::getTypeString(UserType::STUDENT)) {
-            return ['profile' => new StudentProfileResource($this->profileable)];
-        } else if ($this->type == UserType::getTypeString(UserType::COMPANY)) {
-            return ['profile' => new CompanyProfileResource($this->profileable)];
-        } else if ($this->type == UserType::getTypeString(UserType::TEACHING_STAFF)) {
-            return ['profile' => new TeachingStaffProfileResource($this->profileable)];
-        }
+        if ($this->type == UserType::getTypeString(UserType::STUDENT))
+            return ['profile' => new StudentProfileResource($this->whenLoaded('profileable'))];
+        else if ($this->type == UserType::getTypeString(UserType::TEACHING_STAFF))
+            return ['profile' => new TeachingStaffProfileResource($this->whenLoaded('profileable'))];
+        else if ($this->type == UserType::getTypeString(UserType::COMPANY))
+            return ['profile' => new CompanyProfileResource($this->whenLoaded('profileable'))];
+
         return [];
     }
 }

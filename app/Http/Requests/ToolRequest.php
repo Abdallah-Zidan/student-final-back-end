@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ToolType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ToolRequest extends FormRequest
@@ -26,7 +27,7 @@ class ToolRequest extends FormRequest
 		if ($this->routeIs('tools.index'))
 		{
 			return [
-				'type' => 'required|integer|between:0,1',
+				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
 				'tags' => 'string'
 			];
 		}
@@ -35,8 +36,9 @@ class ToolRequest extends FormRequest
 			return [
 				'title' => 'required',
 				'body' => 'required',
-				'type' => 'required|integer|between:0,1',
-				'tags' => 'string',
+				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
+				'tags' => 'required|array',
+				'tags.*' => 'required|distinct',
 				'files' => 'array',
 				'files.*' => 'file|max:51200'
 			];
@@ -46,7 +48,14 @@ class ToolRequest extends FormRequest
 			return [
 				'title' => 'required',
 				'body' => 'required',
-				'tags' => 'string'
+				'tags' => 'required|array',
+				'tags.*' => 'required|distinct'
+			];
+		}
+		else if ($this->routeIs('tools.close'))
+		{
+			return [
+				'id' => 'required|integer'
 			];
 		}
 	}

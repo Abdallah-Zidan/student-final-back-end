@@ -4,96 +4,129 @@ namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\QuestionRequest;
+use App\Http\Resources\QuestionCollection;
 use App\Http\Resources\QuestionResource;
-use App\Http\Resources\TagResource;
 use App\Question;
-use App\QuestionTag;
 use App\Repositories\QuestionRepository;
-use App\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class QuestionController extends Controller
 {
+    /**
+     * The question repository object.
+     *
+     * @var \App\Repositories\QuestionRepository
+     */
     private $repo;
 
+    /**
+     * Create a new QuestionController object.
+     *
+     * @param \App\Repositories\QuestionRepository $repo The question repository object.
+     */
     public function __construct(QuestionRepository $repo)
     {
         $this->repo = $repo;
     }
 
     /**
-     * Display a listing of the resource.
+     * Get all questions.
+     * 
+     * @param \App\Http\Requests\QuestionRequest $request The request object.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(QuestionRequest $request)
     {
-        return $this->repo->getAll($request->tags);
+        $tags = array_filter(array_map('trim', explode(',', $request->tags)));
+        $questions = $this->repo->getAll($tags);
+
+        return new QuestionCollection($questions);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a question.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \App\Http\Requests\QuestionRequest $request The request object.
+     *
      * @return \Illuminate\Http\Response
      */
     public function store(QuestionRequest $request)
     {
-        $question = $this->repo->create($request->only(['title', 'body', 'tags']));
+        $tags = array_filter(array_map('trim', $request->tags));
+        $question = $this->repo->create($request->user(), array_merge($request->only(['title', 'body']), $tags));
+
         return response([
             'data' => [
                 'question' => [
                     'id' => $question->id
-                ],
-                'tags' => TagResource::collection($question->tags)
+                ]
             ]
         ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Show a question.
      *
-     * @param  \App\Question  $question
+     * @param \Illuminate\Http\Request $request The request object.
+     * @param \App\Question $question The question object.
+     *
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request, Question $question)
     {
-        return new QuestionResource($question);
+        $question->load([
+            'user',
+            'comments' => function ($query) { $query->orderBy('created_at'); },
+            'comments.user',
+            'tags'
+        ]);
+
+        return response([
+            'data' => [
+                'question' => new QuestionResource($question)
+            ]
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a question.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Question  $question
+     * @param \App\Http\Requests\QuestionRequest $request The request object.
+     * @param \App\Question $question The question object.
+     *
      * @return \Illuminate\Http\Response
      */
     public function update(QuestionRequest $request, Question $question)
     {
-        if (request()->user()->can('update', $question)) {
-            $question = $this->repo->update($question, $request->only(['title', 'body', 'tags']));
-            return response([
-                'data' => [
-                    'tags' => TagResource::collection($question->tags)
-                ]
-            ], 201);
+        if ($request->user()->can('update', $question))
+        {
+            $tags = array_filter(array_map('trim', $request->tags));
+            $this->repo->update($question, array_merge($request->only(['title', 'body']), $tags));
+
+            return response([], 204);
         }
+
         return response([], 403);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Destroy a question.
      *
-     * @param  \App\Question  $question
+     * @param \Illuminate\Http\Request $request The request object.
+     * @param \App\Question $question The question object.
+     *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Question $question)
+    public function destroy(Request $request, Question $question)
     {
-        if (request()->user()->can('delete', $question)) {
+        if ($request->user()->can('delete', $question))
+        {
             $this->repo->delete($question);
+
             return response([], 204);
         }
+
         return response([], 403);
     }
 }

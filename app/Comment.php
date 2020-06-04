@@ -14,15 +14,16 @@ class Comment extends BaseModel
 	];
 
 	/**
-	 * Model Events
-	 * 
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
 	 */
 	protected static function booted()
-    {
-        static::deleting(function ($comment) {
-            $comment->replies()->delete();
-        });
-    }
+	{
+		static::deleting(function ($comment) {
+			$comment->replies()->delete();
+		});
+	}
 
 	/**
 	 * Many-to-one relationship to the user.

@@ -23,7 +23,7 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response(['Message' => "'The provided credentials are incorrect."], 422);
+            return response(['Message' => 'The provided credentials are incorrect.'], 422);
         }
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();

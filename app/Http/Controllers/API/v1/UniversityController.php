@@ -9,16 +9,33 @@ use Illuminate\Http\Request;
 
 class UniversityController extends Controller
 {
+	/**
+	 * The university repository object.
+	 *
+	 * @var \App\Repositories\UniversityRepository
+	 */
 	private $repo;
 
+	/**
+	 * Create a new UniversityController object.
+	 *
+	 * @param \App\Repositories\UniversityRepository $repo The university repository object.
+	 */
 	public function __construct(UniversityRepository $repo)
 	{
 		$this->repo = $repo;
 	}
 
-	public function index()
+	/**
+	 * Get all universities.
+	 *
+	 * @param \Illuminate\Http\Request $request The request object.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index(Request $request)
 	{
-		$universities = $this->repo->getUniversities();
+		$universities = $this->repo->getAll();
 
 		return response([
 			'data' => [

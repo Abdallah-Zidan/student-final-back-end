@@ -53,9 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail
 	];
 
 	/**
-	 * Set the user's password hash.
+	 * Set the user password hash.
 	 *
-	 * @param string $value The user's password as *plain text*.
+	 * @param string $value The user password as *plain text*.
 	 *
 	 * @return void
 	 */
@@ -65,7 +65,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * Get the user's gender as a StudlyCase.
+	 * Get the user gender as a StudlyCase.
 	 *
 	 * @param int $value the gender value.
 	 *
@@ -77,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * Get the user's avatar image as a url.
+	 * Get the user avatar image as a url.
 	 *
 	 * @param $value the avatar image path.
 	 *
@@ -92,7 +92,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * Get the user's type as a StudlyCase.
+	 * Get the user type as a StudlyCase.
 	 *
 	 * @return string|null
 	 */
@@ -120,7 +120,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\MorphTo
 	 *
-	 * @throws \Exception If the user's type is *null*, or the class name is not found.
+	 * @throws \Exception If the user type is *null*, or the class name is not found.
 	 */
 	public function profileable()
 	{

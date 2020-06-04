@@ -14,7 +14,7 @@ class ReplyCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return [
+		return [
 			'data' => [
 				'replies' => ReplyResource::collection($this->collection)
 			]

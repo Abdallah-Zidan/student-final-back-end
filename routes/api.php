@@ -38,6 +38,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource('events', 'EventController')->only($methods);
 		Route::resource('questions', 'QuestionController')->only($methods);
 		Route::resource('tools', 'ToolController')->only($methods);
+		Route::post('tools/close', 'ToolController@close')->name('tools.close');
 		Route::get('tags', 'TagController@index')->name('tags.index');
 
 		Route::resource('posts.files', 'FileController')->only($methods);

@@ -13,7 +13,7 @@ class PostScope
 	 *
 	 * @var array
 	 */
-	private static $scopes = [
+	public static $scopes = [
 		'Department',
 		'Faculty',
 		'University'

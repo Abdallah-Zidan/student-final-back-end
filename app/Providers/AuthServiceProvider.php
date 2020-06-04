@@ -8,7 +8,6 @@ use App\Policies\CommentPolicy;
 use App\Policies\EventPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\QuestionPolicy;
-use App\Policies\ReplyPolicy;
 use App\Post;
 use App\Question;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;

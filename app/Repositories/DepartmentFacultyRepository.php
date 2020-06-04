@@ -6,9 +6,16 @@ use App\User;
 
 class DepartmentFacultyRepository
 {
-	public function getDepartmentFacultiesFor(User $current_user)
+	/**
+	 * Get all department_faculties related to user.
+	 *
+	 * @param \App\User $user The user object.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function getAll(User $user)
 	{
-		return $current_user->departmentFaculties()->with([
+		return $user->departmentFaculties()->with([
 			'department',
 			'faculty',
 			'faculty.university',

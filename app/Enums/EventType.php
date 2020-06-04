@@ -15,7 +15,7 @@ class EventType
 	 *
 	 * @var array
 	 */
-	private static $types = [
+	public static $types = [
 		'Normal',
 		'Training',
 		'Internship',

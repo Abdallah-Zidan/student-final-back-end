@@ -13,31 +13,39 @@ class CommentPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\User  $user
-     * @return mixed
+     * @param \App\User $user
+     * @param mixed $parent The *Post* / *Event* / *Question* / *Tool* / *Comment* object.
+     *
+     * @return bool
      */
     public function viewAny(User $user, $parent)
     {
+        if ($parent instanceof Comment) // Reply only
+            return $user->can('viewAny', $parent->parent);
+
         return $user->can('view', $parent);
     }
 
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\User  $user
-     * @param  \App\Comment  $comment
-     * @return mixed
+     * @param \App\User $user
+     * @param \App\Comment $comment
+     *
+     * @return bool
      */
     public function view(User $user, Comment $comment)
     {
-        //
+        return $user->can('viewAny', [Comment::class, $comment->parent]);
     }
 
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\User  $user
-     * @return mixed
+     * @param \App\User $user
+     * @param mixed $parent The *Post* / *Event* / *Question* / *Tool* / *Comment* object.
+     *
+     * @return bool
      */
     public function create(User $user, $parent)
     {
@@ -47,58 +55,34 @@ class CommentPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\User  $user
-     * @param  \App\Comment  $comment
-     * @return mixed
+     * @param \App\User $user
+     * @param \App\Comment $comment
+     *
+     * @return bool
      */
     public function update(User $user, Comment $comment)
     {
-        if ($comment->parent instanceof Comment) // reply only
-        {
-            return $user->can('view', $comment->parent->parent) && $user->id  === $comment->user_id;
-        }
-        return  $user->can('view', [$comment->parent]) && $user->id  === $comment->user_id;       // this user is the comment owner
+        if ($comment->parent instanceof Comment) // Reply only
+            return $user->can('view', $comment->parent->parent) && $user->id === $comment->user->id;
+
+        return $user->can('view', $comment->parent) && $user->id === $comment->user->id; // This user is the comment owner
     }
 
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\User  $user
-     * @param  \App\Comment  $comment
-     * @return mixed
-     */
-    public function delete(User $user, Comment $comment, $parent)
-    {
-        if ($parent instanceof Comment) // reply only
-        {
-            return $user->can('view', $parent->parent) && $user->id  === $comment->user_id;
-        }
-        return $user->can('viewAny', $parent) &&
-            ($user->id === $parent->user_id         // this user is the post owner
-                || $user->id  === $comment->user_id);  //this user is the comment owner
-    }
-
-    /**
-     * Determine whether the user can restore the model.
+     * @param \App\User $user
+     * @param \App\Comment $comment
      *
-     * @param  \App\User  $user
-     * @param  \App\Comment  $comment
-     * @return mixed
+     * @return bool
      */
-    public function restore(User $user, Comment $comment)
+    public function delete(User $user, Comment $comment)
     {
-        //
-    }
+        if ($comment->parent instanceof Comment) // Reply only
+            return $user->can('delete', $comment->parent->parent) && $user->id === $comment->user->id;
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Comment  $comment
-     * @return mixed
-     */
-    public function forceDelete(User $user, Comment $comment)
-    {
-        //
+        return $user->can('delete', $comment->parent) &&
+              ($user->id === $comment->parent->user->id || // This user is the post owner
+               $user->id === $comment->user->id); //This user is the comment owner
     }
 }

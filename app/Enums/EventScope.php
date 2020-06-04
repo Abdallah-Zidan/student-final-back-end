@@ -13,7 +13,7 @@ class EventScope
 	 *
 	 * @var array
 	 */
-	private static $scopes = [
+	public static $scopes = [
 		'Faculty',
 		'University',
 		'All'

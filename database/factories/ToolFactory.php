@@ -11,6 +11,7 @@ $factory->define(Tool::class, function (Faker $faker) {
 		'title' => $faker->sentence,
 		'body' => $faker->sentences(3, true),
 		'type' => $faker->randomElement([ToolType::NEED, ToolType::OFFER]),
+		'closed' => $faker->boolean,
 		'faculty_id' => 0,
 		'user_id' => 0
 	];

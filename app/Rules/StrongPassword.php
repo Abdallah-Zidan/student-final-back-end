@@ -25,7 +25,6 @@ class StrongPassword implements Rule
      */
     public function passes($attribute, $value)
     {
-
         return preg_match("/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*+-]).{8,30}$/", $value);
     }
 
@@ -36,6 +35,6 @@ class StrongPassword implements Rule
      */
     public function message()
     {
-        return  'The :attribute must be 8–30 characters, and include a number, a symbol, a lower and a upper case letter';
+        return 'The :attribute must be 8–30 characters, and include a number, a symbol, a lower and a upper case letter';
     }
 }

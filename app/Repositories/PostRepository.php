@@ -48,8 +48,7 @@ class PostRepository
 	 */
 	public function create(User $user, $group, array $data)
 	{
-		$post = $user->posts()->create([
-			'body' => $data['body'],
+		$post = $user->posts()->create($data + [
 			'scopeable_type' => get_class($group),
 			'scopeable_id' => $group->id
 		] + ($user->type === UserType::getTypeString(UserType::STUDENT) ? [
@@ -82,9 +81,7 @@ class PostRepository
 	 */
 	public function update(Post $post, array $data)
 	{
-		$post->update([
-			'body' => $data['body']
-		]);
+		$post->update($data);
 	}
 
 	/**
@@ -139,7 +136,6 @@ class PostRepository
 
 		$posts = Post::with([
 			'user',
-			'user.profileable',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
@@ -167,7 +163,6 @@ class PostRepository
 	{
 		$posts = Post::with([
 			'user',
-			'user.profileable',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
@@ -193,7 +188,6 @@ class PostRepository
 	{
 		$posts = Post::with([
 			'user',
-			'user.profileable',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',

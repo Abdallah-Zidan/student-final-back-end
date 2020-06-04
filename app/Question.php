@@ -14,6 +14,19 @@ class Question extends BaseModel
 	];
 
 	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($question) {
+			$question->comments()->delete();
+			$question->tags()->detach();
+		});
+	}
+
+	/**
 	 * Many-to-one relationship to the user.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

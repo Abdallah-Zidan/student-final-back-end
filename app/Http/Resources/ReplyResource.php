@@ -14,7 +14,7 @@ class ReplyResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+		return [
 			'id' => $this->id,
 			'body' => $this->body,
 			$this->mergeWhen($this->whenLoaded('user'), [

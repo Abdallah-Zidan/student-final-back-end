@@ -16,7 +16,7 @@ class ToolPolicy
 	 * Determine whether the user can view any models.
 	 *
 	 * @param \App\User $user
-	 * @param \App\Faculty $faculty The *Faculty* object.
+	 * @param \App\Faculty $faculty
 	 *
 	 * @return bool
 	 */
@@ -53,6 +53,7 @@ class ToolPolicy
 	 * Determine whether the user can create models.
 	 *
 	 * @param \App\User $user
+	 * @param \App\Faculty $faculty
 	 *
 	 * @return bool
 	 */
@@ -105,5 +106,19 @@ class ToolPolicy
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determine whether the user can close the model.
+	 *
+	 * @param \App\User $user
+	 * @param \App\Tool $tool
+	 *
+	 * @return bool
+	 */
+	public function close(User $user, Tool $tool)
+	{
+		return $tool->user->id === $user->id ||
+			   $user->type === UserType::getTypeString(UserType::ADMIN);
 	}
 }

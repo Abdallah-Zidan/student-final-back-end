@@ -25,13 +25,9 @@ class QuestionResource extends JsonResource
                     'avatar' => $this->user->avatar
                 ]
             ]),
-            $this->mergeWhen($this->whenLoaded('tags'), [
-                'tags' =>  TagResource::collection($this->tags)
-            ]),
-            $this->mergeWhen($this->whenLoaded('comments'), [
-                'comments' =>  CommentResource::collection($this->comments)
-            ]),
-            'created_at'=>$this->created_at,
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
+            'comments' => CommentResource::collection($this->whenLoaded('comments')),
+            'created_at' => $this->created_at,
             'created_at_human' => $this->created_at->diffForHumans()
         ];
     }

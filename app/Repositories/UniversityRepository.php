@@ -6,7 +6,12 @@ use App\University;
 
 class UniversityRepository
 {
-	public function getUniversities()
+	/**
+	 * Get all universities.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Collection
+	 */
+	public function getAll()
 	{
 		return University::with([
 			'faculties',

@@ -2,7 +2,6 @@
 
 use App\DepartmentFaculty;
 use App\DepartmentFacultyUser;
-use App\Enums\UserType;
 use App\Faculty;
 use App\Tool;
 use App\User;
