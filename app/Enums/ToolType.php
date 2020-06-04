@@ -6,6 +6,8 @@ class ToolType
 {
 	const NEED = 0;
 	const OFFER = 1;
+	const LIVING = 2;
+	const CAR = 3;
 
 	/**
 	 * The tool available types.
@@ -14,7 +16,9 @@ class ToolType
 	 */
 	public static $types = [
 		'Need',
-		'Offer'
+		'Offer',
+		'Living',
+		'Car'
 	];
 
 	/**

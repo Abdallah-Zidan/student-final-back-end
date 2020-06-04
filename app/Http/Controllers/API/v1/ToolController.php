@@ -44,9 +44,8 @@ class ToolController extends Controller
 
 		if ($user->can('viewAny', [Tool::class, $faculty]))
 		{
-			$type = $request->type;
 			$tags = array_filter(array_map('trim', explode(',', $request->tags)));
-			$tools = $this->repo->getAll($faculty, $type, $tags);
+			$tools = $this->repo->getAll($faculty, $request->type, $tags);
 
 			return new ToolCollection($tools);
 		}
@@ -101,8 +100,6 @@ class ToolController extends Controller
 				'faculty',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
-				'comments.replies' => function ($query) { $query->orderBy('created_at'); },
-				'comments.replies.user',
 				'files',
 				'tags'
 			]);
