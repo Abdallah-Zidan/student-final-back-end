@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Enums\UserType;
-use App\StudentProfile;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -41,6 +40,9 @@ class UserResource extends JsonResource
         } else if ($this->type == UserType::getTypeString(UserType::TEACHING_STAFF)) 
         {
             return ['profile' => new TeachingStaffProfileResource($this->whenLoaded('profileable'))];
+        }else if ($this->type == UserType::getTypeString(UserType::MODERATOR)) 
+        {
+            return ['profile' => new ModeratorProfileResource($this->whenLoaded('profileable'))];
         }
         return [];
     }

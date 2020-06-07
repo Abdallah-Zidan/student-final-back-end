@@ -100,7 +100,11 @@ class CommentController extends Controller
             {
                 $comment->load(['replies','replies.user']);
             }
-            return response(new CommentResource($comment));
+            return response([
+                'data'=>[
+                    'comment'=>new CommentResource($comment)
+                ]
+            ]);
         }
         return response([], 403);
     }
@@ -120,8 +124,8 @@ class CommentController extends Controller
 
         if ($request->user()->can('update', $comment)) 
         {
-            if ($this->repo->update($comment,  $request->only(['body'])))
-                return response([], 204);
+            $this->repo->update($comment,  $request->only(['body']));
+            return response([], 204);
         }
         return response([], 403);
     }
@@ -141,8 +145,8 @@ class CommentController extends Controller
 
         if ($request->user()->can('delete', $comment))
         {
-            if ($this->repo->delete($comment))
-                return response([], 204);
+            $this->repo->delete($comment);
+            return response([], 204);
         }
         return response([], 403);
     }

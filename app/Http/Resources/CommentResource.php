@@ -26,8 +26,8 @@ class CommentResource extends JsonResource
 				]
 			]),
 			'replies' => CommentResource::collection($this->whenLoaded('replies')),
-			$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->rates()->sum('rate'),
-			$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->isRated(),
+			'rates'=>$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->rates()->sum('rate'),
+			'rated'=>$this->whenLoaded('rates') instanceof MissingValue ? new MissingValue : $this->isRated(),
 			'created_at' => $this->created_at,
 			'created_at_human' => $this->created_at->diffForHumans()
 		];

@@ -14,7 +14,9 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        return new UserResource($request->user());
+        $user = $request->user();
+        $user->load('profileable');
+        return new UserResource($user);
     }
 
     public function update(ProfileRequest $request)
@@ -38,7 +40,7 @@ class ProfileController extends Controller
             $user->profileable()->update($request->only(['birthdate', 'scientific_certificates']));
         }
 
-        return new UserResource($user);
+        return response([],204);
     }
 
     private function saveAvatar(Request $request)

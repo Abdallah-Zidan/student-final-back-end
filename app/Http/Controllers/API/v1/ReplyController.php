@@ -115,8 +115,8 @@ class ReplyController extends Controller
         $reply = $comment->replies()->findOrFail($reply);
         if ($request->user()->can('update', $reply)) 
         {
-            if ($this->repo->update($reply, $request->only(['body'])))
-                return response([], 204);
+            $this->repo->update($reply, $request->only(['body']));
+            return response([], 204);
         }
         return response([], 403);
     }

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Comment;
+use App\Question;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -50,6 +51,10 @@ class CommentPolicy
      */
     public function create(User $user, $parent)
     {
+        if($parent instanceof Comment && $parent->parent instanceof Question) //Reply only on Question
+        {
+            return false;
+        }
         return $user->can('view', $parent);
     }
 
@@ -80,9 +85,9 @@ class CommentPolicy
     {
         if ($comment->parent instanceof Comment) // Reply only
         {
-            return $user->can('view', $comment->parent->parent) && $user->id  === $comment->user_id;
+            return $user->can('delete', $comment->parent->parent) && $user->id  === $comment->user_id;
         }
-        return $user->can('view', $comment->parent) &&
+        return $user->can('delete', $comment->parent) &&
             ($user->id === $comment->parent->user_id   // This user is the post owner
                 || $user->id  === $comment->user_id);  // This user is the comment owner
     }
