@@ -15,7 +15,7 @@ class UserType
 	 *
 	 * @var array
 	 */
-	private static $types = [
+	public static $types = [
 		'Student',
 		'TeachingStaff',
 		'Company',

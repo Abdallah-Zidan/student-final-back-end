@@ -28,7 +28,15 @@ class AuthController extends Controller
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();
         }
-        $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
+            $user->type === UserType::getTypeString(UserType::TEACHING_STAFF) ||
+            $user->type === UserType::getTypeString(UserType::COMPANY))
+            $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::MODERATOR))
+            $user->load('profileable.faculty.university');
+
         $token = $user->createToken($request->device_name);
         $response_data['data']['token']['access_token'] = $token->plainTextToken;
         $response_data['data']['token']['expired_at'] = $this->getTokenExpirationTime($token);
@@ -67,6 +75,14 @@ class AuthController extends Controller
             $department_facultites = DepartmentFaculty::whereIn('department_id', $request->departments)->where('faculty_id', $request->faculty)->get();
             $user->departmentFaculties()->attach($department_facultites);
         }
+
+        if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
+            $user->type === UserType::getTypeString(UserType::TEACHING_STAFF) ||
+            $user->type === UserType::getTypeString(UserType::COMPANY))
+            $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::MODERATOR))
+            $user->load('profileable.faculty.university');
 
         $token = $user->createToken($request->device_name);
         $response_data['data']['token']['access_token'] = $token->plainTextToken;

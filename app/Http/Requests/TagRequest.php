@@ -25,7 +25,7 @@ class TagRequest extends FormRequest
     public function rules()
     {
         return [
-            'scope' => ['required', 'between:0,' . count(TagScope::$scopes) - 1]
         ];
     }
+				'scope' => ['required', 'integer', 'between:0,' . (count(TagScope::$scopes) - 1)]
 }

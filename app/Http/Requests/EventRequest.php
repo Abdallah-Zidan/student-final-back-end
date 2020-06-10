@@ -4,7 +4,9 @@ namespace App\Http\Requests;
 
 use App\Enums\EventScope;
 use App\Enums\EventType;
+use App\Enums\UserType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EventRequest extends FormRequest
 {
@@ -28,19 +30,26 @@ class EventRequest extends FormRequest
 		if ($this->routeIs('events.index'))
 		{
 			return [
-				'group' => 'required|integer|between:0,' . count(EventScope::$scopes) - 1,
-				'group_id' => 'required_unless:group,2|integer',
-				'type' => 'required|integer|between:0,' . count(EventType::$types) - 1
+				'group' => [
+					Rule::requiredIf($this->user()->type !== UserType::getTypeString(UserType::COMPANY)),
+					'integer',
+					'between:0,' . (count(EventScope::$scopes) - 1)
+				],
+				'group_id' => [
+					Rule::requiredIf($this->user()->type !== UserType::getTypeString(UserType::COMPANY) && $this->has('group') && $this->group != 2),
+					'integer'
+				],
+				'type' => 'required|integer|between:0,' . (count(EventType::$types) - 1)
 			];
 		}
 		else if ($this->routeIs('events.store'))
 		{
 			return [
-				'group' => 'required|integer|between:0,' . count(EventScope::$scopes) - 1,
-				'group_id' => 'required|integer',
+				'group' => 'required|integer|between:0,' . (count(EventScope::$scopes) - 1),
+				'group_id' => 'required_unless:group,2|integer',
 				'title' => 'required',
 				'body' => 'required',
-				'type' => 'required|between:0,' . count(EventType::$types) - 1,
+				'type' => 'required|integer|between:0,' . (count(EventType::$types) - 1),
 				'start_date' => 'date',
 				'end_date' => 'date|after_or_equal:start_date',
 				'files' => 'array',

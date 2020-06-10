@@ -24,6 +24,7 @@ class UserSeeder extends Seeder
 			'email' => 'admin@domain.com',
 			'gender' => UserGender::MALE,
 			'blocked' => false,
+			'avatar' => 'images/users/default_male.png',
 			'profileable_type' => UserType::getTypeModel(UserType::ADMIN)
 		]);
 		factory(User::class, 4)->create([

@@ -31,10 +31,10 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|max:255',
             'password' => ['required', new StrongPassword()],
-            'gender' => 'required|in:0,1',
+            'gender' => 'required|integer|in:0,1',
             'address' => 'required|max:255',
             'mobile' => 'required|unique:users|max:15|min:11',
-            'type' => 'required|in:0,1',
+            'type' => 'required|integer|in:0,1',
             'device_name' => 'required'
         ] + $this->getUserTypeRules();
     }
@@ -55,7 +55,7 @@ class RegisterRequest extends FormRequest
             return [
                 'email' => ['required', 'unique:users', 'max:255', new EducationEmail()],
                 'birthdate' => 'required|date|before:today',
-                'year' => 'required|lte:7|gt:0',
+                'year' => 'required|integer|between:1,7',
                 'departments' => 'required|array|max:3',
                 'departments.*' => ['required', 'exists:departments,id', 'distinct', new FacultyDepartmentsExistsRule($this->faculty)],
                 'faculty' => 'required|exists:faculties,id'

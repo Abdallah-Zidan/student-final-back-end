@@ -15,7 +15,15 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
+            $user->type === UserType::getTypeString(UserType::TEACHING_STAFF) ||
+            $user->type === UserType::getTypeString(UserType::COMPANY))
+            $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::MODERATOR))
+            $user->load('profileable.faculty.university');
+
         return new UserResource($user);
     }
 

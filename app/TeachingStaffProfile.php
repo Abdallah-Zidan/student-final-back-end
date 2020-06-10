@@ -14,15 +14,6 @@ class TeachingStaffProfile extends BaseModel
 	];
 
 	/**
-	 * The attributes that should be cast to native types.
-	 *
-	 * @var array
-	 */
-	protected $casts = [
-		'birthdate' => 'date',
-	];
-
-	/**
 	 * One-to-one relationship to the user.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\MorphOne

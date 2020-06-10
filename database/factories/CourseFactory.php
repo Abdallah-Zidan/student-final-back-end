@@ -7,6 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Course::class, function (Faker $faker) {
 	return [
-		'name' => $faker->name
+		'name' => $faker->name,
+		'description' => $faker->sentences(3, true)
 	];
 });

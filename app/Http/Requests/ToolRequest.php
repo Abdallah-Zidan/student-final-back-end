@@ -27,7 +27,7 @@ class ToolRequest extends FormRequest
 		if ($this->routeIs('tools.index'))
 		{
 			return [
-				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
+				'type' => 'required|integer|between:0,' . (count(ToolType::$types) - 1),
 				'tags' => 'string'
 			];
 		}
@@ -36,7 +36,7 @@ class ToolRequest extends FormRequest
 			return [
 				'title' => 'required',
 				'body' => 'required',
-				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
+				'type' => 'required|integer|between:0,' . (count(ToolType::$types) - 1),
 				'tags' => 'required|array',
 				'tags.*' => 'required|distinct',
 				'files' => 'array',

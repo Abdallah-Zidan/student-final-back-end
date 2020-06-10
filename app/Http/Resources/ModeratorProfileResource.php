@@ -15,7 +15,7 @@ class ModeratorProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'faculty' => new FacultyResource($this->faculty)
+            'faculty' => new FacultyResource($this->whenLoaded('faculty'))
         ];
     }
 }

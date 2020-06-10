@@ -40,13 +40,13 @@ class EventController extends Controller
 	 */
 	public function index(EventRequest $request)
 	{
-		$model = EventScope::getScopeModel($request->group);
+		$user = $request->user();
+		$model = $request->group ? EventScope::getScopeModel($request->group) : null;
 		$group = $model ? $model::findOrFail($request->group_id) : null;
 
-		if ($request->user()->can('viewAny', [Event::class, $group]))
+		if ($user->can('viewAny', [Event::class, $group]))
 		{
-			$type = $request->type;
-			$events = $this->repo->getAll($group, $type);
+			$events = $this->repo->getAll($user, $group, $request->type);
 
 			return new EventCollection($events);
 		}

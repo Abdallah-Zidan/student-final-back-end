@@ -36,6 +36,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource('posts', 'PostController')->only($methods);
 		Route::post('posts/report', 'PostController@report')->name('posts.report');
 		Route::resource('events', 'EventController')->only($methods);
+		Route::post('events/{event}/interests', 'InterestController@store')->name('interests.store');
+		Route::delete('events/{event}/interests', 'InterestController@destroy')->name('interests.destroy');
 		Route::resource('questions', 'QuestionController')->only($methods);
 		Route::resource('tools', 'ToolController')->only($methods);
 		Route::post('tools/close', 'ToolController@close')->name('tools.close');
