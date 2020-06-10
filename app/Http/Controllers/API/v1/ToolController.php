@@ -68,7 +68,7 @@ class ToolController extends Controller
 		if ($user->can('create', [Tool::class, $faculty]))
 		{
 			$tags = array_filter(array_map('trim', $request->tags));
-			$tool = $this->repo->create($user, $faculty, array_merge($request->only(['title', 'body', 'type', 'files']), $tags));
+			$tool = $this->repo->create($user, $faculty, array_merge($request->only(['title', 'body', 'type', 'files']), ['tags' => $tags]));
 
 			return response([
 				'data' => [
@@ -127,7 +127,7 @@ class ToolController extends Controller
 		if ($request->user()->can('update', $tool))
 		{
 			$tags = array_filter(array_map('trim', $request->tags));
-			$this->repo->update($tool, array_merge($request->only(['title', 'body']), $tags));
+			$this->repo->update($tool, array_merge($request->only(['title', 'body']), ['tags' => $tags]));
 
 			return response([], 204);
 		}
