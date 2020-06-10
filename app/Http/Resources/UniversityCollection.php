@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UniversityCollection extends JsonResource
+class UniversityCollection extends ResourceCollection
 {
 	/**
-	 * Transform the resource into an array.
+	 * Transform the resource collection into an array.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @return array
@@ -15,9 +15,9 @@ class UniversityCollection extends JsonResource
 	public function toArray($request)
 	{
 		return [
-			'id' => $this->id,
-			'name' => $this->name,
-			'faculties' => FacultyCollection::collection($this->whenLoaded('faculties'))
+			'data' => [
+				'universities' => UniversityResource::collection($this->collection)
+			]
 		];
 	}
 }

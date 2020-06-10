@@ -83,7 +83,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapDeshboardApiRoutes()
     {
         Route::prefix('api')
-            ->middleware('api')
+            ->middleware(['api', 'dashboardApi'])
             ->namespace($this->namespace)
             ->group(base_path('routes/dashboardApi.php'));
     }

@@ -62,7 +62,15 @@ class User extends Authenticatable implements MustVerifyEmail
 	{
 		static::deleting(function ($user) {
 			Storage::disk('local')->delete($user->attributes['avatar']);
+			$user->departmentFaculties()->detach();
+			$user->courseDepartmentFaculties()->detach();
+			$user->comments()->delete();
+			$user->posts->each->delete();
 			$user->interests()->detach();
+			$user->events->each->delete();
+			$user->questions()->delete();
+			$user->tools->each->delete();
+			$user->rates()->detach();
 		});
 	}
 
@@ -175,17 +183,6 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * One-to-many relationship to the questions.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 *
-	 */
-	public function questions()
-	{
-		return $this->hasMany(Question::class);
-	}
-
-	/**
 	 * One-to-many relationship to the events.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -205,6 +202,17 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function interests()
 	{
 		return $this->belongsToMany(Event::class, 'interests')->withTimestamps();
+	}
+
+	/**
+	 * One-to-many relationship to the questions.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function questions()
+	{
+		return $this->hasMany(Question::class);
 	}
 
 	/**

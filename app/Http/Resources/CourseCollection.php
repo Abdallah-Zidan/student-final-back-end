@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class FacultyCollection extends ResourceCollection
+class CourseCollection extends ResourceCollection
 {
 	/**
 	 * Transform the resource collection into an array.
@@ -16,7 +16,7 @@ class FacultyCollection extends ResourceCollection
 	{
 		return [
 			'data' => [
-				'faculties' => FacultyResource::collection($this->collection)
+				'courses' => CourseResource::collection($this->collection)
 			]
 		];
 	}

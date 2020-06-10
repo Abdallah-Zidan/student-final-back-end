@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\TagScope;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TagRequest extends FormRequest
+class UniversityRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
@@ -24,13 +23,7 @@ class TagRequest extends FormRequest
 	 */
 	public function rules()
 	{
-		if ($this->routeIs('tags.index'))
-		{
-			return [
-				'scope' => ['required', 'integer', 'between:0,' . (count(TagScope::$scopes) - 1)]
-			];
-		}
-		else if ($this->routeIs('dashboard.tags.store'))
+		if ($this->routeIs('dashboard.universities.store'))
 		{
 			return [
 				'name' => 'required'

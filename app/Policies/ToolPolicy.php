@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\UserType;
-use App\Faculty;
+use App\Tag;
 use App\Tool;
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -16,11 +16,11 @@ class ToolPolicy
 	 * Determine whether the user can view any models.
 	 *
 	 * @param \App\User $user
-	 * @param \App\Faculty $faculty
+	 * @param mixed $faculty
 	 *
 	 * @return bool
 	 */
-	public function viewAny(User $user, Faculty $faculty)
+	public function viewAny(User $user, $faculty)
 	{
 		if ($user->type === UserType::getTypeString(UserType::STUDENT))
 		{
@@ -53,11 +53,11 @@ class ToolPolicy
 	 * Determine whether the user can create models.
 	 *
 	 * @param \App\User $user
-	 * @param \App\Faculty $faculty
+	 * @param mixed $faculty
 	 *
 	 * @return bool
 	 */
-	public function create(User $user, Faculty $faculty)
+	public function create(User $user, $faculty)
 	{
 		if ($user->type === UserType::getTypeString(UserType::STUDENT))
 		{
@@ -117,6 +117,35 @@ class ToolPolicy
 	 * @return bool
 	 */
 	public function close(User $user, Tool $tool)
+	{
+		return $tool->user->id === $user->id;
+	}
+
+	/**
+	 * Determine whether the user can attach models.
+	 *
+	 * @param \App\User $user
+	 * @param \App\Tool $tool
+	 * @param \App\Tag $tag
+	 *
+	 * @return bool
+	 */
+	public function attach(User $user, Tool $tool, Tag $tag)
+	{
+		return $tool->user->id === $user->id ||
+			   $user->type === UserType::getTypeString(UserType::ADMIN);
+	}
+
+	/**
+	 * Determine whether the user can detach models.
+	 *
+	 * @param \App\User $user
+	 * @param \App\Tool $tool
+	 * @param \App\Tag $tag
+	 *
+	 * @return bool
+	 */
+	public function detach(User $user, Tool $tool, Tag $tag)
 	{
 		return $tool->user->id === $user->id ||
 			   $user->type === UserType::getTypeString(UserType::ADMIN);
