@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\EventScope;
+use App\Enums\UserType;
 use App\Event;
 use App\Faculty;
 use App\University;
@@ -16,19 +17,25 @@ class EventRepository
 	/**
 	 * Get all events related to the *Faculty* / *University* / *All* group.
 	 *
+	 * @param \App\User $user The user object.
 	 * @param mixed $group The *Faculty* / *University* / *All (null)* object.
 	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll($group, int $type)
+	public function getAll(User $user, $group, int $type)
 	{
-		if (is_null($group))
-			return $this->getAllInAll($type);
-		else if ($group instanceof Faculty)
-			return $this->getAllInFaculty($group, $type);
-		else if ($group instanceof University)
-			return $this->getAllInUniversity($group, $type);
+		if ($user->type === UserType::getTypeString(UserType::COMPANY))
+			return $this->getAllForCompany($user, $type);
+		else
+		{
+			if (is_null($group))
+				return $this->getAllInAll($type);
+			else if ($group instanceof Faculty)
+				return $this->getAllInFaculty($group, $type);
+			else if ($group instanceof University)
+				return $this->getAllInUniversity($group, $type);
+		}
 
 		return new LengthAwarePaginator([], 0, 10, 1, [
 			'path' => Paginator::resolveCurrentPath(),
@@ -94,8 +101,33 @@ class EventRepository
 	}
 
 	/**
+	 * Get all events related to the company.
+	 *
+	 * @param \App\User $user The user object.
+	 * @param int $type The event type.
+	 *
+	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+	 */
+	private function getAllForCompany(User $user, int $type)
+	{
+		$events = Event::with([
+			'user',
+			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.user',
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies.user',
+			'files'
+		])->where([
+			['user_id', $user->id],
+			['type', $type]
+		])->orderBy('created_at', 'desc')->paginate(10);
+
+		return $events;
+	}
+
+	/**
 	 * Get all events related to the *All* group.
-	 * 
+	 *
 	 * @param int $type The event type.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator

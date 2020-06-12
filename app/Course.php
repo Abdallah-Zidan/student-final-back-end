@@ -10,8 +10,20 @@ class Course extends BaseModel
 	 * @var array
 	 */
 	protected $fillable = [
-		'name'
+		'name', 'description'
 	];
+
+	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($course) {
+			$course->departmentFaculties()->detach();
+		});
+	}
 
 	/**
 	 * Many-to-many relationship to the departmentFaculties.

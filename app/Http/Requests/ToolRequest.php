@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\ToolType;
+use App\Enums\UserType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ToolRequest extends FormRequest
 {
@@ -27,7 +29,7 @@ class ToolRequest extends FormRequest
 		if ($this->routeIs('tools.index'))
 		{
 			return [
-				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
+				'type' => 'required|integer|between:0,' . (count(ToolType::$types) - 1),
 				'tags' => 'string'
 			];
 		}
@@ -36,7 +38,7 @@ class ToolRequest extends FormRequest
 			return [
 				'title' => 'required',
 				'body' => 'required',
-				'type' => 'required|integer|between:0,' . count(ToolType::$types) - 1,
+				'type' => 'required|integer|between:0,' . (count(ToolType::$types) - 1),
 				'tags' => 'required|array',
 				'tags.*' => 'required|distinct',
 				'files' => 'array',
@@ -58,5 +60,40 @@ class ToolRequest extends FormRequest
 				'id' => 'required|integer'
 			];
 		}
+		else if ($this->routeIs('dashboard.tools.index'))
+		{
+			return [
+				'type' => 'integer|between:0,' . (count(ToolType::$types) - 1),
+				'tags' => 'string'
+			];
+		}
+		else if ($this->routeIs('dashboard.tools.store'))
+		{
+			return [
+				'title' => 'required',
+				'body' => 'required',
+				'type' => 'required|integer|between:0,' . (count(ToolType::$types) - 1),
+				'faculty_id' => 'required|integer',
+				'user_id' => 'required|integer'
+			];
+		}
+		else if ($this->routeIs('dashboard.tools.update'))
+		{
+			return [
+				'type' => 'integer|between:0,' . (count(ToolType::$types) - 1),
+				'closed' => 'integer',
+				'faculty_id' => 'integer',
+				'user_id' => 'integer'
+			];
+		}
+		else if ($this->routeIs('dashboard.tools.attach') || $this->routeIs('dashboard.tools.detach'))
+		{
+			return [
+				'tool_id' => 'required|integer',
+				'tag_id' => 'required|integer'
+			];
+		}
+
+		return [];
 	}
 }

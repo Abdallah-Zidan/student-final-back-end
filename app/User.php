@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -51,6 +52,27 @@ class User extends Authenticatable implements MustVerifyEmail
 	protected $appends = [
 		'type'
 	];
+
+	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($user) {
+			Storage::disk('local')->delete($user->attributes['avatar']);
+			$user->departmentFaculties()->detach();
+			$user->courseDepartmentFaculties()->detach();
+			$user->comments()->delete();
+			$user->posts->each->delete();
+			$user->interests()->detach();
+			$user->events->each->delete();
+			$user->questions()->delete();
+			$user->tools->each->delete();
+			$user->rates()->detach();
+		});
+	}
 
 	/**
 	 * Set the user password hash.
@@ -161,17 +183,6 @@ class User extends Authenticatable implements MustVerifyEmail
 	}
 
 	/**
-	 * One-to-many relationship to the questions.
-	 *
-	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
-	 *
-	 */
-	public function questions()
-	{
-		return $this->hasMany(Question::class);
-	}
-
-	/**
 	 * One-to-many relationship to the events.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -180,6 +191,28 @@ class User extends Authenticatable implements MustVerifyEmail
 	public function events()
 	{
 		return $this->hasMany(Event::class);
+	}
+
+	/**
+	 * Many-to-many relationship to the interests.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function interests()
+	{
+		return $this->belongsToMany(Event::class, 'interests')->withTimestamps();
+	}
+
+	/**
+	 * One-to-many relationship to the questions.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function questions()
+	{
+		return $this->hasMany(Question::class);
 	}
 
 	/**

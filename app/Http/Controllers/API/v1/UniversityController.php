@@ -37,10 +37,6 @@ class UniversityController extends Controller
 	{
 		$universities = $this->repo->getAll();
 
-		return response([
-			'data' => [
-				'universities' => UniversityCollection::collection($universities)
-			]
-		]);
+		return new UniversityCollection($universities);
 	}
 }

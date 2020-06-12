@@ -24,7 +24,7 @@ class RateRequest extends FormRequest
     public function rules()
     {
         return [
-            'rate' => 'required|in:1,-1'
+            'rate' => 'required|integer|in:1,-1'
         ];
     }
 }

@@ -14,6 +14,20 @@ class University extends BaseModel
 	];
 
 	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($university) {
+			$university->faculties()->delete();
+			$university->posts->delete();
+			$university->events->delete();
+		});
+	}
+
+	/**
 	 * One-to-Many relationship to the faculties.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

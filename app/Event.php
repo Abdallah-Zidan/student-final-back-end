@@ -52,6 +52,7 @@ class Event extends BaseModel
 	protected static function booted()
 	{
 		static::deleting(function ($event) {
+			$event->interests()->detach();
 			$event->comments()->delete();
 			$event->files->each->delete();
 		});
@@ -91,6 +92,17 @@ class Event extends BaseModel
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	/**
+	 * Many-to-many relationship to the interests.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function interests()
+	{
+		return $this->belongsToMany(User::class, 'interests')->withTimestamps();
 	}
 
 	/**

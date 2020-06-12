@@ -14,6 +14,19 @@ class Department extends BaseModel
 	];
 
 	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($department) {
+			$department->faculties()->detach();
+			$department->courseDepartmentFaculties()->delete();
+		});
+	}
+
+	/**
 	 * Many-to-many relationship to the faculties.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

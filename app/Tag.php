@@ -14,6 +14,19 @@ class Tag extends BaseModel
 	];
 
 	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($tag) {
+			$tag->questions()->detach();
+			$tag->tools()->detach();
+		});
+	}
+
+	/**
 	 * Many-to-many relationship to the questions.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

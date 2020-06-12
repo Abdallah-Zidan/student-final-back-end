@@ -14,6 +14,23 @@ class Faculty extends BaseModel
 	];
 
 	/**
+	 * Perform any actions required after the model boots.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function ($faculty) {
+			$faculty->moderators()->delete();
+			$faculty->departments()->detach();
+			$faculty->courseDepartmentFaculties()->delete();
+			$faculty->posts->delete();
+			$faculty->events->delete();
+			$faculty->tools->delete();
+		});
+	}
+
+	/**
 	 * One-to-many relationship to the moderators.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany

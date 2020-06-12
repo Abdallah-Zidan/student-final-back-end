@@ -49,7 +49,11 @@ class PostPolicy
 		}
 		else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 		{
-			if ($group instanceof DepartmentFaculty)
+			if (is_null($group)) // Dashboard policy to get all posts
+			{
+				return true;
+			}
+			else if ($group instanceof DepartmentFaculty)
 			{
 				if (DepartmentFaculty::where('faculty_id', $user->profileable->faculty->id)->find($group->id))
 					return true;
@@ -83,8 +87,8 @@ class PostPolicy
 	{
 		return $post->user->id === $user->id ||
 			  ($user->can('viewAny', [Post::class, $post->scopeable]) &&
-				($user->type === UserType::getTypeString(UserType::STUDENT) && $user->profileable->year === $post->year) ||
-				 $user->type !== UserType::getTypeString(UserType::STUDENT));
+				(($user->type === UserType::getTypeString(UserType::STUDENT) && $user->profileable->year === $post->year) ||
+				  $user->type !== UserType::getTypeString(UserType::STUDENT)));
 	}
 
 	/**

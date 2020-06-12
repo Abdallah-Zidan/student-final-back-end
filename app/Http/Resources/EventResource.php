@@ -21,9 +21,9 @@ class EventResource extends JsonResource
 			'body' => $this->body,
 			'type' => $this->type,
 			'start_date' => $this->start_date,
-			'start_date_human' => $this->start_date->diffForHumans(),
+			'start_date_human' => $this->start_date ? $this->start_date->diffForHumans() : null,
 			'end_date' => $this->end_date,
-			'end_date_human' => $this->end_date->diffForHumans(),
+			'end_date_human' => $this->end_date ? $this->end_date->diffForHumans() : null,
 			$this->mergeWhen($this->whenLoaded('user'), [
 				'user' => [
 					'id' => $this->user->id,
