@@ -26,7 +26,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 
 	Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 		Route::group(['prefix' => 'user', 'namespace' => 'User'], function () {
-			Route::get('profile', 'ProfileController@show')->name('user.profile.show');
+			Route::get('profile/{user?}', 'ProfileController@show')->name('user.profile.show');
 			Route::put('profile', 'ProfileController@update')->name('user.profile.update');
 			Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
 		});
@@ -55,5 +55,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::post('comments/{comment}/rates', 'RateController@store')->name('rates.store');
 		Route::put('comments/{comment}/rates', 'RateController@update')->name('rates.update');
 		Route::delete('comments/{comment}/rates', 'RateController@destroy')->name('rates.destroy');
+
+		Route::get('messages/{user}','MessageController@index')->name('messages.index');
+		Route::post('messages','MessageController@store')->name('messages.store');
+
+		Route::get('receivers/','ReceiverController@index');
 	});
 });

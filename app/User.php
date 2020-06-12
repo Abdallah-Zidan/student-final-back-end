@@ -216,4 +216,15 @@ class User extends Authenticatable implements MustVerifyEmail
 					->withPivot('rate')
 					->withTimestamps();
 	}
+
+	/**
+	 * One-to-many relationship to the messages.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function messges()
+	{
+		return $this->hasMany(Message::class,'from');
+	}
 }

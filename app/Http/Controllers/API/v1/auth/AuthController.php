@@ -28,7 +28,12 @@ class AuthController extends Controller
         if ($token = $user->tokens()->where('name', $request->device_name)) {
             $token->delete();
         }
-        $user->load('profileable');
+        if ($user->type != UserType::getTypeString(UserType::ADMIN))
+            $user->load('profileable');
+            
+        if ($user->type == UserType::getTypeString(UserType::MODERATOR))
+            $user->load(['profileable.faculty','profileable.faculty.university']);
+        
         $token = $user->createToken($request->device_name);
         $response_data['data']['token']['access_token'] = $token->plainTextToken;
         $response_data['data']['token']['expired_at'] = $this->getTokenExpirationTime($token);

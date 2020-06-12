@@ -1,5 +1,7 @@
 <?php
 
+use App\Events\MessageSent;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,3 +20,5 @@ Route::get('/', function () {
 });
 
 Route::get('uploads/{path}', 'UploadController@show')->where('path', '.*');
+
+Broadcast::routes(['middleware' => ['auth:sanctum']]);

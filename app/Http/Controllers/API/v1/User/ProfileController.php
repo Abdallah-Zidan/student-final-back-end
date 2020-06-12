@@ -6,6 +6,7 @@ use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProfileRequest;
 use App\Http\Resources\UserResource;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -14,8 +15,19 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        $user = $request->user();
-        $user->load('profileable');
+        if($user = $request->user)
+            $user = User::findOrFail($user);
+        else
+            $user = $request->user();
+
+        if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
+        $user->type === UserType::getTypeString(UserType::TEACHING_STAFF) ||
+        $user->type === UserType::getTypeString(UserType::COMPANY))
+            $user->load('profileable');
+
+        if ($user->type === UserType::getTypeString(UserType::MODERATOR))
+            $user->load('profileable.faculty.university');
+
         return new UserResource($user);
     }
 

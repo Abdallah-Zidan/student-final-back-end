@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ModeratorProfileResource extends JsonResource
+class ReceiverResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +15,9 @@ class ModeratorProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'faculty' => new FacultyResource($this->whenLoaded('faculty'))
+            'id' => $this->id,
+            'name' => $this->name,
+            'avatar' => $this->avatar
         ];
     }
 }
