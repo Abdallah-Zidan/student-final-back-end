@@ -32,10 +32,10 @@ class ProfileRequest extends FormRequest
             'address' => 'max:255',
             'mobile' => ['max:15', 'min:11', Rule::unique('users')->ignore($this->user())],
             'avatar' => 'mimes:jpeg,bmp,png|file|max:2048'
-        ] + $this->updateProfileableData();
+        ] + $this->ProfileableData();
     }
 
-    private function updateProfileableData()
+    private function ProfileableData()
     {
         if ($this->user()->type == UserType::getTypeString(UserType::COMPANY))
         {
@@ -52,5 +52,7 @@ class ProfileRequest extends FormRequest
                 'birthdate' => 'date|before:today'
             ];
         }
+        else
+        return [];
     }
 }

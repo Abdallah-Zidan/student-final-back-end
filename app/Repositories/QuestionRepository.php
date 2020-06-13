@@ -32,7 +32,7 @@ class QuestionRepository
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(array $tags = [])
+	public function getAll(string $tags =null)
 	{
 		$tags = array_filter(array_map('trim', explode(",", $tags)));
 
@@ -43,6 +43,7 @@ class QuestionRepository
 		return Question::with([
 			'user',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.rates',
 			'comments.user',
 			'tags',
 		])->orderBy('created_at' , 'desc')->paginate(10);
@@ -61,8 +62,9 @@ class QuestionRepository
 		$questions = Question::whereIn('id', $questions_ids)->with([
 			'user',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.rates',
 			'comments.user',
-			'tags'
+			'tags',
 		])->orderBy('created_at', 'desc')->paginate(10);
 		return $questions;
 	}
