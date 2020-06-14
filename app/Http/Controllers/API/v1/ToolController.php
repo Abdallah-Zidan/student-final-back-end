@@ -40,7 +40,8 @@ class ToolController extends Controller
 	public function index(ToolRequest $request)
 	{
 		$user = $request->user();
-		$faculty = $user->departmentFaculties()->first()->faculty;
+		$department_faculty = $user->departmentFaculties()->first();
+		$faculty = $department_faculty ? $department_faculty->faculty : null;
 
 		if ($user->can('viewAny', [Tool::class, $faculty]))
 		{
@@ -63,7 +64,8 @@ class ToolController extends Controller
 	public function store(ToolRequest $request)
 	{
 		$user = $request->user();
-		$faculty = $user->departmentFaculties()->first()->faculty;
+		$department_faculty = $user->departmentFaculties()->first();
+		$faculty = $department_faculty ? $department_faculty->faculty : null;
 
 		if ($user->can('create', [Tool::class, $faculty]))
 		{

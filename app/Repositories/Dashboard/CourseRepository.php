@@ -4,22 +4,31 @@ namespace App\Repositories\Dashboard;
 
 use App\Course;
 use App\DepartmentFaculty;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class CourseRepository
 {
 	/**
 	 * Get all courses.
 	 *
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(int $items = 10)
+	public function getAll($items = 10)
 	{
-		return Course::with([
-			'departmentFaculties.faculty',
-			'departmentFaculties.department'
-		])->paginate($items);
+		if ($items === '*')
+		{
+			$courses = Course::all();
+
+			return new LengthAwarePaginator($courses, $courses->count(), $courses->count(), 1, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+		else
+			return Course::paginate($items);
 	}
 
 	/**
@@ -69,7 +78,7 @@ class CourseRepository
 	 */
 	public function attach(Course $course, DepartmentFaculty $department_faculty)
 	{
-		if (!$course->departmentFaculties()->find($department_faculty))
+		if (!$course->departmentFaculties()->find($department_faculty->id))
 			$course->departmentFaculties()->attach($department_faculty);
 	}
 

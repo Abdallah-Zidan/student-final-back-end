@@ -21,9 +21,9 @@ class University extends BaseModel
 	protected static function booted()
 	{
 		static::deleting(function ($university) {
-			$university->faculties()->delete();
-			$university->posts->delete();
-			$university->events->delete();
+			$university->faculties->each->delete();
+			$university->posts->each->delete();
+			$university->events->each->delete();
 		});
 	}
 

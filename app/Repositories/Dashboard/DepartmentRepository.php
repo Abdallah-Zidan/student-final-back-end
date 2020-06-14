@@ -4,22 +4,31 @@ namespace App\Repositories\Dashboard;
 
 use App\Department;
 use App\Faculty;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class DepartmentRepository
 {
 	/**
 	 * Get all departments.
 	 *
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(int $items = 10)
+	public function getAll($items = 10)
 	{
-		return Department::with([
-			'faculties',
-			'courseDepartmentFaculties.course'
-		])->paginate($items);
+		if ($items === '*')
+		{
+			$departments = Department::all();
+
+			return new LengthAwarePaginator($departments, $departments->count(), $departments->count(), 1, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+		else
+			return Department::paginate($items);
 	}
 
 	/**

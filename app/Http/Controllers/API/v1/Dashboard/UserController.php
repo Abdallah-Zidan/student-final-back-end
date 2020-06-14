@@ -46,7 +46,7 @@ class UserController extends Controller
 
 		if ($user->can('viewAny', User::class))
 		{
-			$items = intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
 			$users = $this->repo->getAll($user, $items);
 
 			return new UserCollection($users);
