@@ -204,6 +204,6 @@ class PostPolicy
 	 */
 	public function report(User $user, Post $post)
 	{
-		return $user->can('view', $post);
+		return $user->can('viewAny', [Post::class, $post->scopeable]);
 	}
 }

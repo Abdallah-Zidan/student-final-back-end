@@ -20,7 +20,10 @@ class CourseRepository
 	{
 		if ($items === '*')
 		{
-			$courses = Course::all();
+			$courses = Course::with([
+				'departmentFaculties.faculty',
+				'departmentFaculties.department'
+			])->get();
 
 			return new LengthAwarePaginator($courses, $courses->count(), $courses->count(), 1, [
 				'path' => Paginator::resolveCurrentPath(),

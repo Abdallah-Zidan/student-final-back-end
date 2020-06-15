@@ -106,7 +106,10 @@ class EventController extends Controller
 	{
 		if ($request->user()->can('view', $event))
 		{
-			$event->load('user');
+			$event->load([
+				'user',
+				'interests'
+			]);
 
 			if ($event->scope === EventScope::getScopeString(EventScope::FACULTY) || $event->scope === EventScope::getScopeString(EventScope::UNIVERSITY))
 				$event->load('scopeable');

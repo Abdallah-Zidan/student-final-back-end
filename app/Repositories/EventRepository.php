@@ -112,6 +112,7 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
+			'interests',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
 			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
@@ -136,6 +137,7 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
+			'interests',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
 			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
@@ -161,6 +163,7 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
+			'interests',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
@@ -188,6 +191,7 @@ class EventRepository
 	{
 		$events = Event::with([
 			'user',
+			'interests',
 			'scopeable',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',

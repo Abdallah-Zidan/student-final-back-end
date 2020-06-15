@@ -61,6 +61,10 @@ class UserRequest extends FormRequest
 				'faculty_id' => [
 					Rule::requiredIf($this->user()->type === UserType::getTypeString(UserType::ADMIN) && $this->has('type') && $this->type == UserType::MODERATOR),
 					'integer'
+				],
+				'department_id' => [
+					Rule::requiredIf($this->user()->type === UserType::getTypeString(UserType::MODERATOR) && $this->has('type') && $this->type == UserType::TEACHING_STAFF),
+					'integer'
 				]
 			];
 		}
@@ -74,13 +78,14 @@ class UserRequest extends FormRequest
 				'avatar' => 'mimes:jpeg,bmp,png|file|max:2048',
 				'birthdate' => 'date|before:today',
 				'year' => 'integer|between:1,7',
+				'faculty_id' => 'integer'
+			] + ($this->user->type === UserType::getTypeString(UserType::COMPANY) ? [
 				'fax' => 'unique:company_profiles,fax,' . $this->user->profileable->id,
 				'website' => [
 					'unique:company_profiles,website,' . $this->user->profileable->id,
 					'url'
-				],
-				'faculty_id' => 'integer'
-			];
+				]
+			] : []);
 		}
 		else if ($this->routeIs('dashboard.users.departments.attach') || $this->routeIs('dashboard.users.departments.detach'))
 		{
