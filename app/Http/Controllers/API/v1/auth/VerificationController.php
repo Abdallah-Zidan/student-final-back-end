@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class VerificationController extends Controller
 {
@@ -81,7 +82,9 @@ class VerificationController extends Controller
          if($request->wantsJson()) {
              return new Response([], 204);
          }
-        return response(['message' => 'Successfully verified']);
+        // return view('verifyEmail'); //view
+        Redirect::to('http://localhost:4200/email/verify/success');
+        // redirect('http://localhost:4200/email/verify/success');
 
     }
 

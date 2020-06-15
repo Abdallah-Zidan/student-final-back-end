@@ -29,6 +29,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 			Route::get('profile/{user?}', 'ProfileController@show')->name('user.profile.show');
 			Route::put('profile', 'ProfileController@update')->name('user.profile.update');
 			Route::get('departments', 'DepartmentFacultyController@index')->name('user.department.index');
+			Route::get('courses', 'CourseController@index')->name('user.courses.index');
 		});
 
 		$methods = ['index', 'store', 'show', 'update', 'destroy'];
@@ -42,15 +43,21 @@ Route::group(['prefix' => 'v1', 'namespace' => 'API\v1'], function () {
 		Route::resource('tools', 'ToolController')->only($methods);
 		Route::post('tools/close', 'ToolController@close')->name('tools.close');
 		Route::get('tags', 'TagController@index')->name('tags.index');
+		Route::resource('coursePosts', 'CoursePostController')->only($methods);
+		Route::resource('tutorials', 'TutorialController')->only($methods);
 
 		Route::resource('posts.files', 'FileController')->only($methods);
 		Route::resource('events.files', 'FileController')->only($methods);
 		Route::resource('tools.files', 'FileController')->only($methods);
+		Route::resource('coursePosts.files', 'FileController')->only($methods);
+		Route::resource('tutorials.files', 'FileController')->only($methods);
 
 		Route::resource('posts.comments', 'CommentController')->only($methods);
 		Route::resource('events.comments', 'CommentController')->only($methods);
 		Route::resource('questions.comments', 'CommentController')->only($methods);
 		Route::resource('tools.comments', 'CommentController')->only($methods);
+		Route::resource('coursePosts.comments', 'CommentController')->only($methods);
+		Route::resource('tutorials.comments', 'CommentController')->only($methods);
 
 		Route::resource('comments.replies', 'ReplyController')->only($methods);
 

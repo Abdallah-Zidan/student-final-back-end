@@ -260,4 +260,15 @@ class User extends Authenticatable implements MustVerifyEmail
 	{
 		return $this->hasMany(Message::class,'from');
 	}
+
+	/**
+	 * One-to-many relationship to the coursePosts.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 *
+	 */
+	public function coursePosts()
+	{
+		return $this->hasMany(CoursePost::class);
+	}
 }

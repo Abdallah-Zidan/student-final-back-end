@@ -135,7 +135,7 @@ class ReplyController extends Controller
         $reply = $comment->replies()->findOrFail($reply);
         if ($request->user()->can('delete', $reply))
         { 
-            if ($this->repo->delete($reply))
+            $this->repo->delete($reply);
             return response([], 204);
         }
         return response([], 403);

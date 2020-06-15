@@ -61,5 +61,6 @@ class RegisterRequest extends FormRequest
                 'faculty' => 'required|exists:faculties,id'
             ];
         }
+        return [];
     }
 }

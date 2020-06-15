@@ -45,4 +45,9 @@ class CourseDepartmentFaculty extends BaseModel
 	{
 		return $this->belongsTo(Course::class);
 	}
+	
+	public function coursePosts()
+	{
+		return $this->hasMany(CoursePost::class);
+	}
 }
