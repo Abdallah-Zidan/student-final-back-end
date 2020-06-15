@@ -98,6 +98,7 @@ class EventController extends Controller
 		{
 			$event->load([
 				'user',
+				'interests',
 				'comments' => function ($query) { $query->orderBy('created_at'); },
 				'comments.user',
 				'comments.replies' => function ($query) { $query->orderBy('created_at'); },

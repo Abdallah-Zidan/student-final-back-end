@@ -25,7 +25,9 @@ class UserResource extends JsonResource
             'address' => $this->address,
             'mobile' => $this->mobile,
             'avatar' => $this->avatar,
-            'type' => $this->type
+            'type' => $this->type,
+            'department_faculties' => DepartmentFacultyResource::collection($this->whenLoaded('departmentFaculties')),
+            'course_department_faculties' => CourseDepartmentFacultyResource::collection($this->whenLoaded('courseDepartmentFaculties'))
         ] + $this->getProfile();
     }
 

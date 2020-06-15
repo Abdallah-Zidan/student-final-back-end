@@ -61,10 +61,33 @@ class UserRepository
 		if (array_key_exists('avatar', $data))
 			$data['avatar'] = Storage::disk('local')->put('images/users', $data['avatar']);
 
+		$data['email_verified_at'] = now();
+
 		if ($data['type'] == UserType::ADMIN)
-			$user = User::create($data);
+		{
+			$user = User::create($data + [
+				'profileable_type' => UserType::getTypeModel(UserType::ADMIN),
+				'profileable_id' => 0
+			]);
+		}
 		else
-			$user = $profile->user()->create($data);
+		{
+			$user = $profile->user()->create($data + [
+				'profileable_type' => get_class($profile),
+				'profileable_id' => $profile->id
+			]);
+
+			if ($user->type === UserType::getTypeString(UserType::TEACHING_STAFF))
+			{
+				$department_Faculty = DepartmentFaculty::where([
+					['faculty_id', $profile_data['faculty_id']],
+					['department_id', $profile_data['department_id']]
+				])->first();
+
+				if ($department_Faculty && !$user->departmentFaculties()->find($department_Faculty))
+					$user->departmentFaculties()->attach($department_Faculty);
+			}
+		}
 
 		return $user;
 	}
@@ -85,7 +108,7 @@ class UserRepository
 
 		if (array_key_exists('avatar', $data))
 		{
-			Storage::disk('local')->delete($user->avatar);
+			Storage::disk('local')->delete($user->getAttributes()['avatar']);
 			$data['avatar'] = Storage::disk('local')->put('images/users', $data['avatar']);
 		}
 

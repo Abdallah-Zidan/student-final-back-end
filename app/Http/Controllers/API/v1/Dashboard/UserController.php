@@ -75,7 +75,8 @@ class UserController extends Controller
 			$profile_data = $request->only(['birthdate', 'year', 'scientific_certificates', 'fax', 'description', 'website']) + ($user->type === UserType::getTypeString(UserType::ADMIN) ? [
 				'faculty_id' => $request->faculty_id
 			] : [
-				'faculty_id' => $user->profileable->faculty->id
+				'faculty_id' => $user->profileable->faculty->id,
+				'department_id' => $request->department_id
 			]);
 			$user = $this->repo->create($data, $profile_data);
 
@@ -104,11 +105,18 @@ class UserController extends Controller
 		if ($request->user()->can('view', $user))
 		{
 			if ($user->type === UserType::getTypeString(UserType::STUDENT) ||
-				$user->type === UserType::getTypeString(UserType::TEACHING_STAFF) ||
-				$user->type === UserType::getTypeString(UserType::COMPANY))
+				$user->type === UserType::getTypeString(UserType::TEACHING_STAFF))
+			{
+				$user->load([
+					'profileable',
+					'departmentFaculties.department',
+					'departmentFaculties.faculty.university',
+					'courseDepartmentFaculties.course'
+				]);
+			}
+			else if ($user->type === UserType::getTypeString(UserType::COMPANY))
 				$user->load('profileable');
-
-			if ($user->type === UserType::getTypeString(UserType::MODERATOR))
+			else if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 				$user->load('profileable.faculty.university');
 
 			return response([
@@ -139,7 +147,7 @@ class UserController extends Controller
 		if ($current_user->can('update', $user))
 		{
 			$data = $request->only(['name', 'email', 'password', 'gender', 'blocked', 'address', 'mobile', 'avatar']);
-			$profile_data = $request->only(['birthdate', 'year', 'scientific_certificates', 'fax', 'description', 'website']) + ($user->type === UserType::getTypeString(UserType::ADMIN) ? $request->only(['faculty_id']) : []);
+			$profile_data = $request->only(['birthdate', 'year', 'scientific_certificates', 'fax', 'description', 'website']) + ($current_user->type === UserType::getTypeString(UserType::ADMIN) ? $request->only(['faculty_id']) : []);
 			$this->repo->update($user, $data, $profile_data);
 
 			return response([], 204);
@@ -180,7 +188,7 @@ class UserController extends Controller
 		$user = User::findOrFail($request->user_id);
 		$department_faculty = DepartmentFaculty::where([
 			['department_id', $request->department_id],
-			['faculty_id', ($user->type === UserType::getTypeString(UserType::ADMIN)) ? $request->faculty_id : $user->profileable->faculty->id]
+			['faculty_id', $request->user()->type === UserType::getTypeString(UserType::ADMIN) ? $request->faculty_id : $request->user()->profileable->faculty->id]
 		])->firstOrFail();
 
 		if ($request->user()->can('attachDepartment', [User::class, $user, $department_faculty]))
@@ -205,7 +213,7 @@ class UserController extends Controller
 		$user = User::findOrFail($request->user_id);
 		$department_faculty = DepartmentFaculty::where([
 			['department_id', $request->department_id],
-			['faculty_id', ($user->type === UserType::getTypeString(UserType::ADMIN)) ? $request->faculty_id : $user->profileable->faculty->id]
+			['faculty_id', $request->user()->type === UserType::getTypeString(UserType::ADMIN) ? $request->faculty_id : $request->user()->profileable->faculty->id]
 		])->firstOrFail();
 
 		if ($request->user()->can('detachDepartment', [User::class, $user, $department_faculty]))
@@ -230,7 +238,7 @@ class UserController extends Controller
 		$user = User::findOrFail($request->user_id);
 		$department_faculty = DepartmentFaculty::where([
 			['department_id', $request->department_id],
-			['faculty_id', ($user->type === UserType::getTypeString(UserType::ADMIN)) ? $request->faculty_id : $user->profileable->faculty->id]
+			['faculty_id', $request->user()->type === UserType::getTypeString(UserType::ADMIN) ? $request->faculty_id : $request->user()->profileable->faculty->id]
 		])->firstOrFail();
 		$course_department_faculty = CourseDepartmentFaculty::where([
 			['course_id', $request->course_id],
@@ -259,7 +267,7 @@ class UserController extends Controller
 		$user = User::findOrFail($request->user_id);
 		$department_faculty = DepartmentFaculty::where([
 			['department_id', $request->department_id],
-			['faculty_id', ($user->type === UserType::getTypeString(UserType::ADMIN)) ? $request->faculty_id : $user->profileable->faculty->id]
+			['faculty_id', $request->user()->type === UserType::getTypeString(UserType::ADMIN) ? $request->faculty_id : $request->user()->profileable->faculty->id]
 		])->firstOrFail();
 		$course_department_faculty = CourseDepartmentFaculty::where([
 			['course_id', $request->course_id],

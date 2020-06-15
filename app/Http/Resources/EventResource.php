@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Enums\EventScope;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\MissingValue;
 
 class EventResource extends JsonResource
 {
@@ -39,6 +40,7 @@ class EventResource extends JsonResource
 				$this->scope === EventScope::getScopeString(EventScope::UNIVERSITY),
 				['university' => new UniversityResource($this->whenLoaded('scopeable'))]
 			),
+			'interests' => $this->whenLoaded('interests') instanceof MissingValue ? new MissingValue : InterestResource::collection($this->interests),
 			'comments' => CommentResource::collection($this->whenLoaded('comments')),
 			'files' => FileResource::collection($this->whenLoaded('files')),
 			'created_at' => $this->created_at,
