@@ -42,7 +42,7 @@ class CourseController extends Controller
 	{
 		if ($request->user()->can('viewAny', Course::class))
 		{
-			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : (intval($request->items) ?: 10);
 			$courses = $this->repo->getAll($items);
 
 			return new CourseCollection($courses);

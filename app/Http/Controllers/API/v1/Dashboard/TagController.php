@@ -41,7 +41,7 @@ class TagController extends Controller
 	{
 		if ($request->user()->can('viewAny', Tag::class))
 		{
-			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : (intval($request->items) ?: 10);
 			$tags = $this->repo->getAll($items);
 
 			return new TagCollection($tags);
