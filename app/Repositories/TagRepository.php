@@ -25,6 +25,9 @@ class TagRepository
         } else if ($scope == TagScope::QUESTION) 
         {
             $tags_ids = DB::table('question_tags')->pluck('tag_id');
+        }else if ($scope == TagScope::TUTORIAL) 
+        {
+            $tags_ids = DB::table('tag_tutorials')->pluck('tag_id');
         }
         return Tag::find($tags_ids);
     }

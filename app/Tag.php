@@ -47,4 +47,15 @@ class Tag extends BaseModel
 	{
 		return $this->belongsToMany(Tool::class, 'tag_tools')->withTimestamps();
 	}
+
+	/**
+	 * Many-to-many relationship to the tutorials.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+	 *
+	 */
+	public function tutorials()
+	{
+		return $this->belongsToMany(Tutorial::class, 'tag_tutorials')->withTimestamps();
+	}
 }

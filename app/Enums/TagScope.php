@@ -6,6 +6,7 @@ class TagScope
 {
 	const TOOL = 0;
 	const QUESTION = 1;
+	const TUTORIAL=2;
 
 	/**
 	 * The tag available scopes.
@@ -15,6 +16,7 @@ class TagScope
 	public static $scopes = [
 		'Tool',
 		'Question',
+		'Tutorial'
 	];
 
 	/**

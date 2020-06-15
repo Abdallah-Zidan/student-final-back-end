@@ -30,7 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         Comment::class => CommentPolicy::class,
         Question::class => QuestionPolicy::class,
         CoursePost::class => CoursePostPolicy::class,
-        // Tutorial::class => TutorialPolicy::class,
+        Tutorial::class => TutorialPolicy::class,
     ];
 
     /**

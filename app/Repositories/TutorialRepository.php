@@ -2,11 +2,13 @@
 
 namespace App\Repositories;
 
-use App\Question;
 use App\Tag;
+use App\Tutorial;
+use App\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-class QuestionRepository
+class TutorialRepository
 {
 		/**
 	 * The tag repository object.
@@ -40,12 +42,14 @@ class QuestionRepository
 			return $this->filter($tags);
 		}
 
-		return Question::with([
+		return Tutorial::with([
 			'user',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
-			'comments.rates',
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
 			'comments.user',
+			'comments.replies.user',
 			'tags',
+			'files'
 		])->orderBy('created_at' , 'desc')->paginate(10);
 	}
 
@@ -58,15 +62,18 @@ class QuestionRepository
 	private function filter(array $tags)
 	{
 		$tags_ids = Tag::whereIn('name', $tags)->get()->pluck('id');
-		$questions_ids = DB::table('question_tags')->whereIn('tag_id', $tags_ids)->get()->pluck('question_id');
-		$questions = Question::whereIn('id', $questions_ids)->with([
+		$questions_ids = DB::table('tag_tutorials')->whereIn('tag_id', $tags_ids)->get()->pluck('tutorial_id');
+		$tutorials = Tutorial::whereIn('id', $questions_ids)->with([
 			'user',
 			'comments' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies' => function ($query) { $query->orderBy('created_at'); },
+			'comments.replies.user',
 			'comments.rates',
 			'comments.user',
 			'tags',
+			'files'
 		])->orderBy('created_at', 'desc')->paginate(10);
-		return $questions;
+		return $tutorials;
 	}
 
 	/**
@@ -77,11 +84,22 @@ class QuestionRepository
 	 *
 	 * @return \App\Question
 	 */
-	public function create(array $data)
+	public function create(array $data, User $user)
 	{
-		$question = Question::create(['title' => $data['title'], 'body' => $data['body'], 'user_id' => request()->user()->id]);
-		$this->attachTags($question, $data['tags']);
-		return $question;
+		$tutorial = Tutorial::create([ 'body' => $data['body'], 'user_id'=> $user->id]);
+		$this->attachTags($tutorial, $data['tags']);
+
+		if (array_key_exists('files', $data)) {
+            foreach ($data['files'] as $file) {
+                $path = Storage::disk('local')->put('files/posts/' . $tutorial->id, $file);
+                $tutorial->files()->create([
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime' => Storage::mimeType($path)
+                ]);
+            }
+        }	
+		return $tutorial;
 	}
 
 	/**
@@ -91,7 +109,7 @@ class QuestionRepository
 	 * @param array $tag_names
 	 * @return void
 	 */
-	private function attachTags(Question $question, array $tag_names)
+	private function attachTags(Tutorial $tutorial, array $tag_names)
 	{
 		$tag_names = array_filter(array_map('trim', $tag_names));
 		$db_tags = Tag::whereIn('name', $tag_names);
@@ -108,7 +126,7 @@ class QuestionRepository
 				}
 			}
 		}
-		$question->tags()->sync($db_tag_ids);
+		$tutorial->tags()->sync($db_tag_ids);
 	}
 
 	/**
@@ -119,11 +137,24 @@ class QuestionRepository
 	 *
 	 * @return Question
 	 */
-	public function update(Question $question, array $data)
+	public function update(Tutorial $tutorial, array $data)
 	{
-		$question->update(['title' => $data['title'], 'body' => $data['body']]);
-		$this->attachTags($question, $data['tags']);
-		return $question;
+		$tutorial->update(['body' => $data['body']]);
+		if (array_key_exists('tags', $data)) {
+			$this->attachTags($tutorial, $data['tags']);
+		}
+		if (array_key_exists('files', $data)) {
+			$tutorial->files->each->delete();
+            foreach ($data['files'] as $file) {
+                $path = Storage::disk('local')->put('files/posts/' . $tutorial->id, $file);
+                $tutorial->files()->create([
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'mime' => Storage::mimeType($path)
+                ]);
+            }
+        }	
+		return $tutorial;
 	}
 	
 	/**
@@ -133,9 +164,9 @@ class QuestionRepository
 	 *
 	 * @return void
 	 */
-	public function delete(Question $question)
+	public function delete(Tutorial $tutorial)
 	{
-		$question->tags()->detach();
-		$question->delete();
+		$tutorial->tags()->detach();
+		$tutorial->delete();
 	}
 }
