@@ -26,7 +26,6 @@ class VerificationController extends Controller
     */
 
     use VerifiesEmails;
-
     /**
      * Where to redirect users after verification.
      *
@@ -82,9 +81,7 @@ class VerificationController extends Controller
          if($request->wantsJson()) {
              return new Response([], 204);
          }
-        // return view('verifyEmail'); //view
-        Redirect::to('http://localhost:4200/email/verify/success');
-        // redirect('http://localhost:4200/email/verify/success');
+        return redirect()->away('http://localhost:4200/email/verify/success');
 
     }
 
