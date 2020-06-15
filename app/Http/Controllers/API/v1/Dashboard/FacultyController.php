@@ -41,7 +41,7 @@ class FacultyController extends Controller
 	{
 		if ($request->user()->can('viewAny', Faculty::class))
 		{
-			$items = intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
 			$faculties = $this->repo->getAll($items);
 
 			return new FacultyCollection($faculties);

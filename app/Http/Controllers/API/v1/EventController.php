@@ -41,7 +41,7 @@ class EventController extends Controller
 	public function index(EventRequest $request)
 	{
 		$user = $request->user();
-		$model = $request->group ? EventScope::getScopeModel($request->group) : null;
+		$model = !is_null($request->group) ? EventScope::getScopeModel($request->group) : null;
 		$group = $model ? $model::findOrFail($request->group_id) : null;
 
 		if ($user->can('viewAny', [Event::class, $group]))

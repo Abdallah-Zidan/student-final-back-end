@@ -3,19 +3,31 @@
 namespace App\Repositories\Dashboard;
 
 use App\University;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class UniversityRepository
 {
 	/**
 	 * Get all universities.
 	 *
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(int $items = 10)
+	public function getAll($items = 10)
 	{
-		return University::with('faculties')->paginate($items);
+		if ($items === '*')
+		{
+			$universities = University::all();
+
+			return new LengthAwarePaginator($universities, $universities->count(), $universities->count(), 1, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+		else
+			return University::paginate($items);
 	}
 
 	/**

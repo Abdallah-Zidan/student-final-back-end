@@ -22,11 +22,11 @@ class UserRepository
 	 * Get all users.
 	 *
 	 * @param \App\User $user The user object.
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	public function getAll(User $user, int $items = 10)
+	public function getAll(User $user, $items = 10)
 	{
 		if ($user->type === UserType::getTypeString(UserType::MODERATOR))
 			return $this->getAllForMoedrator($user->profileable->faculty, $items);
@@ -165,11 +165,11 @@ class UserRepository
 	 * Get all users related to the moedrator groups.
 	 *
 	 * @param \App\Faculty $faculty The faculty object.
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	private function getAllForMoedrator(Faculty $faculty, int $items)
+	private function getAllForMoedrator(Faculty $faculty, $items)
 	{
 		$department_faculties = DepartmentFaculty::where('faculty_id', $faculty->id)->get();
 		$department_faculty_users = DepartmentFacultyUser::whereIn('department_faculty_id', $department_faculties->pluck('id'))->get();
@@ -179,7 +179,19 @@ class UserRepository
 					->orWhere(function ($query) use ($moderator_profiles) {
 						$query->where('profileable_type', UserType::getTypeModel(UserType::MODERATOR))
 							->whereIn('profileable_id', $moderator_profiles->pluck('id'));
-					})->paginate($items);
+					});
+
+		if ($items === '*')
+		{
+			$users = $users->get();
+
+			$users = new LengthAwarePaginator($users, $users->count(), $users->count(), 1, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+		else
+			$users = $users->paginate($items);
 
 		$users->whereIn('profileable_type', [
 			UserType::getTypeModel(UserType::STUDENT),
@@ -195,13 +207,23 @@ class UserRepository
 	/**
 	 * Get all users.
 	 *
-	 * @param int $items The items count per page.
+	 * @param mixed $items The items count per page.
 	 *
 	 * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
 	 */
-	private function getAllForAdmin(int $items)
+	private function getAllForAdmin($items)
 	{
-		$users = User::paginate($items);
+		if ($items === '*')
+		{
+			$users = User::all();
+
+			$users = new LengthAwarePaginator($users, $users->count(), $users->count(), 1, [
+				'path' => Paginator::resolveCurrentPath(),
+				'pageName' => 'page'
+			]);
+		}
+		else
+			$users = User::paginate($items);
 
 		$users->whereIn('profileable_type', [
 			UserType::getTypeModel(UserType::STUDENT),

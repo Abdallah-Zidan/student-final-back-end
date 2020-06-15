@@ -24,9 +24,9 @@ class Faculty extends BaseModel
 			$faculty->moderators()->delete();
 			$faculty->departments()->detach();
 			$faculty->courseDepartmentFaculties()->delete();
-			$faculty->posts->delete();
-			$faculty->events->delete();
-			$faculty->tools->delete();
+			$faculty->posts->each->delete();
+			$faculty->events->each->delete();
+			$faculty->tools->each->delete();
 		});
 	}
 
