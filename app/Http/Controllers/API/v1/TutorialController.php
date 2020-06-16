@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TutorialRequest;
 use App\Http\Resources\TagResource;
 use App\Http\Resources\Tutorialcollection;
 use App\Http\Resources\TutorialResource;
@@ -24,7 +25,7 @@ class TutorialController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(TutorialRequest $request)
     {
         $tutorials = $this->repo->getAll($request->tags);
         return  new Tutorialcollection($tutorials);
@@ -37,7 +38,7 @@ class TutorialController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TutorialRequest $request)
     {
         $tutorial = $this->repo->create($request->only(['body', 'tags','files']), $request->user());
         return response([
