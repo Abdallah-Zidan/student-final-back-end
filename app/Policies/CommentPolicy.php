@@ -85,10 +85,17 @@ class CommentPolicy
     {
         if ($comment->parent instanceof Comment) // Reply only
         {
-            return $user->can('delete', $comment->parent->parent) && $user->id  === $comment->user_id;
+            return $user->can('delete', $comment->parent->parent) || $user->id  === $comment->user_id;
         }
-        return $user->can('delete', $comment->parent) &&
-            ($user->id === $comment->parent->user_id   // This user is the post owner
-                || $user->id  === $comment->user_id);  // This user is the comment owner
+        return $user->can('delete', $comment->parent) || $user->id  === $comment->user_id;
     }
+
+    // public function delete(User $user, Comment $comment)
+    // {
+    //     if ($comment->parent instanceof Comment) // Reply only
+    //     {
+    //         return $user->can('delete', $comment->parent->parent) || $user->id  === $comment->user_id;
+    //     }
+    //     return $user->can('delete', $comment->parent) ||  $user->id  === $comment->user_id;  
+    // }
 }
