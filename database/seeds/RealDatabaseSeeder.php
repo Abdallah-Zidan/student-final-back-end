@@ -4,12 +4,21 @@ use App\CompanyProfile;
 use App\Department;
 use App\DepartmentFaculty;
 use App\DepartmentFacultyUser;
+use App\Enums\EventScope;
+use App\Enums\EventType;
+use App\Enums\UserType;
+use App\Event;
 use App\Faculty;
 use App\ModeratorProfile;
+use App\Post;
+use App\Question;
 use App\StudentProfile;
+use App\Tag;
 use App\TeachingStaffProfile;
+use App\Tool;
 use App\University;
 use App\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 
 class RealDatabaseSeeder extends Seeder
@@ -23,156 +32,168 @@ class RealDatabaseSeeder extends Seeder
 	{
 		app('model-cache')->runDisabled(function () {
 			StudentProfile::insert([
-				['birthdate' => '1995-11-11', 'year' => 5],
-				['birthdate' => '1998-11-12', 'year' => 7],
-				['birthdate' => '1998-11-12', 'year' => 1],
-				['birthdate' => '1998-08-09', 'year' => 4],
-				['birthdate' => '1994-12-08', 'year' => 4],
-				['birthdate' => '1996-07-08', 'year' => 3],
-				['birthdate' => '1997-08-08', 'year' => 4],
-				['birthdate' => '1999-11-11', 'year' => 5],
-				['birthdate' => '1998-11-12', 'year' => 4],
-				['birthdate' => '1997-05-06', 'year' => 3],
-				['birthdate' => '1996-06-02', 'year' => 5],
-				['birthdate' => '2000-08-10', 'year' => 1],
-				['birthdate' => '1999-06-02', 'year' => 3],
-				['birthdate' => '1992-05-02', 'year' => 4],
-				['birthdate' => '1998-05-06', 'year' => 4],
-				['birthdate' => '1992-02-02', 'year' => 3],
-				['birthdate' => '1994-02-05', 'year' => 3],
-				['birthdate' => '2000-05-05', 'year' => 5],
-				['birthdate' => '1995-02-06', 'year' => 2],
-				['birthdate' => '1993-02-04', 'year' => 4],
-				['birthdate' => '1993-05-06', 'year' => 3],
-				['birthdate' => '1995-08-07', 'year' => 5],
-				['birthdate' => '1992-02-08', 'year' => 3],
-				['birthdate' => '1991-02-03', 'year' => 4],
-				['birthdate' => '1995-09-05', 'year' => 2],
-				['birthdate' => '1994-02-04', 'year' => 3],
-				['birthdate' => '1998-02-05', 'year' => 5],
-				['birthdate' => '1997-02-07', 'year' => 4],
-				['birthdate' => '1999-02-06', 'year' => 2],
-				['birthdate' => '1994-04-06', 'year' => 5],
-				['birthdate' => '1992-08-09', 'year' => 3],
-				['birthdate' => '1996-05-02', 'year' => 2],
-				['birthdate' => '1997-02-12', 'year' => 5],
-				['birthdate' => '1995-02-10', 'year' => 5],
-				['birthdate' => '1992-04-04', 'year' => 3],
-				['birthdate' => '1991-05-11', 'year' => 4],
-				['birthdate' => '2000-06-06', 'year' => 2],
-				['birthdate' => '1998-08-09', 'year' => 4],
-				['birthdate' => '1996-07-21', 'year' => 5],
-				['birthdate' => '1994-04-03', 'year' => 3],
-				['birthdate' => '1992-02-11', 'year' => 2],
-				['birthdate' => '1993-08-11', 'year' => 3],
-				['birthdate' => '1994-05-06', 'year' => 3],
-				['birthdate' => '1992-04-09', 'year' => 4],
-				['birthdate' => '1990-05-09', 'year' => 5],
-				['birthdate' => '1999-08-08', 'year' => 1],
-				['birthdate' => '1990-03-08', 'year' => 2],
-				['birthdate' => '1997-02-11', 'year' => 3],
-				['birthdate' => '1994-02-08', 'year' => 4],
-				['birthdate' => '1999-09-09', 'year' => 2],
-				['birthdate' => '1995-08-01', 'year' => 3],
-				['birthdate' => '1998-05-07', 'year' => 4]
+				['birthdate' => '1995-11-11', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-11-12', 'year' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-11-12', 'year' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-08-09', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-12-08', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1996-07-08', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1997-08-08', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1999-11-11', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-11-12', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1997-05-06', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1996-06-02', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '2000-08-10', 'year' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1999-06-02', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-05-02', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-05-06', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-02-02', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-02-05', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '2000-05-05', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1995-02-06', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1993-02-04', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1993-05-06', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1995-08-07', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-02-08', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1991-02-03', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1995-09-05', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-02-04', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-02-05', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1997-02-07', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1999-02-06', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-04-06', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-08-09', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1996-05-02', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1997-02-12', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1995-02-10', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-04-04', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1991-05-11', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '2000-06-06', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-08-09', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1996-07-21', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-04-03', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-02-11', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1993-08-11', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-05-06', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1992-04-09', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1990-05-09', 'year' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1999-08-08', 'year' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1990-03-08', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1997-02-11', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1994-02-08', 'year' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1999-09-09', 'year' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1995-08-01', 'year' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1998-05-07', 'year' => 4, 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			TeachingStaffProfile::insert([
-				['birthdate' => '1985-07-23', 'scientific_certificates' => 'Certified information systems auditor (CISA)'],
-				['birthdate' => '1985-10-24', 'scientific_certificates' => 'Salesforce certified development lifecycle and deployment'],
-				['birthdate' => '1985-02-02', 'scientific_certificates' => 'Project management professional (PMP)'],
-				['birthdate' => '1977-08-16', 'scientific_certificates' => 'Global information assurance certification (GIAC)'],
-				['birthdate' => '1978-08-25', 'scientific_certificates' => 'Certified information systems security professional (CISSP)'],
-				['birthdate' => '1978-05-11', 'scientific_certificates' => 'Cisco certified network associate (CCNA)'],
-				['birthdate' => '1980-06-29', 'scientific_certificates' => 'Certified data professional (CDP)'],
-				['birthdate' => '1974-12-16', 'scientific_certificates' => 'Project management professional (PMP)'],
-				['birthdate' => '1973-01-18', 'scientific_certificates' => 'Microsoft technology associate (MTA)']
+				['birthdate' => '1985-07-23', 'scientific_certificates' => 'Certified information systems auditor (CISA)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1985-10-24', 'scientific_certificates' => 'Salesforce certified development lifecycle and deployment', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1985-02-02', 'scientific_certificates' => 'Project management professional (PMP)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1977-08-16', 'scientific_certificates' => 'Global information assurance certification (GIAC)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1978-08-25', 'scientific_certificates' => 'Certified information systems security professional (CISSP)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1978-05-11', 'scientific_certificates' => 'Cisco certified network associate (CCNA)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1980-06-29', 'scientific_certificates' => 'Certified data professional (CDP)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1974-12-16', 'scientific_certificates' => 'Project management professional (PMP)', 'created_at' => now(), 'updated_at' => now()],
+				['birthdate' => '1973-01-18', 'scientific_certificates' => 'Microsoft technology associate (MTA)', 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			CompanyProfile::insert([
 				[
 					'fax' => '+5733194604728',
 					'description' => 'Swvl is a revolutionary idea that was born from passion, loyalty, and persistence to face all challenges that come our way.',
-					'website' => 'http://www.swvl.com'
+					'website' => 'http://www.swvl.com',
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'fax' => '+5462794491764',
 					'description' => 'Softxpert is a Software Development Company headquartered in USA providing a substantial range of business operations that are fundamental to a diversified portfolio of clients worldwide.',
-					'website' => 'http://www.softxpert.com'
+					'website' => 'http://www.softxpert.com',
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'fax' => '+5263208900583',
 					'description' => 'Inova is a software company, headquartered in Alexandria, Egypt. We are developing native mobile apps for more than 8 years. We are specialized on iOS and Android & Web Development.',
-					'website' => 'https://www.inovaeg.com'
+					'website' => 'https://www.inovaeg.com',
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'fax' => '+3353245856339',
 					'description' => 'Vodafone Egypt entered the Egyptian telecom market as the second operator; a consortium between Vodafone international, Air Touch, and local/ international partners. In 1999',
-					'website' => 'https://web.vodafone.com.eg'
+					'website' => 'https://web.vodafone.com.eg',
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'fax' => '+3352245856339',
 					'description' => 'Vodafone Egypt entered the Egyptian telecom market as the second operator; a consortium between Vodafone international, Air Touch, and local/ international partners. In 1999',
-					'website' => 'https://web.vodafonee.com.eg'
+					'website' => 'https://web.vodafonee.com.eg',
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'fax' => '+3934235326210',
 					'description' => 'Orange Egypt is an Egyptian joint stock company established under the Law No. 8 of 1997 "Investment Guarantees and Incentives Law and its executive regulations", was established on the 4th of March 1998.',
-					'website' => 'https://www.orange.eg/en/'
+					'website' => 'https://www.orange.eg/en/',
+					'created_at' => now(),
+					'updated_at' => now()
 				]
 			]);
 
 			ModeratorProfile::insert([
-				['faculty_id' => 1],
-				['faculty_id' => 2],
-				['faculty_id' => 3],
-				['faculty_id' => 4],
-				['faculty_id' => 5],
-				['faculty_id' => 6],
-				['faculty_id' => 7],
-				['faculty_id' => 8],
-				['faculty_id' => 9],
-				['faculty_id' => 10],
-				['faculty_id' => 11],
-				['faculty_id' => 12],
-				['faculty_id' => 13],
-				['faculty_id' => 14],
-				['faculty_id' => 15],
-				['faculty_id' => 16],
-				['faculty_id' => 17],
-				['faculty_id' => 18],
-				['faculty_id' => 19],
-				['faculty_id' => 20],
-				['faculty_id' => 21],
-				['faculty_id' => 22],
-				['faculty_id' => 23],
-				['faculty_id' => 24],
-				['faculty_id' => 25],
-				['faculty_id' => 26],
-				['faculty_id' => 27],
-				['faculty_id' => 28],
-				['faculty_id' => 29],
-				['faculty_id' => 30],
-				['faculty_id' => 31],
-				['faculty_id' => 32],
-				['faculty_id' => 33],
-				['faculty_id' => 34],
-				['faculty_id' => 35],
-				['faculty_id' => 36],
-				['faculty_id' => 37],
-				['faculty_id' => 38],
-				['faculty_id' => 39],
-				['faculty_id' => 40],
-				['faculty_id' => 41],
-				['faculty_id' => 42],
-				['faculty_id' => 43],
-				['faculty_id' => 44],
-				['faculty_id' => 45],
-				['faculty_id' => 46],
-				['faculty_id' => 47],
-				['faculty_id' => 48],
-				['faculty_id' => 49],
-				['faculty_id' => 50]
+				['faculty_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 44, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['faculty_id' => 50, 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			User::insert([
@@ -185,7 +206,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+2035094590797',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\AdminProfile',
-					'profileable_id' => 0
+					'profileable_id' => 0,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Abd Allah Zidan',
@@ -196,7 +219,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01028472149',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 1
+					'profileable_id' => 1,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Abdelhamid',
@@ -207,7 +232,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01115323260',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 2
+					'profileable_id' => 2,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Gaber',
@@ -218,7 +245,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01120593525',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 3
+					'profileable_id' => 3,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Galal',
@@ -229,7 +258,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01005107219',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 4
+					'profileable_id' => 4,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Mahmoud',
@@ -240,7 +271,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01203879464',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 5
+					'profileable_id' => 5,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Mamdouh',
@@ -251,7 +284,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01288678233',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 6
+					'profileable_id' => 6,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ahmed Tawfieck',
@@ -262,7 +297,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01110031649',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 7
+					'profileable_id' => 7,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Al-Haitham Kamal',
@@ -273,7 +310,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01280464139',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 8
+					'profileable_id' => 8,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Ali Gomaa',
@@ -284,7 +323,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01555541096',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 9
+					'profileable_id' => 9,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Amira Abdelhalim',
@@ -295,7 +336,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01275323545',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 10
+					'profileable_id' => 10,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Andrew Nagy',
@@ -306,7 +349,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01204055115',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 11
+					'profileable_id' => 11,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Emad Saeed',
@@ -317,7 +362,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01112137376',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 12
+					'profileable_id' => 12,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Fatma Mohammed',
@@ -328,7 +375,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01091940204',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 13
+					'profileable_id' => 13,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Gehad samir',
@@ -339,7 +388,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01066332499',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 14
+					'profileable_id' => 14,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Hagar Mohamed Gamal Bakry',
@@ -350,7 +401,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01116648278',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 15
+					'profileable_id' => 15,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Hagar Mohamed Gamal Bakry',
@@ -361,7 +414,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01289150190',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 16
+					'profileable_id' => 16,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Hagar Mohamed Abdou',
@@ -372,7 +427,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01279533136',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 17
+					'profileable_id' => 17,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Hagar Reda Mohamed',
@@ -383,7 +440,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01280848768',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 18
+					'profileable_id' => 18,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Heba Abd Elmonaem Elsayed',
@@ -394,7 +453,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01111335889',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 19
+					'profileable_id' => 19,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Khaled Mhamed Mansour',
@@ -405,7 +466,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01207622310',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 20
+					'profileable_id' => 20,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Logain Hassan Mostafa',
@@ -416,7 +479,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01272030776',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 21
+					'profileable_id' => 21,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mahmoud Ahmed Youssef',
@@ -427,7 +492,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01003969630',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 22
+					'profileable_id' => 22,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mahmoud Moataz',
@@ -438,7 +505,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01256412030',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 23
+					'profileable_id' => 23,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mahmoud Mohamed Elkhadragy',
@@ -449,7 +518,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01150389852',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 24
+					'profileable_id' => 24,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mahmoud Mohamed Ramadan',
@@ -460,7 +531,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01271034474',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 25
+					'profileable_id' => 25,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Manar Elsayed Yakout',
@@ -471,7 +544,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01055634892',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 26
+					'profileable_id' => 26,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Marc Medhat Roushdy',
@@ -482,7 +557,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01200092723',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 27
+					'profileable_id' => 27,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Marina Medhat',
@@ -493,7 +570,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01228313621',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 28
+					'profileable_id' => 28,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mark Monir Ibrahim Anis',
@@ -504,7 +583,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01007211704',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 29
+					'profileable_id' => 29,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Marwa Aiman SaadEldeen',
@@ -515,7 +596,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01115850248',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 30
+					'profileable_id' => 30,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mayar Alaa Said',
@@ -526,7 +609,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01092210559',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 31
+					'profileable_id' => 31,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mayar Yasser Lotfy',
@@ -537,7 +622,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01282205369',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 32
+					'profileable_id' => 32,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mohamed Ahmed Attia',
@@ -548,7 +635,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01229505537',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 33
+					'profileable_id' => 33,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mohamed Ahmed Ramadan',
@@ -559,7 +648,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01274407276',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 34
+					'profileable_id' => 34,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Mohamed Gaber Ahmed',
@@ -570,7 +661,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01028745452',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 35
+					'profileable_id' => 35,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Muhammad Alaeldien Muhammad',
@@ -581,7 +674,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01063169859',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 36
+					'profileable_id' => 36,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Nada Alaa Hassan Desouky',
@@ -592,7 +687,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01092263423',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 37
+					'profileable_id' => 37,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Nohier Hassan Mohamed',
@@ -603,7 +700,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01289892637',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 38
+					'profileable_id' => 38,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Nouran Ebrahim Mohamed',
@@ -614,7 +713,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01118758260',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 39
+					'profileable_id' => 39,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Nouran Ebrahim Mohamed',
@@ -625,7 +726,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01061638792',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 40
+					'profileable_id' => 40,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Nouran Samy Attia Ahmed',
@@ -636,7 +739,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01110032691',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 41
+					'profileable_id' => 41,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Osama Ragab Ebrahim',
@@ -647,7 +752,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01002475929',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 42
+					'profileable_id' => 42,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Rola Ahmed Abdelmaksoud',
@@ -658,7 +765,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01289830695',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 43
+					'profileable_id' => 43,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Safaa Mohamed Gamal',
@@ -669,7 +778,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01022619498',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 44
+					'profileable_id' => 44,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Sara Yasser Elsayed',
@@ -680,7 +791,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01024374955',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 45
+					'profileable_id' => 45,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Sarah Muhammad Ibraheem',
@@ -691,7 +804,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01554424394',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 46
+					'profileable_id' => 46,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Sarah Refaat Ezzat',
@@ -702,7 +817,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01159210722',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 47
+					'profileable_id' => 47,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Tarek Hassan Ahmed',
@@ -713,7 +830,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01113288865',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 48
+					'profileable_id' => 48,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Tarek Ibrahem Mohammed',
@@ -724,7 +843,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01006409760',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 49
+					'profileable_id' => 49,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Yara Ahmed Ibrahim',
@@ -735,7 +856,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01119162762',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 50
+					'profileable_id' => 50,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Yasmine Khaled',
@@ -746,7 +869,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01014050535',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 51
+					'profileable_id' => 51,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Zeyad Mostafa',
@@ -757,7 +882,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01289456175',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\StudentProfile',
-					'profileable_id' => 52
+					'profileable_id' => 52,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Swwvvl',
@@ -768,7 +895,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01037841298',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 1
+					'profileable_id' => 1,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Softxpert',
@@ -779,7 +908,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01246983175',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 2
+					'profileable_id' => 2,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Inovva',
@@ -790,7 +921,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01127984633',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 3
+					'profileable_id' => 3,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Vodafone',
@@ -800,7 +933,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01001888888',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 4
+					'profileable_id' => 4,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Vodafone',
@@ -811,7 +946,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01001188888',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 5
+					'profileable_id' => 5,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Orange',
@@ -822,7 +959,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01224001001',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\CompanyProfile',
-					'profileable_id' => 6
+					'profileable_id' => 6,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Eng.Noha Salah',
@@ -833,7 +972,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01011572934',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 1
+					'profileable_id' => 1,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'ENG.Nuha Amer',
@@ -844,7 +985,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01140824630',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 2
+					'profileable_id' => 2,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Eng.Ghada Kadous',
@@ -855,7 +998,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01294165459',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 3
+					'profileable_id' => 3,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Eng.Mahmoud Ouf',
@@ -866,7 +1011,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01561015041',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 4
+					'profileable_id' => 4,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Dr.Ahmed Younes',
@@ -877,7 +1024,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01231558551',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 5
+					'profileable_id' => 5,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Dr.Ali Omer',
@@ -888,7 +1037,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01131913143',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 6
+					'profileable_id' => 6,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Dr.Yasser Fouad',
@@ -899,7 +1050,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01540381100',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 7
+					'profileable_id' => 7,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Dr.Asraf Saad',
@@ -910,7 +1063,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01055897976',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 8
+					'profileable_id' => 8,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Dr.Doaa Soleiman',
@@ -921,7 +1076,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '01000459815',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\TeachingStaffProfile',
-					'profileable_id' => 9
+					'profileable_id' => 9,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -932,7 +1089,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5241887307205',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 1
+					'profileable_id' => 1,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -943,7 +1102,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9350721930481',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 2
+					'profileable_id' => 2,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -954,7 +1115,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8832614926845',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 3
+					'profileable_id' => 3,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -965,7 +1128,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6808015106132',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 4
+					'profileable_id' => 4,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -976,7 +1141,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+4066544315381',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 5
+					'profileable_id' => 5,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -987,7 +1154,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8641976522916',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 6
+					'profileable_id' => 6,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -998,7 +1167,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5751540894337',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 7
+					'profileable_id' => 7,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1009,7 +1180,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+3717170583401',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 8
+					'profileable_id' => 8,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1020,7 +1193,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5666458001651',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 9
+					'profileable_id' => 9,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1031,7 +1206,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+4662205237177',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 10
+					'profileable_id' => 10,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1042,7 +1219,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+1180973029579',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 11
+					'profileable_id' => 11,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1053,7 +1232,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5653110655206',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 12
+					'profileable_id' => 12,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1064,7 +1245,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6980804657016',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 13
+					'profileable_id' => 13,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1075,7 +1258,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+4806351372692',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 14
+					'profileable_id' => 14,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1086,7 +1271,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5779139569350',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 15
+					'profileable_id' => 15,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1097,7 +1284,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+7127916986623',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 16
+					'profileable_id' => 16,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1108,7 +1297,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5058136993679',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 17
+					'profileable_id' => 17,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1119,7 +1310,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9167817610303',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 18
+					'profileable_id' => 18,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1130,7 +1323,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+2965088296628',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 19
+					'profileable_id' => 19,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1141,7 +1336,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5353325198694',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 20
+					'profileable_id' => 20,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1152,7 +1349,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9722352256276',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 21
+					'profileable_id' => 21,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1163,7 +1362,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+7624860072092',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 22
+					'profileable_id' => 22,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1174,7 +1375,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6884463701704',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 23
+					'profileable_id' => 23,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1185,7 +1388,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5302148686832',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 24
+					'profileable_id' => 24,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1196,7 +1401,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6615398491440',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 25
+					'profileable_id' => 25,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1207,7 +1414,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+1545169450937',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 26
+					'profileable_id' => 26,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1218,7 +1427,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6058767495256',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 27
+					'profileable_id' => 27,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1229,7 +1440,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8343023175623',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 28
+					'profileable_id' => 28,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1240,7 +1453,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+3964395364704',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 29
+					'profileable_id' => 29,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1251,7 +1466,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8959568982188',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 30
+					'profileable_id' => 30,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1262,7 +1479,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8897830295846',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 31
+					'profileable_id' => 31,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1273,7 +1492,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5291917223110',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 32
+					'profileable_id' => 32,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1284,7 +1505,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+7444456514486',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 33
+					'profileable_id' => 33,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1295,7 +1518,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5200411340933',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 34
+					'profileable_id' => 34,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1306,7 +1531,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6612820858350',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 35
+					'profileable_id' => 35,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1317,7 +1544,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5831122749729',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 36
+					'profileable_id' => 36,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1328,7 +1557,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+3731386636201',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 37
+					'profileable_id' => 37,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1339,7 +1570,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9320912580500',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 38
+					'profileable_id' => 38,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1350,7 +1583,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+6582918704665',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 39
+					'profileable_id' => 39,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1361,7 +1596,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+3346520028868',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 40
+					'profileable_id' => 40,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1372,7 +1609,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+1130293233314',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 41
+					'profileable_id' => 41,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1383,7 +1622,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+2357974212129',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 42
+					'profileable_id' => 42,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1394,7 +1635,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+2593098764994',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 43
+					'profileable_id' => 43,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1405,7 +1648,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+1287506729760',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 44
+					'profileable_id' => 44,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1416,7 +1661,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5349462467583',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 45
+					'profileable_id' => 45,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1427,7 +1674,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+8770897670926',
 					'avatar' => 'images/users/default_male.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 46
+					'profileable_id' => 46,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1438,7 +1687,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9482421374769',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 47
+					'profileable_id' => 47,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1449,7 +1700,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+5088522705833',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 48
+					'profileable_id' => 48,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1460,7 +1713,9 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9094807661279',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 49
+					'profileable_id' => 49,
+					'created_at' => now(),
+					'updated_at' => now()
 				],
 				[
 					'name' => 'Moderator',
@@ -1471,385 +1726,560 @@ class RealDatabaseSeeder extends Seeder
 					'mobile' => '+9233916258762',
 					'avatar' => 'images/users/default_female.png',
 					'profileable_type' => 'App\\ModeratorProfile',
-					'profileable_id' => 50
+					'profileable_id' => 50,
+					'created_at' => now(),
+					'updated_at' => now()
 				]
 			]);
 
 			University::insert([
-				['name' => 'Alexandria University'],
-				['name' => 'Ain Shams University'],
-				['name' => 'Aswan University'],
-				['name' => 'Cairo University '],
-				['name' => 'Helwan University'],
-				['name' => 'kafrelsheikh University'],
-				['name' => 'Mansoura University'],
-				['name' => 'Menoufia University'],
-				['name' => 'Sohag University'],
-				['name' => 'Tanta University']
+				['name' => 'Alexandria University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Ain Shams University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Aswan University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Cairo University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Helwan University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'kafrelsheikh University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Mansoura University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Menoufia University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Sohag University', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Tanta University', 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			Faculty::insert([
-				['name' => 'Faculty of Education', 'university_id' => 1],
-				['name' => 'Faculty of Medicine', 'university_id' => 1],
-				['name' => 'Faculty of Engineering', 'university_id' => 1],
-				['name' => 'Faculty of Fine Arts', 'university_id' => 1],
-				['name' => 'Faculty of Agriculture', 'university_id' => 1],
-				['name' => 'Faculty of Al-Alsun', 'university_id' => 2],
-				['name' => 'Computer and Information Sciences', 'university_id' => 2],
-				['name' => 'Faculty of Nursing', 'university_id' => 2],
-				['name' => 'Institute of Environemnt', 'university_id' => 2],
-				['name' => 'Faculty of Law', 'university_id' => 2],
-				['name' => 'Faculty of Dentistry', 'university_id' => 3],
-				['name' => 'Faculty of Business', 'university_id' => 3],
-				['name' => 'Faculty of Specific Education', 'university_id' => 3],
-				['name' => 'Faculty of Pharmacy', 'university_id' => 3],
-				['name' => 'Faculty of Science', 'university_id' => 3],
-				['name' => 'Faculty of Commerce', 'university_id' => 4],
-				['name' => 'Faculty of Physiotherapy', 'university_id' => 4],
-				['name' => 'Faculty of Economics and Political Science', 'university_id' => 4],
-				['name' => 'Faculty of Archaeology', 'university_id' => 4],
-				['name' => 'Faculty of Engineering', 'university_id' => 4],
-				['name' => 'Institute for Computers and Management Information Systems', 'university_id' => 5],
-				['name' => 'Faculty of Arts', 'university_id' => 5],
-				['name' => 'Faculty of Science', 'university_id' => 5],
-				['name' => 'Faculty of Pharmacology', 'university_id' => 5],
-				['name' => 'Faculty of Agriculture', 'university_id' => 5],
-				['name' => 'Faculty of Kindergarten', 'university_id' => 6],
-				['name' => 'Faculty of Engineering', 'university_id' => 6],
-				['name' => 'Faculty of Computers and Information System', 'university_id' => 6],
-				['name' => 'Faculty of Pharmacology', 'university_id' => 6],
-				['name' => 'Faculty of Agriculture', 'university_id' => 6],
-				['name' => 'Faculty of Medicine', 'university_id' => 7],
-				['name' => 'Faculty of Science', 'university_id' => 7],
-				['name' => 'Faculty of Economics and Political Science', 'university_id' => 7],
-				['name' => 'Faculty of Mass Communication', 'university_id' => 7],
-				['name' => 'Faculty of Arts', 'university_id' => 7],
-				['name' => 'Faculty of Archaeology', 'university_id' => 8],
-				['name' => 'Faculty of Commerce', 'university_id' => 8],
-				['name' => 'Faculty of Physiotherapy', 'university_id' => 8],
-				['name' => 'Faculty of Law', 'university_id' => 8],
-				['name' => 'Faculty of Nursing', 'university_id' => 8],
-				['name' => 'Faculty of Specialized Education', 'university_id' => 9],
-				['name' => 'Faculty of Petroleum and Mining Engineering', 'university_id' => 9],
-				['name' => 'Faculty of physical education', 'university_id' => 9],
-				['name' => 'Faculty of computers and information', 'university_id' => 9],
-				['name' => 'Faculty of Veterinary Medicine', 'university_id' => 9],
-				['name' => 'Faculty of Oral and Dental Medicine ', 'university_id' => 10],
-				['name' => 'Faculty of Physiotherapy', 'university_id' => 10],
-				['name' => 'Faculty of Regional and Urban Planning', 'university_id' => 10],
-				['name' => 'Faculty of Science', 'university_id' => 10],
-				['name' => 'Faculty of Commerce', 'university_id' => 10]
+				['name' => 'Faculty of Education', 'university_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Medicine', 'university_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Engineering', 'university_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Fine Arts', 'university_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Agriculture', 'university_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Al-Alsun', 'university_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Computer and Information Sciences', 'university_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Nursing', 'university_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Institute of Environemnt', 'university_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Law', 'university_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Dentistry', 'university_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Business', 'university_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Specific Education', 'university_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Pharmacy', 'university_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Science', 'university_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Commerce', 'university_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Physiotherapy', 'university_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Economics and Political Science', 'university_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Archaeology', 'university_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Engineering', 'university_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Institute for Computers and Management Information Systems', 'university_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Arts', 'university_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Science', 'university_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Pharmacology', 'university_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Agriculture', 'university_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Kindergarten', 'university_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Engineering', 'university_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Computers and Information System', 'university_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Pharmacology', 'university_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Agriculture', 'university_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Medicine', 'university_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Science', 'university_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Economics and Political Science', 'university_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Mass Communication', 'university_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Arts', 'university_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Archaeology', 'university_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Commerce', 'university_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Physiotherapy', 'university_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Law', 'university_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Nursing', 'university_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Specialized Education', 'university_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Petroleum and Mining Engineering', 'university_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of physical education', 'university_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of computers and information', 'university_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Veterinary Medicine', 'university_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Oral and Dental Medicine ', 'university_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Physiotherapy', 'university_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Regional and Urban Planning', 'university_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Science', 'university_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Faculty of Commerce', 'university_id' => 10, 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			Department::insert([
-				['name' => 'Business Administration'],
-				['name' => 'Economics'],
-				['name' => 'Mathematics'],
-				['name' => 'Structural'],
-				['name' => 'Computer and Systems'],
-				['name' => 'Chemical'],
-				['name' => 'Civil'],
-				['name' => 'Anatomy'],
-				['name' => 'Biochemistry'],
-				['name' => 'Graphics'],
-				['name' => 'Decoration'],
-				['name' => 'English'],
-				['name' => 'Arabic'],
-				['name' => 'French']
+				['name' => 'Business Administration', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Economics', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Mathematics', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Structural', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Computer and Systems', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Chemical', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Civil', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Anatomy', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Biochemistry', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Graphics', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Decoration', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'English', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'Arabic', 'created_at' => now(), 'updated_at' => now()],
+				['name' => 'French', 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			DepartmentFaculty::insert([
-				['department_id' => 3, 'faculty_id' => 1],
-				['department_id' => 6, 'faculty_id' => 1],
-				['department_id' => 9, 'faculty_id' => 1],
-				['department_id' => 6, 'faculty_id' => 2],
-				['department_id' => 9, 'faculty_id' => 2],
-				['department_id' => 8, 'faculty_id' => 2],
-				['department_id' => 4, 'faculty_id' => 3],
-				['department_id' => 7, 'faculty_id' => 3],
-				['department_id' => 5, 'faculty_id' => 3],
-				['department_id' => 10, 'faculty_id' => 4],
-				['department_id' => 11, 'faculty_id' => 4],
-				['department_id' => 4, 'faculty_id' => 4],
-				['department_id' => 9, 'faculty_id' => 5],
-				['department_id' => 8, 'faculty_id' => 5],
-				['department_id' => 6, 'faculty_id' => 5],
-				['department_id' => 12, 'faculty_id' => 6],
-				['department_id' => 13, 'faculty_id' => 6],
-				['department_id' => 14, 'faculty_id' => 6],
-				['department_id' => 3, 'faculty_id' => 7],
-				['department_id' => 9, 'faculty_id' => 7],
-				['department_id' => 5, 'faculty_id' => 7],
-				['department_id' => 6, 'faculty_id' => 8],
-				['department_id' => 8, 'faculty_id' => 8],
-				['department_id' => 9, 'faculty_id' => 8],
-				['department_id' => 4, 'faculty_id' => 9],
-				['department_id' => 6, 'faculty_id' => 9],
-				['department_id' => 7, 'faculty_id' => 9],
-				['department_id' => 7, 'faculty_id' => 10],
-				['department_id' => 2, 'faculty_id' => 10],
-				['department_id' => 1, 'faculty_id' => 10],
-				['department_id' => 6, 'faculty_id' => 11],
-				['department_id' => 8, 'faculty_id' => 11],
-				['department_id' => 9, 'faculty_id' => 11],
-				['department_id' => 1, 'faculty_id' => 12],
-				['department_id' => 2, 'faculty_id' => 12],
-				['department_id' => 5, 'faculty_id' => 12],
-				['department_id' => 3, 'faculty_id' => 13],
-				['department_id' => 6, 'faculty_id' => 13],
-				['department_id' => 13, 'faculty_id' => 13],
-				['department_id' => 8, 'faculty_id' => 14],
-				['department_id' => 6, 'faculty_id' => 14],
-				['department_id' => 9, 'faculty_id' => 14],
-				['department_id' => 6, 'faculty_id' => 15],
-				['department_id' => 8, 'faculty_id' => 15],
-				['department_id' => 9, 'faculty_id' => 15],
-				['department_id' => 1, 'faculty_id' => 16],
-				['department_id' => 2, 'faculty_id' => 16],
-				['department_id' => 5, 'faculty_id' => 16],
-				['department_id' => 6, 'faculty_id' => 17],
-				['department_id' => 8, 'faculty_id' => 17],
-				['department_id' => 9, 'faculty_id' => 17],
-				['department_id' => 1, 'faculty_id' => 18],
-				['department_id' => 2, 'faculty_id' => 18],
-				['department_id' => 7, 'faculty_id' => 18],
-				['department_id' => 12, 'faculty_id' => 19],
-				['department_id' => 13, 'faculty_id' => 19],
-				['department_id' => 7, 'faculty_id' => 19],
-				['department_id' => 4, 'faculty_id' => 20],
-				['department_id' => 5, 'faculty_id' => 20],
-				['department_id' => 7, 'faculty_id' => 20],
-				['department_id' => 5, 'faculty_id' => 21],
-				['department_id' => 1, 'faculty_id' => 21],
-				['department_id' => 2, 'faculty_id' => 21],
-				['department_id' => 12, 'faculty_id' => 22],
-				['department_id' => 13, 'faculty_id' => 22],
-				['department_id' => 14, 'faculty_id' => 22],
-				['department_id' => 6, 'faculty_id' => 23],
-				['department_id' => 8, 'faculty_id' => 23],
-				['department_id' => 9, 'faculty_id' => 23],
-				['department_id' => 9, 'faculty_id' => 24],
-				['department_id' => 8, 'faculty_id' => 24],
-				['department_id' => 6, 'faculty_id' => 24],
-				['department_id' => 6, 'faculty_id' => 25],
-				['department_id' => 8, 'faculty_id' => 25],
-				['department_id' => 9, 'faculty_id' => 25],
-				['department_id' => 12, 'faculty_id' => 26],
-				['department_id' => 3, 'faculty_id' => 26],
-				['department_id' => 13, 'faculty_id' => 26],
-				['department_id' => 4, 'faculty_id' => 27],
-				['department_id' => 6, 'faculty_id' => 27],
-				['department_id' => 7, 'faculty_id' => 27],
-				['department_id' => 3, 'faculty_id' => 28],
-				['department_id' => 5, 'faculty_id' => 28],
-				['department_id' => 9, 'faculty_id' => 28],
-				['department_id' => 8, 'faculty_id' => 29],
-				['department_id' => 6, 'faculty_id' => 29],
-				['department_id' => 9, 'faculty_id' => 29],
-				['department_id' => 8, 'faculty_id' => 30],
-				['department_id' => 6, 'faculty_id' => 30],
-				['department_id' => 9, 'faculty_id' => 30],
-				['department_id' => 6, 'faculty_id' => 31],
-				['department_id' => 8, 'faculty_id' => 31],
-				['department_id' => 9, 'faculty_id' => 31],
-				['department_id' => 3, 'faculty_id' => 32],
-				['department_id' => 6, 'faculty_id' => 32],
-				['department_id' => 5, 'faculty_id' => 32],
-				['department_id' => 1, 'faculty_id' => 33],
-				['department_id' => 2, 'faculty_id' => 33],
-				['department_id' => 3, 'faculty_id' => 33],
-				['department_id' => 12, 'faculty_id' => 34],
-				['department_id' => 13, 'faculty_id' => 34],
-				['department_id' => 14, 'faculty_id' => 34],
-				['department_id' => 12, 'faculty_id' => 35],
-				['department_id' => 13, 'faculty_id' => 35],
-				['department_id' => 14, 'faculty_id' => 35],
-				['department_id' => 7, 'faculty_id' => 36],
-				['department_id' => 12, 'faculty_id' => 36],
-				['department_id' => 14, 'faculty_id' => 36],
-				['department_id' => 1, 'faculty_id' => 37],
-				['department_id' => 2, 'faculty_id' => 37],
-				['department_id' => 3, 'faculty_id' => 37],
-				['department_id' => 6, 'faculty_id' => 38],
-				['department_id' => 8, 'faculty_id' => 38],
-				['department_id' => 9, 'faculty_id' => 38],
-				['department_id' => 7, 'faculty_id' => 39],
-				['department_id' => 2, 'faculty_id' => 39],
-				['department_id' => 14, 'faculty_id' => 39],
-				['department_id' => 6, 'faculty_id' => 40],
-				['department_id' => 8, 'faculty_id' => 40],
-				['department_id' => 9, 'faculty_id' => 40],
-				['department_id' => 3, 'faculty_id' => 41],
-				['department_id' => 12, 'faculty_id' => 41],
-				['department_id' => 6, 'faculty_id' => 41],
-				['department_id' => 6, 'faculty_id' => 42],
-				['department_id' => 4, 'faculty_id' => 42],
-				['department_id' => 3, 'faculty_id' => 42],
-				['department_id' => 3, 'faculty_id' => 43],
-				['department_id' => 12, 'faculty_id' => 43],
-				['department_id' => 6, 'faculty_id' => 43],
-				['department_id' => 5, 'faculty_id' => 44],
-				['department_id' => 9, 'faculty_id' => 44],
-				['department_id' => 3, 'faculty_id' => 44],
-				['department_id' => 9, 'faculty_id' => 45],
-				['department_id' => 6, 'faculty_id' => 45],
-				['department_id' => 8, 'faculty_id' => 45],
-				['department_id' => 6, 'faculty_id' => 46],
-				['department_id' => 8, 'faculty_id' => 46],
-				['department_id' => 9, 'faculty_id' => 46],
-				['department_id' => 8, 'faculty_id' => 47],
-				['department_id' => 6, 'faculty_id' => 47],
-				['department_id' => 9, 'faculty_id' => 47],
-				['department_id' => 4, 'faculty_id' => 48],
-				['department_id' => 7, 'faculty_id' => 48],
-				['department_id' => 3, 'faculty_id' => 48],
-				['department_id' => 8, 'faculty_id' => 49],
-				['department_id' => 9, 'faculty_id' => 49],
-				['department_id' => 6, 'faculty_id' => 49],
-				['department_id' => 1, 'faculty_id' => 50],
-				['department_id' => 2, 'faculty_id' => 50],
-				['department_id' => 3, 'faculty_id' => 50]
+				['department_id' => 3, 'faculty_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 1, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 10, 'faculty_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 11, 'faculty_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 13, 'faculty_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 14, 'faculty_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 12, 'faculty_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 5, 'faculty_id' => 44, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 44, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 44, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 4, 'faculty_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 7, 'faculty_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 8, 'faculty_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 9, 'faculty_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 6, 'faculty_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 1, 'faculty_id' => 50, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 2, 'faculty_id' => 50, 'created_at' => now(), 'updated_at' => now()],
+				['department_id' => 3, 'faculty_id' => 50, 'created_at' => now(), 'updated_at' => now()]
 			]);
 
 			DepartmentFacultyUser::insert([
-				['department_faculty_id' => 7, 'user_id' => 2],
-				['department_faculty_id' => 9, 'user_id' => 3],
-				['department_faculty_id' => 16, 'user_id' => 4],
-				['department_faculty_id' => 17, 'user_id' => 4],
-				['department_faculty_id' => 94, 'user_id' => 5],
-				['department_faculty_id' => 96, 'user_id' => 5],
-				['department_faculty_id' => 127, 'user_id' => 6],
-				['department_faculty_id' => 129, 'user_id' => 6],
-				['department_faculty_id' => 1, 'user_id' => 7],
-				['department_faculty_id' => 3, 'user_id' => 7],
-				['department_faculty_id' => 10, 'user_id' => 8],
-				['department_faculty_id' => 11, 'user_id' => 8],
-				['department_faculty_id' => 1, 'user_id' => 9],
-				['department_faculty_id' => 2, 'user_id' => 9],
-				['department_faculty_id' => 19, 'user_id' => 10],
-				['department_faculty_id' => 21, 'user_id' => 10],
-				['department_faculty_id' => 16, 'user_id' => 11],
-				['department_faculty_id' => 17, 'user_id' => 11],
-				['department_faculty_id' => 8, 'user_id' => 12],
-				['department_faculty_id' => 9, 'user_id' => 12],
-				['department_faculty_id' => 10, 'user_id' => 13],
-				['department_faculty_id' => 11, 'user_id' => 13],
-				['department_faculty_id' => 1, 'user_id' => 14],
-				['department_faculty_id' => 2, 'user_id' => 14],
-				['department_faculty_id' => 4, 'user_id' => 15],
-				['department_faculty_id' => 6, 'user_id' => 15],
-				['department_faculty_id' => 22, 'user_id' => 16],
-				['department_faculty_id' => 23, 'user_id' => 16],
-				['department_faculty_id' => 16, 'user_id' => 17],
-				['department_faculty_id' => 18, 'user_id' => 17],
-				['department_faculty_id' => 26, 'user_id' => 18],
-				['department_faculty_id' => 27, 'user_id' => 18],
-				['department_faculty_id' => 19, 'user_id' => 19],
-				['department_faculty_id' => 20, 'user_id' => 19],
-				['department_faculty_id' => 19, 'user_id' => 20],
-				['department_faculty_id' => 21, 'user_id' => 20],
-				['department_faculty_id' => 4, 'user_id' => 21],
-				['department_faculty_id' => 5, 'user_id' => 21],
-				['department_faculty_id' => 28, 'user_id' => 22],
-				['department_faculty_id' => 29, 'user_id' => 22],
-				['department_faculty_id' => 10, 'user_id' => 23],
-				['department_faculty_id' => 11, 'user_id' => 23],
-				['department_faculty_id' => 16, 'user_id' => 24],
-				['department_faculty_id' => 17, 'user_id' => 24],
-				['department_faculty_id' => 26, 'user_id' => 25],
-				['department_faculty_id' => 27, 'user_id' => 25],
-				['department_faculty_id' => 22, 'user_id' => 26],
-				['department_faculty_id' => 23, 'user_id' => 26],
-				['department_faculty_id' => 19, 'user_id' => 27],
-				['department_faculty_id' => 20, 'user_id' => 27],
-				['department_faculty_id' => 19, 'user_id' => 28],
-				['department_faculty_id' => 20, 'user_id' => 28],
-				['department_faculty_id' => 23, 'user_id' => 29],
-				['department_faculty_id' => 24, 'user_id' => 29],
-				['department_faculty_id' => 25, 'user_id' => 30],
-				['department_faculty_id' => 26, 'user_id' => 30],
-				['department_faculty_id' => 1, 'user_id' => 31],
-				['department_faculty_id' => 2, 'user_id' => 31],
-				['department_faculty_id' => 23, 'user_id' => 32],
-				['department_faculty_id' => 24, 'user_id' => 32],
-				['department_faculty_id' => 49, 'user_id' => 33],
-				['department_faculty_id' => 50, 'user_id' => 33],
-				['department_faculty_id' => 26, 'user_id' => 34],
-				['department_faculty_id' => 27, 'user_id' => 34],
-				['department_faculty_id' => 55, 'user_id' => 35],
-				['department_faculty_id' => 56, 'user_id' => 35],
-				['department_faculty_id' => 4, 'user_id' => 36],
-				['department_faculty_id' => 5, 'user_id' => 36],
-				['department_faculty_id' => 55, 'user_id' => 37],
-				['department_faculty_id' => 57, 'user_id' => 37],
-				['department_faculty_id' => 10, 'user_id' => 38],
-				['department_faculty_id' => 11, 'user_id' => 38],
-				['department_faculty_id' => 22, 'user_id' => 39],
-				['department_faculty_id' => 23, 'user_id' => 39],
-				['department_faculty_id' => 19, 'user_id' => 40],
-				['department_faculty_id' => 20, 'user_id' => 40],
-				['department_faculty_id' => 49, 'user_id' => 41],
-				['department_faculty_id' => 51, 'user_id' => 41],
-				['department_faculty_id' => 46, 'user_id' => 42],
-				['department_faculty_id' => 47, 'user_id' => 42],
-				['department_faculty_id' => 58, 'user_id' => 43],
-				['department_faculty_id' => 60, 'user_id' => 43],
-				['department_faculty_id' => 53, 'user_id' => 44],
-				['department_faculty_id' => 16, 'user_id' => 45],
-				['department_faculty_id' => 18, 'user_id' => 45],
-				['department_faculty_id' => 49, 'user_id' => 46],
-				['department_faculty_id' => 50, 'user_id' => 46],
-				['department_faculty_id' => 10, 'user_id' => 47],
-				['department_faculty_id' => 11, 'user_id' => 47],
-				['department_faculty_id' => 7, 'user_id' => 48],
-				['department_faculty_id' => 9, 'user_id' => 48],
-				['department_faculty_id' => 46, 'user_id' => 49],
-				['department_faculty_id' => 47, 'user_id' => 49],
-				['department_faculty_id' => 22, 'user_id' => 50],
-				['department_faculty_id' => 23, 'user_id' => 50],
-				['department_faculty_id' => 50, 'user_id' => 51],
-				['department_faculty_id' => 51, 'user_id' => 51],
-				['department_faculty_id' => 4, 'user_id' => 52],
-				['department_faculty_id' => 5, 'user_id' => 52],
-				['department_faculty_id' => 7, 'user_id' => 53],
-				['department_faculty_id' => 8, 'user_id' => 53],
-				['department_faculty_id' => 1, 'user_id' => 60],
-				['department_faculty_id' => 2, 'user_id' => 60],
-				['department_faculty_id' => 3, 'user_id' => 60],
-				['department_faculty_id' => 4, 'user_id' => 60],
-				['department_faculty_id' => 5, 'user_id' => 61],
-				['department_faculty_id' => 6, 'user_id' => 61],
-				['department_faculty_id' => 7, 'user_id' => 61],
-				['department_faculty_id' => 8, 'user_id' => 61],
-				['department_faculty_id' => 9, 'user_id' => 62],
-				['department_faculty_id' => 10, 'user_id' => 62],
-				['department_faculty_id' => 11, 'user_id' => 62],
-				['department_faculty_id' => 12, 'user_id' => 62],
-				['department_faculty_id' => 13, 'user_id' => 63],
-				['department_faculty_id' => 14, 'user_id' => 63],
-				['department_faculty_id' => 15, 'user_id' => 63],
-				['department_faculty_id' => 16, 'user_id' => 63],
-				['department_faculty_id' => 17, 'user_id' => 64],
-				['department_faculty_id' => 18, 'user_id' => 64],
-				['department_faculty_id' => 19, 'user_id' => 64],
-				['department_faculty_id' => 20, 'user_id' => 64],
-				['department_faculty_id' => 21, 'user_id' => 65],
-				['department_faculty_id' => 22, 'user_id' => 65],
-				['department_faculty_id' => 23, 'user_id' => 65],
-				['department_faculty_id' => 24, 'user_id' => 65],
-				['department_faculty_id' => 25, 'user_id' => 66],
-				['department_faculty_id' => 26, 'user_id' => 66],
-				['department_faculty_id' => 27, 'user_id' => 66],
-				['department_faculty_id' => 28, 'user_id' => 66],
-				['department_faculty_id' => 29, 'user_id' => 67],
-				['department_faculty_id' => 30, 'user_id' => 67],
-				['department_faculty_id' => 31, 'user_id' => 67],
-				['department_faculty_id' => 32, 'user_id' => 67],
-				['department_faculty_id' => 33, 'user_id' => 68],
-				['department_faculty_id' => 34, 'user_id' => 68],
-				['department_faculty_id' => 35, 'user_id' => 68],
-				['department_faculty_id' => 36, 'user_id' => 68]
+				['department_faculty_id' => 7, 'user_id' => 2, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 9, 'user_id' => 3, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 17, 'user_id' => 4, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 94, 'user_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 96, 'user_id' => 5, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 127, 'user_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 129, 'user_id' => 6, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 1, 'user_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 3, 'user_id' => 7, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 8, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 1, 'user_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 2, 'user_id' => 9, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 21, 'user_id' => 10, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 17, 'user_id' => 11, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 8, 'user_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 9, 'user_id' => 12, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 13, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 1, 'user_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 2, 'user_id' => 14, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 4, 'user_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 6, 'user_id' => 15, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 22, 'user_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 16, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 18, 'user_id' => 17, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 26, 'user_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 27, 'user_id' => 18, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 20, 'user_id' => 19, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 21, 'user_id' => 20, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 4, 'user_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 5, 'user_id' => 21, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 28, 'user_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 29, 'user_id' => 22, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 23, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 17, 'user_id' => 24, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 26, 'user_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 27, 'user_id' => 25, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 22, 'user_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 26, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 20, 'user_id' => 27, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 20, 'user_id' => 28, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 24, 'user_id' => 29, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 25, 'user_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 26, 'user_id' => 30, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 1, 'user_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 2, 'user_id' => 31, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 24, 'user_id' => 32, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 49, 'user_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 50, 'user_id' => 33, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 26, 'user_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 27, 'user_id' => 34, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 55, 'user_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 56, 'user_id' => 35, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 4, 'user_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 5, 'user_id' => 36, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 55, 'user_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 57, 'user_id' => 37, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 38, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 22, 'user_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 39, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 20, 'user_id' => 40, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 49, 'user_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 51, 'user_id' => 41, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 46, 'user_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 47, 'user_id' => 42, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 58, 'user_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 60, 'user_id' => 43, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 53, 'user_id' => 44, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 18, 'user_id' => 45, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 49, 'user_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 50, 'user_id' => 46, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 47, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 7, 'user_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 9, 'user_id' => 48, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 46, 'user_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 47, 'user_id' => 49, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 22, 'user_id' => 50, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 50, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 50, 'user_id' => 51, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 51, 'user_id' => 51, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 4, 'user_id' => 52, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 5, 'user_id' => 52, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 7, 'user_id' => 53, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 8, 'user_id' => 53, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 1, 'user_id' => 60, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 2, 'user_id' => 60, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 3, 'user_id' => 60, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 4, 'user_id' => 60, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 5, 'user_id' => 61, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 6, 'user_id' => 61, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 7, 'user_id' => 61, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 8, 'user_id' => 61, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 9, 'user_id' => 62, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 10, 'user_id' => 62, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 11, 'user_id' => 62, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 12, 'user_id' => 62, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 13, 'user_id' => 63, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 14, 'user_id' => 63, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 15, 'user_id' => 63, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 16, 'user_id' => 63, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 17, 'user_id' => 64, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 18, 'user_id' => 64, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 19, 'user_id' => 64, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 20, 'user_id' => 64, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 21, 'user_id' => 65, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 22, 'user_id' => 65, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 23, 'user_id' => 65, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 24, 'user_id' => 65, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 25, 'user_id' => 66, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 26, 'user_id' => 66, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 27, 'user_id' => 66, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 28, 'user_id' => 66, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 29, 'user_id' => 67, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 30, 'user_id' => 67, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 31, 'user_id' => 67, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 32, 'user_id' => 67, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 33, 'user_id' => 68, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 34, 'user_id' => 68, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 35, 'user_id' => 68, 'created_at' => now(), 'updated_at' => now()],
+				['department_faculty_id' => 36, 'user_id' => 68, 'created_at' => now(), 'updated_at' => now()]
 			]);
+
+			User::whereIn('profileable_type', [UserType::getTypeModel(UserType::STUDENT), UserType::getTypeModel(UserType::TEACHING_STAFF)])->get()->each(function ($user) {
+				$faculties = new Collection;
+
+				$user->departmentFaculties->each(function ($department_faculty) use ($user, $faculties) {
+					$faculty = $department_faculty->faculty;
+
+					if (!$faculties->contains($faculty))
+						$faculties->push($faculty);
+
+					factory(Post::class, 3)->create([
+						'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($department_faculty),
+						'scopeable_id' => $department_faculty->id
+					]);
+				});
+
+				$faculties->each(function ($faculty) use ($user) {
+					factory(Post::class, 3)->create([
+						'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($faculty),
+						'scopeable_id' => $faculty->id
+					]);
+					factory(Post::class, 3)->create([
+						'year' => $user->type === UserType::getTypeString(UserType::STUDENT) ? $user->profileable->year : null,
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($faculty->university),
+						'scopeable_id' => $faculty->university->id
+					]);
+				});
+			});
+
+			User::where('profileable_type', UserType::getTypeModel(UserType::STUDENT))->get()->each(function ($user) {
+				$user->departmentFaculties->load('faculty.university')->each(function ($department_faculty) use ($user) {
+					factory(Event::class)->create([
+						'type' => EventType::NORMAL,
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($department_faculty->faculty),
+						'scopeable_id' => $department_faculty->faculty->id
+					]);
+
+					factory(Event::class)->create([
+						'type' => EventType::NORMAL,
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($department_faculty->faculty->university),
+						'scopeable_id' => $department_faculty->faculty->university->id
+					]);
+
+					factory(Event::class)->create([
+						'type' => EventType::NORMAL,
+						'user_id' => $user->id,
+						'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
+					]);
+				});
+			});
+
+			User::where('profileable_type', UserType::getTypeModel(UserType::TEACHING_STAFF))->get()->each(function ($user) {
+				$user->departmentFaculties->load('faculty.university')->each(function ($department_faculty) use ($user) {
+					$types = [EventType::NORMAL, EventType::ANNOUNCEMENT];
+					factory(Event::class)->create([
+						'type' => $types[array_rand($types)],
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($department_faculty->faculty),
+						'scopeable_id' => $department_faculty->faculty->id
+					]);
+
+					factory(Event::class)->create([
+						'type' => $types[array_rand($types)],
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($department_faculty->faculty->university),
+						'scopeable_id' => $department_faculty->faculty->university->id
+					]);
+
+					factory(Event::class)->create([
+						'type' => $types[array_rand($types)],
+						'user_id' => $user->id,
+						'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
+					]);
+				});
+			});
+
+			User::where('profileable_type', UserType::getTypeModel(UserType::COMPANY))->get()->each(function ($user) {
+				$types = [EventType::TRAINING, EventType::INTERNSHIP, EventType::JOB_OFFER];
+				Faculty::inRandomOrder()->take(5)->get()->each(function ($faculty) use ($user, $types) {
+					factory(Event::class)->create([
+						'type' => $types[array_rand($types)],
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($faculty),
+						'scopeable_id' => $faculty->id
+					]);
+				});
+
+				University::inRandomOrder()->take(5)->get()->each(function ($university) use ($user, $types) {
+					factory(Event::class)->create([
+						'type' => $types[array_rand($types)],
+						'user_id' => $user->id,
+						'scopeable_type' => get_class($university),
+						'scopeable_id' => $university->id
+					]);
+				});
+
+				factory(Event::class)->create([
+					'type' => $types[array_rand($types)],
+					'user_id' => $user->id,
+					'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
+				]);
+			});
+
+			User::with('profileable.faculty.university')->where('profileable_type', UserType::getTypeModel(UserType::MODERATOR))->get()->each(function ($user) {
+				factory(Event::class)->create([
+					'type' => EventType::ANNOUNCEMENT,
+					'user_id' => $user->id,
+					'scopeable_type' => get_class($user->profileable->faculty),
+					'scopeable_id' => $user->profileable->faculty->id
+				]);
+
+				factory(Event::class)->create([
+					'type' => EventType::ANNOUNCEMENT,
+					'user_id' => $user->id,
+					'scopeable_type' => get_class($user->profileable->faculty->university),
+					'scopeable_id' => $user->profileable->faculty->university->id
+				]);
+
+				factory(Event::class)->create([
+					'type' => EventType::ANNOUNCEMENT,
+					'user_id' => $user->id,
+					'scopeable_type' => EventScope::getScopeString(EventScope::ALL)
+				]);
+			});
+
+			Faculty::all()->each(function ($faculty) {
+				$department_faculties = DepartmentFaculty::where('faculty_id', $faculty->id)->get();
+				$department_faculty_users = DepartmentFacultyUser::whereIn('department_faculty_id', $department_faculties->pluck('id'));
+
+				User::where('profileable_type', UserType::getTypeModel(UserType::STUDENT))
+					->whereIn('id', $department_faculty_users->pluck('user_id'))->inRandomOrder()->take(15)->get()->each(function ($user) use ($faculty) {
+					factory(Tool::class)->create([
+						'faculty_id' => $faculty->id,
+						'user_id' => $user->id
+					]);
+				});
+			});
+
+			User::whereIn('profileable_type', [UserType::getTypeModel(UserType::STUDENT), UserType::getTypeModel(UserType::TEACHING_STAFF)])->get()->each(function ($user) {
+				factory(Question::class, 4)->create([
+					'user_id' => $user->id
+				]);
+			});
+
+			Tag::insert([
+				['name' => 'Tag 1'],
+				['name' => 'Tag 2'],
+				['name' => 'Tag 3'],
+				['name' => 'Tag 4'],
+				['name' => 'Tag 5'],
+				['name' => 'Tag 6'],
+				['name' => 'Tag 7'],
+				['name' => 'Tag 8'],
+				['name' => 'Tag 9'],
+				['name' => 'Tag 10']
+			]);
+
+			Question::all()->each(function ($question) {
+				$tags = Tag::inRandomOrder()->take(3)->get();
+				$question->tags()->attach($tags);
+			});
+
+			Tool::all()->each(function ($tool) {
+				$tags = Tag::inRandomOrder()->take(3)->get();
+				$tool->tags()->attach($tags);
+			});
 		});
 	}
 }
