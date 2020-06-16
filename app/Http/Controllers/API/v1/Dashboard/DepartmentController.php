@@ -42,7 +42,7 @@ class DepartmentController extends Controller
 	{
 		if ($request->user()->can('viewAny', Department::class))
 		{
-			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : (intval($request->items) ?: 10);
 			$departments = $this->repo->getAll($items);
 
 			return new DepartmentCollection($departments);

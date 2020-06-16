@@ -40,7 +40,7 @@ class UniversityController extends Controller
 	{
 		if ($request->user()->can('viewAny', University::class))
 		{
-			$items = $request->items === '*' ? '*' : intval($request->items) ?: 10;
+			$items = $request->items === '*' ? '*' : (intval($request->items) ?: 10);
 			$universities = $this->repo->getAll($items);
 
 			return new UniversityCollection($universities);
